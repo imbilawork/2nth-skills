@@ -18,6 +18,7 @@ Works with Claude Code, Cursor, Windsurf, Cline, and 30+ AI coding agents.
 |-------|-------------|--------|
 | [`sagex3-ai`](./sagex3-ai/) | Sage X3 ERP — GraphQL API, master data, reporting, AI integration | Live |
 | [`erpnext-furniture`](./erpnext-furniture/) | ERPNext — furniture manufacturing, BOMs, work orders, production, inventory | Live |
+| [`shopify-ai`](./shopify-ai/) | Shopify — Admin API, 6 role-based AI partners, MCP tools, content generation | Live |
 
 ## Skill structure
 

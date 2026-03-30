@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopify AI — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="AI agent skill for Shopify — role-based AI partners for store owners, merchandisers, content creators, customer service, marketing, and operations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root {
+      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
+      --c-titanium:#fafafa;
+      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
+      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
+      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
+      --c-grid-line:hsla(0,0%,100%,.018);
+      --c-input-bg:#141414;
+    }
+    .light {
+      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
+      --c-titanium:#0a0a0a;
+      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
+      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
+      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
+      --c-grid-line:rgba(0,0,0,.03);
+      --c-input-bg:#f7f8fa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    /* Nav */
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
+    @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:#06b6d4}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
+    .hidden{display:none}
+
+    /* Layout */
+    .page{max-width:1100px;margin:0 auto;padding:100px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+    @media(max-width:900px){.page{grid-template-columns:1fr;gap:24px}.toc{display:none}}
+
+    /* TOC */
+    .toc{position:sticky;top:80px;height:fit-content}
+    .toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;font-weight:600}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.toc-active{color:#06b6d4;border-left-color:#06b6d4}
+
+    /* Content */
+    .content{min-width:0}
+    .skill-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:#06b6d4}
+    .breadcrumb a:hover{text-decoration:underline}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:8px}
+    .skill-title span{color:#06b6d4}
+    .skill-subtitle{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.6;margin-bottom:16px}
+    .skill-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600}
+    .badge-brand{background:rgba(6,182,212,.12);color:#06b6d4}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-purple{background:rgba(99,102,241,.12);color:#6366f1}
+    .badge-orange{background:rgba(249,115,22,.12);color:#f97316}
+    .install-box{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .install-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:#06b6d4}
+    .install-copy{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);background:var(--c-carbon);border:1px solid var(--c-border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .15s}
+    .install-copy:hover{color:var(--c-steel-300);border-color:var(--c-border-s)}
+
+    /* Sections */
+    .sec{margin-bottom:48px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:24px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:12px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.6;margin-bottom:4px}
+    .sec strong{color:var(--c-steel-300)}
+
+    /* Code */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:16px;margin:12px 0 16px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 5px;border-radius:3px;color:#06b6d4}
+
+    /* Info grid */
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .info-cell{background:var(--c-graphite);padding:16px}
+    .info-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:4px}
+    .info-value{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);line-height:1}
+
+    /* Architecture */
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:24px;margin:16px 0;text-align:center}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:120px}
+    .arch-box.highlight{border-color:#06b6d4;color:#06b6d4}
+    .arch-arrow{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c-steel-700)}
+
+    /* Table */
+    .doc-table{width:100%;border-collapse:collapse;margin:12px 0 16px;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:8px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border)}
+    .doc-table tr:last-child td{border-bottom:none}
+
+    /* Callout */
+    .callout{background:var(--c-graphite);border-left:3px solid #06b6d4;padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0}
+
+    /* Role card */
+    .role-card{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:20px;margin:16px 0}
+    .role-card-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .role-icon{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.05em;background:rgba(6,182,212,.12);color:#06b6d4;border:1px solid rgba(6,182,212,.2);padding:4px 10px;border-radius:3px}
+    .role-card h4{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);font-weight:600}
+    .role-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+    @media(max-width:600px){.role-split{grid-template-columns:1fr}}
+    .role-col-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:6px;font-weight:600}
+    .role-col ul{padding-left:0;list-style:none}
+    .role-col li{font-size:13px;color:var(--c-steel-500);padding:4px 0;border-bottom:1px solid var(--c-border)}
+    .role-col li:last-child{border-bottom:none}
+    .role-col li::before{content:'— ';color:var(--c-steel-700)}
+
+    /* Conversation */
+    .convo{margin:16px 0}
+    .convo-line{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+    .convo-role{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;min-width:60px;padding-top:12px;font-weight:600}
+    .convo-role.human{color:var(--c-steel-500)}
+    .convo-role.ai{color:#06b6d4}
+    .convo-text{font-size:13px;color:var(--c-steel-400);line-height:1.6;background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 14px;flex:1}
+
+    /* Tool grid */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:12px 0}
+    .tool-item{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:3px;padding:8px 12px}
+    .tool-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:#06b6d4;margin-bottom:2px}
+    .tool-desc{font-size:11px;color:var(--c-steel-600)}
+
+    /* Footer */
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://2nth.ai" class="nav-brand"><span>2</span>NTH</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Skills</a>
+      <a href="https://2nth.ai" class="nav-link">Home</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- TOC -->
+  <aside class="toc">
+    <div class="toc-title">ON THIS PAGE</div>
+    <a href="#overview">Overview</a>
+    <a href="#model">The 2nth Model</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#apis">Shopify APIs</a>
+    <a href="#owner">Owner AI</a>
+    <a href="#merchandiser">Merchandiser AI</a>
+    <a href="#content">Content AI</a>
+    <a href="#support">Support AI</a>
+    <a href="#marketing">Marketing AI</a>
+    <a href="#operations">Operations AI</a>
+    <a href="#install">Install</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <div class="skill-header">
+      <div class="breadcrumb"><a href="/">Skills</a> / Shopify AI</div>
+      <div class="skill-title">SHOPIFY <span>AI</span></div>
+      <div class="skill-subtitle">Every person who works with a Shopify store gets their own AI partner. This skill gives your agent deep expertise in the Shopify Admin API, Storefront API, and all the role-specific patterns that make Shopify teams extraordinary.</div>
+      <div class="skill-badges">
+        <span class="badge badge-green">LIVE</span>
+        <span class="badge badge-brand">v1.0</span>
+        <span class="badge badge-orange">E-Commerce</span>
+        <span class="badge badge-brand">Admin API</span>
+        <span class="badge badge-purple">MCP</span>
+        <span class="badge badge-brand">6 Roles</span>
+      </div>
+      <div class="install-box">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@shopify-ai</code>
+        <button class="install-copy" onclick="navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@shopify-ai');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',1500)">COPY</button>
+      </div>
+    </div>
+
+    <!-- 01 Overview -->
+    <div class="sec" id="overview">
+      <div class="sec-num">01</div>
+      <h2>OVERVIEW</h2>
+      <p>Shopify powers over 4 million stores globally. It exposes two APIs: the <strong>Admin API</strong> (REST + GraphQL) for store management, and the <strong>Storefront API</strong> (GraphQL) for customer-facing experiences. Both are powerful foundations for AI augmentation.</p>
+      <p>This skill gives AI agents the knowledge to query, operate, and automate Shopify — across every role in the organisation — without hallucinating endpoints or field names.</p>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">Admin API</div>
+          <div class="info-value">REST + GQL</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Auth</div>
+          <div class="info-value">TOKEN</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Pagination</div>
+          <div class="info-value">RELAY</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Roles</div>
+          <div class="info-value">6</div>
+        </div>
+      </div>
+
+      <h3>What your agent can do</h3>
+      <ul>
+        <li>Query products, orders, customers, inventory, collections, and analytics</li>
+        <li>Generate AI-powered product descriptions, SEO copy, and alt text</li>
+        <li>Surface revenue dashboards, trend analysis, and stock alerts for owners</li>
+        <li>Audit SEO issues, auto-tag products, and reorder collections for merchandisers</li>
+        <li>Instantly look up orders and draft customer service responses</li>
+        <li>Segment customers and generate campaign copy for marketing</li>
+        <li>Monitor unfulfilled orders, flag fraud, and route fulfillments for operations</li>
+      </ul>
+    </div>
+
+    <!-- 02 The 2nth Model -->
+    <div class="sec" id="model">
+      <div class="sec-num">02</div>
+      <h2>THE 2NTH MODEL</h2>
+      <p>The 2nth model is simple: <strong>every person who works with a Shopify store gets their own AI partner.</strong> The AI never makes decisions — it surfaces data, drafts content, and catches things humans miss. The human always has the final say.</p>
+
+      <div class="callout">
+        <div class="callout-title">The principle</div>
+        <p>One person + one AI = extraordinary. The AI handles data retrieval and first drafts. The human applies judgment, brand instinct, and relationship intelligence.</p>
+      </div>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Role</th><th>The Human Decides</th><th>The AI Enables</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Store Owner</strong></td><td>Strategy, pricing, brand direction</td><td>Revenue dashboards, trends, competitive monitoring</td></tr>
+          <tr><td><strong>Merchandiser</strong></td><td>Collection curation, product selection</td><td>Auto-tagging, SEO audits, inventory-aware recommendations</td></tr>
+          <tr><td><strong>Content Creator</strong></td><td>Brand voice, creative direction</td><td>Draft descriptions, alt text, meta tags, blog posts</td></tr>
+          <tr><td><strong>Customer Service</strong></td><td>Escalations, refunds, relationship calls</td><td>Order lookup, response drafts, sentiment analysis</td></tr>
+          <tr><td><strong>Marketing Manager</strong></td><td>Campaign strategy, budget allocation</td><td>Segmentation, A/B copy, performance reporting</td></tr>
+          <tr><td><strong>Operations</strong></td><td>Exception handling, carrier selection</td><td>Order routing, stock alerts, fraud flags</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 03 Architecture -->
+    <div class="sec" id="architecture">
+      <div class="sec-num">03</div>
+      <h2>ARCHITECTURE</h2>
+      <p>The recommended integration uses a Cloudflare Worker as an MCP server — it proxies the Shopify Admin API, generates content via Workers AI, and exposes role-specific tools to the AI client.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">User (Role)</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">AI Client<br><span style="font-size:9px;color:var(--c-steel-600)">Claude</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">MCP Server<br><span style="font-size:9px;color:var(--c-steel-600)">Cloudflare Worker</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Shopify<br><span style="font-size:9px;color:var(--c-steel-600)">Admin API</span></div>
+        </div>
+        <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-steel-700)">Workers AI handles content generation and analysis in the same edge runtime</div>
+      </div>
+
+      <h3>Authentication</h3>
+      <pre><code># Admin API (Private/Custom App)
+X-Shopify-Access-Token: shpat_xxxxx
+
+# Storefront API
+X-Shopify-Storefront-Access-Token: xxxxx
+
+# Base URLs
+https://{store}.myshopify.com/admin/api/2024-10/{resource}.json   # REST
+https://{store}.myshopify.com/admin/api/2024-10/graphql.json      # GraphQL</code></pre>
+
+      <h3>MCP Tool Registration (per role)</h3>
+      <pre><code>const ROLE_TOOLS = {
+  owner:        ['get_revenue_dashboard', 'get_top_products', 'get_customer_growth', 'get_inventory_value'],
+  merchandiser: ['list_products', 'update_product', 'manage_collection', 'get_seo_audit', 'auto_tag_products'],
+  content:      ['get_product', 'update_product_description', 'generate_alt_text', 'update_seo_metadata'],
+  support:      ['search_orders', 'get_order_status', 'search_customers', 'draft_response', 'create_return'],
+  marketing:    ['get_sales_report', 'get_customer_segments', 'generate_campaign_copy', 'get_channel_performance'],
+  operations:   ['list_unfulfilled_orders', 'get_inventory_levels', 'create_fulfillment', 'flag_fraud_risk'],
+};</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">Security</div>
+        <p>Never expose <code>SHOPIFY_ACCESS_TOKEN</code> in client-side code. Store as a Cloudflare Worker secret: <code>npx wrangler secret put SHOPIFY_ACCESS_TOKEN</code></p>
+      </div>
+    </div>
+
+    <!-- 04 Shopify APIs -->
+    <div class="sec" id="apis">
+      <div class="sec-num">04</div>
+      <h2>SHOPIFY APIS</h2>
+      <p>GraphQL is preferred for complex queries, metafields, and bulk operations. REST is simpler for straightforward CRUD. Both are available on all plans.</p>
+
+      <h3>Admin REST — Key Resources</h3>
+      <pre><code>GET  /admin/api/2024-10/products.json?limit=50&status=active
+GET  /admin/api/2024-10/products/{id}.json
+POST /admin/api/2024-10/products.json
+PUT  /admin/api/2024-10/products/{id}.json
+
+GET  /admin/api/2024-10/orders.json?status=open&limit=50
+GET  /admin/api/2024-10/orders/{id}.json
+
+GET  /admin/api/2024-10/customers/search.json?query=email:user@example.com
+GET  /admin/api/2024-10/inventory_levels.json?location_ids=1234</code></pre>
+
+      <h3>Admin GraphQL — Products</h3>
+      <pre><code>{
+  products(first: 20, query: "status:active") {
+    edges {
+      node {
+        id title handle description tags status
+        variants(first: 10) {
+          edges { node { id price sku inventoryQuantity } }
+        }
+        images(first: 5) {
+          edges { node { url altText } }
+        }
+        seo { title description }
+      }
+    }
+    pageInfo { hasNextPage endCursor }
+  }
+}</code></pre>
+
+      <h3>Admin GraphQL — Orders</h3>
+      <pre><code>{
+  orders(first: 30, query: "fulfillment_status:unfulfilled") {
+    edges {
+      node {
+        id name createdAt
+        totalPriceSet { shopMoney { amount currencyCode } }
+        customer { firstName lastName email }
+        lineItems(first: 10) {
+          edges { node { title quantity variant { sku inventoryQuantity } } }
+        }
+        shippingAddress { address1 city province zip country }
+        fulfillments { trackingInfo { number url company } status }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>Rate Limits</h3>
+      <table class="doc-table">
+        <thead><tr><th>Plan</th><th>REST</th><th>GraphQL</th></tr></thead>
+        <tbody>
+          <tr><td>Standard</td><td>2 req/sec</td><td>50 points/sec</td></tr>
+          <tr><td>Advanced / Plus</td><td>4 req/sec</td><td>100 points/sec</td></tr>
+          <tr><td>Shopify Plus</td><td>20 req/sec</td><td>1000 points/sec</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Webhooks</h3>
+      <table class="doc-table">
+        <thead><tr><th>Webhook</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>orders/create</code></td><td>Alert operations, update dashboards</td></tr>
+          <tr><td><code>orders/fulfilled</code></td><td>Notify customer service, update tracking</td></tr>
+          <tr><td><code>products/update</code></td><td>Trigger SEO re-audit</td></tr>
+          <tr><td><code>inventory_levels/update</code></td><td>Check reorder points</td></tr>
+          <tr><td><code>customers/create</code></td><td>Welcome sequence, segment assignment</td></tr>
+          <tr><td><code>refunds/create</code></td><td>Alert customer service, flag patterns</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 05 Owner AI -->
+    <div class="sec" id="owner">
+      <div class="sec-num">05</div>
+      <h2>OWNER AI</h2>
+      <p>The store owner sets strategy, makes pricing decisions, and chooses brand direction. Their AI partner handles daily data retrieval so they can focus on what only they can do.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">OWNER</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Pricing strategy</li>
+              <li>Brand direction</li>
+              <li>New product lines</li>
+              <li>Supplier relationships</li>
+              <li>Capital allocation</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>Morning revenue dashboard</li>
+              <li>Top product trends</li>
+              <li>Cash flow visibility</li>
+              <li>Refund rate alerts</li>
+              <li>YoY comparison</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">get_revenue_dashboard</div><div class="tool-desc">Revenue, orders, AOV by period</div></div>
+        <div class="tool-item"><div class="tool-name">get_top_products</div><div class="tool-desc">Best sellers by revenue and volume</div></div>
+        <div class="tool-item"><div class="tool-name">get_customer_growth</div><div class="tool-desc">New vs returning, LTV trends</div></div>
+        <div class="tool-item"><div class="tool-name">get_inventory_value</div><div class="tool-desc">Stock value by collection/location</div></div>
+        <div class="tool-item"><div class="tool-name">get_refund_summary</div><div class="tool-desc">Refund rate, reasons, trends</div></div>
+        <div class="tool-item"><div class="tool-name">compare_periods</div><div class="tool-desc">This month vs last, YoY</div></div>
+      </div>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Owner</div>
+          <div class="convo-text">How are we doing this month?</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">Revenue R 842K (+14% vs Feb). 234 orders, AOV R 3,600. Your Fusion Floor Lamps are your fastest mover — 38 sold, up 60% MoM. Stock alert: Sossus Dining Table down to 3 units. Top customer: Weylandts with R 120K in orders. One concern: refund rate ticked up to 4.2% from 2.8% — mostly "item not as described" on the scatter cushions. Want me to pull the specific returns?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 Merchandiser AI -->
+    <div class="sec" id="merchandiser">
+      <div class="sec-num">06</div>
+      <h2>MERCHANDISER AI</h2>
+      <p>The merchandiser curates collections, decides what to feature, and approves product positioning. Their AI partner handles the analytical legwork — surfacing what needs attention before it becomes a problem.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">MERCH</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Collection curation</li>
+              <li>Featured products</li>
+              <li>Seasonal campaigns</li>
+              <li>Pricing position</li>
+              <li>Range expansion</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>SEO audits (missing meta, alt text)</li>
+              <li>Auto-generated product tags</li>
+              <li>Collection reordering by conversion</li>
+              <li>Slow mover identification</li>
+              <li>Inventory-aware recommendations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">list_products</div><div class="tool-desc">With filters: collection, status, inventory</div></div>
+        <div class="tool-item"><div class="tool-name">update_product</div><div class="tool-desc">Title, description, tags, SEO</div></div>
+        <div class="tool-item"><div class="tool-name">manage_collection</div><div class="tool-desc">Add/remove products, reorder</div></div>
+        <div class="tool-item"><div class="tool-name">get_seo_audit</div><div class="tool-desc">Missing meta, alt text, duplicates</div></div>
+        <div class="tool-item"><div class="tool-name">auto_tag_products</div><div class="tool-desc">AI-generated tags from content</div></div>
+        <div class="tool-item"><div class="tool-name">get_slow_movers</div><div class="tool-desc">Products with 0 sales in N days</div></div>
+        <div class="tool-item"><div class="tool-name">get_conversion_by_product</div><div class="tool-desc">Views to cart to purchase funnel</div></div>
+      </div>
+
+      <h3>SEO Audit Query</h3>
+      <pre><code>{
+  products(first: 250) {
+    edges {
+      node {
+        id title
+        seo { title description }
+        images(first: 1) { edges { node { altText } } }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Merch</div>
+          <div class="convo-text">Which products need SEO attention?</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">12 products have issues: 4 missing meta descriptions, 3 have duplicate titles, 5 have images without alt text. Biggest opportunity: your Charred Veldt Coffee Table — 340 views last month but no meta description. Want me to draft SEO copy for these 12? I won't publish anything until you approve.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 Content AI -->
+    <div class="sec" id="content">
+      <div class="sec-num">07</div>
+      <h2>CONTENT AI</h2>
+      <p>The content creator owns the brand voice, makes creative decisions, and approves all copy. Their AI partner handles first drafts — so they spend time on craft, not data entry.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">CONTENT</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Brand voice</li>
+              <li>Creative direction</li>
+              <li>Final copy approval</li>
+              <li>Campaign messaging</li>
+              <li>Tone per channel</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>Product description drafts</li>
+              <li>Alt text for all images</li>
+              <li>Meta titles and descriptions</li>
+              <li>Blog post outlines</li>
+              <li>Channel rewrites (email, social)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">get_product</div><div class="tool-desc">Full product data including images</div></div>
+        <div class="tool-item"><div class="tool-name">update_product_description</div><div class="tool-desc">Set body HTML on approval</div></div>
+        <div class="tool-item"><div class="tool-name">update_seo_metadata</div><div class="tool-desc">Set meta title + description</div></div>
+        <div class="tool-item"><div class="tool-name">generate_alt_text</div><div class="tool-desc">AI writes alt text from image</div></div>
+        <div class="tool-item"><div class="tool-name">generate_product_copy</div><div class="tool-desc">Full description from specs</div></div>
+        <div class="tool-item"><div class="tool-name">batch_update_descriptions</div><div class="tool-desc">Process multiple products at once</div></div>
+      </div>
+
+      <h3>Content System Prompt Pattern</h3>
+      <pre><code>You are a copywriter for NoHa, a luxury South African furniture brand.
+Brand voice: sophisticated, understated, nature-inspired. Never salesy.
+Lead with the emotional benefit. Include materials and dimensions.
+Use sensory language. Keep under 150 words for product descriptions.</code></pre>
+
+      <h3>Workers AI — Content Generation</h3>
+      <pre><code>const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+  messages: [
+    { role: 'system', content: 'You are a luxury e-commerce copywriter. Be concise and compelling.' },
+    { role: 'user', content: `Write a product description for "${product.title}".
+      Brand: luxury South African furniture. Voice: sophisticated, nature-inspired.
+      Include: ${product.tags.join(', ')}.
+      Keep under 150 words. Lead with emotion, end with specs.` }
+  ]
+});</code></pre>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Content</div>
+          <div class="convo-text">Write a description for the new Kuba Wall Art</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">Here's a draft: "A bold graphic statement rooted in Central African textile tradition. The Kuba Wall Art translates the geometric precision of Kuba cloth into a large-scale work that commands any room. Handcrafted in our studio using mixed media on board. Each piece is unique — slight variations in texture and tone are part of its character. Details: 1200 x 900mm. Mixed media on board. Ready to hang. Indoor only." — Want me to adjust the tone or length? I can also draft the meta description and alt text.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08 Support AI -->
+    <div class="sec" id="support">
+      <div class="sec-num">08</div>
+      <h2>SUPPORT AI</h2>
+      <p>Customer service handles escalations, approves refunds, and makes relationship calls. Their AI partner handles the lookup and drafting work — so they respond faster without losing the human touch.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">SUPPORT</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Escalation handling</li>
+              <li>Refund approvals</li>
+              <li>Policy exceptions</li>
+              <li>VIP relationship calls</li>
+              <li>Sending any message</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>Instant order lookup</li>
+              <li>Tracking status and ETA</li>
+              <li>Draft email responses</li>
+              <li>Repeat issue flagging</li>
+              <li>VIP customer identification</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">search_orders</div><div class="tool-desc">By order number, email, name</div></div>
+        <div class="tool-item"><div class="tool-name">get_order_status</div><div class="tool-desc">Full status with tracking info</div></div>
+        <div class="tool-item"><div class="tool-name">search_customers</div><div class="tool-desc">Lookup by email, phone, name</div></div>
+        <div class="tool-item"><div class="tool-name">draft_response</div><div class="tool-desc">AI writes reply for review</div></div>
+        <div class="tool-item"><div class="tool-name">create_return</div><div class="tool-desc">Pre-fill return request</div></div>
+        <div class="tool-item"><div class="tool-name">get_customer_history</div><div class="tool-desc">Past orders, returns, notes</div></div>
+        <div class="tool-item"><div class="tool-name">flag_escalation</div><div class="tool-desc">Mark for human attention</div></div>
+      </div>
+
+      <h3>Order Lookup Query</h3>
+      <pre><code>{
+  orders(first: 1, query: "name:#1042") {
+    edges {
+      node {
+        id name financialStatus fulfillmentStatus
+        totalPriceSet { shopMoney { amount } }
+        customer { firstName lastName email }
+        lineItems(first: 10) { edges { node { title quantity } } }
+        fulfillments { trackingInfo { number url company } status }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Support</div>
+          <div class="convo-text">Customer is asking about order #1042</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">Order #1042: Placed Mar 22, 2x NoHa Dining Chairs (R 17,990). Shipped via CourierGuy, tracking CG-8891234. Last scan: Johannesburg depot yesterday 14:32. Expected delivery: tomorrow by 17:00. Customer: Sarah M., returning customer (4th order, R 48K lifetime). Draft: "Hi Sarah, your dining chairs are on their way! They left the JHB depot yesterday and should arrive tomorrow by 5pm. Tracking: CG-8891234. Let me know if you need anything else." — Shall I send this or adjust it?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 Marketing AI -->
+    <div class="sec" id="marketing">
+      <div class="sec-num">09</div>
+      <h2>MARKETING AI</h2>
+      <p>The marketing manager decides campaign strategy, approves messaging, and allocates budget. Their AI partner segments the audience, generates copy variants, and surfaces the data that makes campaigns perform.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">MKTG</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Campaign strategy</li>
+              <li>Budget allocation</li>
+              <li>Message approval</li>
+              <li>Discount depth</li>
+              <li>Audience targeting</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>Customer segmentation</li>
+              <li>A/B copy variants</li>
+              <li>Channel performance data</li>
+              <li>Best send-time analysis</li>
+              <li>Slow mover discount strategy</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">get_sales_report</div><div class="tool-desc">Revenue by period, product, collection</div></div>
+        <div class="tool-item"><div class="tool-name">get_customer_segments</div><div class="tool-desc">Auto-segmented by purchase behaviour</div></div>
+        <div class="tool-item"><div class="tool-name">generate_campaign_copy</div><div class="tool-desc">Email/SMS/social copy variants</div></div>
+        <div class="tool-item"><div class="tool-name">get_channel_performance</div><div class="tool-desc">Online vs POS vs wholesale</div></div>
+        <div class="tool-item"><div class="tool-name">get_discount_impact</div><div class="tool-desc">Revenue impact of active discounts</div></div>
+        <div class="tool-item"><div class="tool-name">get_abandoned_carts</div><div class="tool-desc">Checkout data for recovery campaigns</div></div>
+      </div>
+
+      <h3>Customer Segmentation Query</h3>
+      <pre><code>{
+  customers(first: 50, query: "orders_count:>3", sortKey: TOTAL_SPENT, reverse: true) {
+    edges {
+      node {
+        id firstName lastName email
+        ordersCount totalSpent tags
+        lastOrder { id name createdAt }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Mktg</div>
+          <div class="convo-text">I need a campaign for the Fusion Floor Lamps</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">The Fusion range is your fastest-growing category — up 60% MoM. Three approaches: (1) Lifestyle: "Light that tells a story — The Fusion Range" — targets design-conscious buyers. (2) Gift angle: "The gift they'll never forget — from R 3,995" — targets gifting (28% of your customers). (3) Collection: "Complete the room — pair any Fusion Lamp with a coffee table, save 10%" — targets upsell. Best-performing send time: Tuesday 10am (23% open rate). Want me to draft full email copy for any of these?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 Operations AI -->
+    <div class="sec" id="operations">
+      <div class="sec-num">10</div>
+      <h2>OPERATIONS AI</h2>
+      <p>Operations handles exceptions, selects carriers, and manages the warehouse team. Their AI partner monitors the queue, flags issues before they escalate, and pre-builds fulfillment requests for human approval.</p>
+
+      <div class="role-card">
+        <div class="role-card-header">
+          <div class="role-icon">OPS</div>
+          <h4>Human + AI Split</h4>
+        </div>
+        <div class="role-split">
+          <div class="role-col">
+            <div class="role-col-label">The Human Decides</div>
+            <ul>
+              <li>Exception handling</li>
+              <li>Carrier selection</li>
+              <li>Warehouse priorities</li>
+              <li>Fraud call (approve/reject)</li>
+              <li>Inter-warehouse transfers</li>
+            </ul>
+          </div>
+          <div class="role-col">
+            <div class="role-col-label">The AI Enables</div>
+            <ul>
+              <li>Overdue order flagging</li>
+              <li>Inventory vs order crosscheck</li>
+              <li>Fulfillment request pre-build</li>
+              <li>Fraud signal scoring</li>
+              <li>Stockout forecasting</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>MCP Tools</h3>
+      <div class="tool-grid">
+        <div class="tool-item"><div class="tool-name">list_unfulfilled_orders</div><div class="tool-desc">Sorted by age, flagged if overdue</div></div>
+        <div class="tool-item"><div class="tool-name">get_inventory_levels</div><div class="tool-desc">By location, with pending allocations</div></div>
+        <div class="tool-item"><div class="tool-name">create_fulfillment</div><div class="tool-desc">Prepare fulfillment for approval</div></div>
+        <div class="tool-item"><div class="tool-name">flag_fraud_risk</div><div class="tool-desc">Scoring based on signals</div></div>
+        <div class="tool-item"><div class="tool-name">get_carrier_performance</div><div class="tool-desc">Delivery time, damage rate by carrier</div></div>
+        <div class="tool-item"><div class="tool-name">get_stockout_forecast</div><div class="tool-desc">Days until stockout by product</div></div>
+      </div>
+
+      <h3>Unfulfilled Orders Query</h3>
+      <pre><code>{
+  orders(first: 30, query: "fulfillment_status:unfulfilled") {
+    edges {
+      node {
+        id name createdAt
+        totalPriceSet { shopMoney { amount currencyCode } }
+        customer { firstName lastName email }
+        lineItems(first: 10) {
+          edges { node { title quantity sku variant { inventoryQuantity } } }
+        }
+        shippingAddress { address1 city province country }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>Example Conversation</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <div class="convo-role human">Ops</div>
+          <div class="convo-text">What's overdue?</div>
+        </div>
+        <div class="convo-line">
+          <div class="convo-role ai">AI</div>
+          <div class="convo-text">3 orders unfulfilled over 24 hours: #1039 (R 18,995 Sossus Table) — 28h. Oversized, needs freight carrier. Suggestion: DSV. #1041 (R 7,990 scatter + throw) — 26h. No issue found, may have been missed. Flag for warehouse. #1044 (R 3,295 Idwala Coffee Table) — 25h. 0 units at JHB but 4 at CPT. Suggest inter-warehouse transfer or ship from CPT. — Want me to create fulfillment requests for #1041 and #1044?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 Install -->
+    <div class="sec" id="install">
+      <div class="sec-num">11</div>
+      <h2>INSTALL</h2>
+      <p>Install this skill into your AI agent with a single command. The skill gives your agent complete Shopify API knowledge, all role patterns, query references, and content generation prompts.</p>
+
+      <div class="install-box" style="margin-bottom:16px">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@shopify-ai</code>
+        <button class="install-copy" onclick="navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@shopify-ai');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',1500)">COPY</button>
+      </div>
+
+      <h3>What's Included</h3>
+      <ul>
+        <li><strong>SKILL.md</strong> — Full Admin API reference, role patterns, rate limits, webhooks, gotchas</li>
+        <li><strong>references/queries.md</strong> — Complete query library: products, orders, customers, inventory, analytics, bulk ops</li>
+        <li><strong>references/roles.md</strong> — Detailed role patterns for all 6 roles with MCP tools and example conversations</li>
+        <li><strong>references/ai-integration.md</strong> — Cloudflare Worker proxy, Workers AI content generation, webhook handlers, wrangler config</li>
+      </ul>
+
+      <h3>Wrangler Config</h3>
+      <pre><code>name = "shopify-ai"
+compatibility_date = "2026-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[ai]
+binding = "AI"
+
+[vars]
+SHOPIFY_STORE = "your-store-name"
+
+# Secrets (run in your terminal):
+# npx wrangler secret put SHOPIFY_ACCESS_TOKEN</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">Common Gotchas</div>
+        <p><strong>API versioning:</strong> Always specify version e.g. <code>2024-10</code>. <strong>Pagination:</strong> REST uses Link headers, GraphQL uses cursor-based edges/node. <strong>Metafields:</strong> Use GraphQL — REST support is limited. <strong>Bulk ops:</strong> For &gt;250 items use GraphQL bulk operations. <strong>Currency:</strong> Amounts are strings in REST, use <code>MoneyV2</code> in GraphQL.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
+    <div class="footer-links">
+      <a href="/">All Skills</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+      <a href="https://github.com/imbilawork">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script>
+function toggleTheme(){
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('2nth-theme',document.documentElement.classList.contains('light')?'light':'dark');
+  updateIcons();
+}
+function updateIcons(){
+  var l=document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden',!l);
+  document.getElementById('icon-moon').classList.toggle('hidden',l);
+}
+updateIcons();
+
+var tocLinks=document.querySelectorAll('.toc a');
+var sections=document.querySelectorAll('.sec');
+window.addEventListener('scroll',function(){
+  var scrollPos=window.scrollY+120;
+  sections.forEach(function(sec,i){
+    if(sec.offsetTop<=scrollPos&&sec.offsetTop+sec.offsetHeight>scrollPos){
+      tocLinks.forEach(function(a){a.classList.remove('toc-active')});
+      if(tocLinks[i])tocLinks[i].classList.add('toc-active');
+    }
+  });
+});
+</script>
+</body>
+</html>
