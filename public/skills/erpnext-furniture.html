@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERPNext Furniture Manufacturing — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="AI agent skill for ERPNext furniture manufacturing — REST API, BOMs, work orders, inventory, production planning, edge AI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root {
+      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
+      --c-titanium:#fafafa;
+      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
+      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
+      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
+      --c-grid-line:hsla(0,0%,100%,.018);
+      --c-input-bg:#141414;
+    }
+    .light {
+      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
+      --c-titanium:#0a0a0a;
+      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
+      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
+      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
+      --c-grid-line:rgba(0,0,0,.03);
+      --c-input-bg:#f7f8fa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    /* ── Nav ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
+    @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:#06b6d4}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .nav-link.active{color:var(--c-steel-300)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
+    .hidden{display:none}
+
+    /* ── Layout ── */
+    .page{max-width:1100px;margin:0 auto;padding:100px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+    @media(max-width:900px){.page{grid-template-columns:1fr;gap:24px}.toc{display:none}}
+
+    /* ── TOC sidebar ── */
+    .toc{position:sticky;top:80px;height:fit-content}
+    .toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;font-weight:600}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.toc-active{color:#06b6d4;border-left-color:#06b6d4}
+
+    /* ── Content ── */
+    .content{min-width:0}
+
+    /* Skill header */
+    .skill-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:#06b6d4}
+    .breadcrumb a:hover{text-decoration:underline}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:8px}
+    .skill-title span{color:#06b6d4}
+    .skill-subtitle{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.6;margin-bottom:16px}
+    .skill-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600}
+    .badge-brand{background:rgba(6,182,212,.12);color:#06b6d4}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-purple{background:rgba(99,102,241,.12);color:#6366f1}
+    .install-box{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .install-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:#06b6d4}
+    .install-copy{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);background:var(--c-carbon);border:1px solid var(--c-border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .15s}
+    .install-copy:hover{color:var(--c-steel-300);border-color:var(--c-border-s)}
+
+    /* ── Sections ── */
+    .sec{margin-bottom:48px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:24px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:12px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.6;margin-bottom:4px}
+    .sec strong{color:var(--c-steel-300)}
+
+    /* Code blocks */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:16px;margin:12px 0 16px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 5px;border-radius:3px;color:#06b6d4}
+
+    /* Info cards */
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .info-cell{background:var(--c-graphite);padding:16px}
+    .info-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:4px}
+    .info-value{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);line-height:1}
+
+    /* Schema tree */
+    .tree{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:20px;margin:12px 0 16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--c-steel-500)}
+    .tree .domain{color:#06b6d4;font-weight:600}
+    .tree .entity{color:var(--c-steel-300)}
+    .tree .dim{color:var(--c-steel-700)}
+
+    /* Table */
+    .doc-table{width:100%;border-collapse:collapse;margin:12px 0 16px;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:8px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border)}
+    .doc-table tr:last-child td{border-bottom:none}
+
+    /* Callout */
+    .callout{background:var(--c-graphite);border-left:3px solid #06b6d4;padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0}
+
+    /* Architecture diagram (ASCII in code block) */
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:24px;margin:16px 0;text-align:center}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:120px}
+    .arch-box.highlight{border-color:#06b6d4;color:#06b6d4}
+    .arch-arrow{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c-steel-700)}
+
+    /* Footer */
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://2nth.ai" class="nav-brand"><span>2</span>NTH</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Skills</a>
+      <a href="https://2nth.ai" class="nav-link">Home</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- ═══ TOC ═══ -->
+  <aside class="toc">
+    <div class="toc-title">ON THIS PAGE</div>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#doctypes">Doctypes</a>
+    <a href="#manufacturing">Manufacturing</a>
+    <a href="#queries">API Patterns</a>
+    <a href="#reporting">Reporting</a>
+    <a href="#ai-integration">AI Integration</a>
+    <a href="#install">Install</a>
+    <a href="#gotchas">Gotchas</a>
+  </aside>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content">
+
+    <!-- Header -->
+    <div class="skill-header">
+      <div class="breadcrumb"><a href="/">Skills</a> / ERPNext Furniture Manufacturing</div>
+      <div class="skill-title">ERPNEXT <span>FURNITURE MANUFACTURING</span></div>
+      <div class="skill-subtitle">Give your AI agent deep expertise in ERPNext for furniture manufacturing. Covers the full REST API, Bills of Materials, work orders, production planning, inventory, and AI-powered operations on the edge.</div>
+      <div class="skill-badges">
+        <span class="badge badge-green">LIVE</span>
+        <span class="badge badge-brand">v1.0</span>
+        <span class="badge badge-purple">Manufacturing</span>
+        <span class="badge badge-brand">REST API</span>
+        <span class="badge badge-brand">Frappe</span>
+        <span class="badge badge-brand">Edge AI</span>
+      </div>
+      <div class="install-box">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@erpnext-furniture</code>
+        <button class="install-copy" onclick="navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@erpnext-furniture');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',1500)">COPY</button>
+      </div>
+    </div>
+
+    <!-- Overview -->
+    <div class="sec" id="overview">
+      <div class="sec-num">01</div>
+      <h2>OVERVIEW</h2>
+      <p>ERPNext is an open-source ERP built on the <strong>Frappe framework</strong>. It's widely used in manufacturing, especially for make-to-order and make-to-stock operations. This skill is tailored for <strong>furniture manufacturing</strong> — covering BOMs, production routing, timber/hardware inventory, and quality inspection.</p>
+      <p>ERPNext exposes a comprehensive <strong>REST API</strong> for every doctype, plus an <strong>RPC API</strong> for server-side methods. This skill gives AI agents the knowledge to query, automate, and report on a furniture factory — without hallucinating endpoints or field names.</p>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">API Type</div>
+          <div class="info-value">REST + RPC</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Auth</div>
+          <div class="info-value">TOKEN / BASIC</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Framework</div>
+          <div class="info-value">FRAPPE</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Doctypes</div>
+          <div class="info-value">12+ MFG</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="sec" id="architecture">
+      <div class="sec-num">02</div>
+      <h2>ARCHITECTURE</h2>
+      <p>The recommended pattern uses a Cloudflare Worker as a proxy — this avoids CORS, secures API keys at the edge, and enables AI analysis via Workers AI.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">User / Dashboard</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Cloudflare Worker<br><span style="font-size:9px;color:var(--c-steel-600)">Proxy + AI</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">ERPNext<br><span style="font-size:9px;color:var(--c-steel-600)">REST / RPC API</span></div>
+        </div>
+      </div>
+
+      <h3>Base URL</h3>
+      <pre><code>GET  https://&lt;site&gt;/api/resource/&lt;DocType&gt;
+POST https://&lt;site&gt;/api/method/&lt;dotted.path&gt;</code></pre>
+
+      <h3>Authentication</h3>
+      <pre><code># API Key + Secret (recommended)
+Authorization: token api_key:api_secret
+
+# Or Basic Auth
+Authorization: Basic base64(user:password)</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">Security</div>
+        <p>Never expose API keys in client-side code. Use a Cloudflare Worker proxy with secrets stored via <code>wrangler secret put</code>.</p>
+      </div>
+    </div>
+
+    <!-- Capabilities -->
+    <div class="sec" id="capabilities">
+      <div class="sec-num">03</div>
+      <h2>CAPABILITIES</h2>
+      <p>What your agent can do with this skill installed:</p>
+      <ul>
+        <li><strong>Manage BOMs</strong> — create, explode, and cost Bills of Materials for furniture</li>
+        <li><strong>Schedule production</strong> — work orders, job cards, workstation capacity</li>
+        <li><strong>Track inventory</strong> — stock levels, reorder alerts, material transfers</li>
+        <li><strong>Process sales</strong> — orders, deliveries, invoices, customer analytics</li>
+        <li><strong>Handle procurement</strong> — purchase orders, supplier performance, cost tracking</li>
+        <li><strong>Quality control</strong> — inspections, readings, pass/fail automation</li>
+        <li><strong>Generate reports</strong> — revenue, production output, material usage, margins</li>
+        <li><strong>Natural language queries</strong> — translate questions into ERPNext API calls</li>
+        <li><strong>Deploy to edge</strong> — Cloudflare Workers proxy with AI analysis</li>
+      </ul>
+    </div>
+
+    <!-- Doctypes -->
+    <div class="sec" id="doctypes">
+      <div class="sec-num">04</div>
+      <h2>KEY DOCTYPES</h2>
+      <p>ERPNext uses "doctypes" — each is a data model with its own REST endpoint.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Doctype</th><th>Endpoint</th><th>Furniture Context</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Item</strong></td><td><code>/api/resource/Item</code></td><td>Finished furniture, timber, hardware, fabric</td></tr>
+          <tr><td><strong>BOM</strong></td><td><code>/api/resource/BOM</code></td><td>Recipe: 4 legs + 1 top + 8 screws = Table</td></tr>
+          <tr><td><strong>Work Order</strong></td><td><code>/api/resource/Work Order</code></td><td>"Make 30 Dining Tables"</td></tr>
+          <tr><td><strong>Job Card</strong></td><td><code>/api/resource/Job Card</code></td><td>CNC cutting, assembly, finishing steps</td></tr>
+          <tr><td><strong>Workstation</strong></td><td><code>/api/resource/Workstation</code></td><td>CNC Router, Spray Booth, Assembly Line</td></tr>
+          <tr><td><strong>Stock Entry</strong></td><td><code>/api/resource/Stock Entry</code></td><td>Material issue, manufacture, transfer</td></tr>
+          <tr><td><strong>Quality Inspection</strong></td><td><code>/api/resource/Quality Inspection</code></td><td>Surface finish, dimensions, joint strength</td></tr>
+          <tr><td><strong>Sales Order</strong></td><td><code>/api/resource/Sales Order</code></td><td>Retailer and custom orders</td></tr>
+          <tr><td><strong>Purchase Order</strong></td><td><code>/api/resource/Purchase Order</code></td><td>Timber, hardware, finish supplies</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Item Groups (furniture setup)</h3>
+      <div class="tree">
+<span class="domain">All Item Groups</span>
+  ├── <span class="entity">Finished Goods</span>
+  │   ├── <span class="dim">Dining / Lounge / Bedroom / Storage / Custom</span>
+  ├── <span class="entity">Raw Material</span>
+  │   ├── <span class="dim">Timber / Board &amp; Panel / Fabric &amp; Foam / Finish / Hardware</span>
+  ├── <span class="entity">Sub Assembly</span>
+  │   └── <span class="dim">Frames / Tops &amp; Surfaces / Upholstered Parts</span>
+  └── <span class="entity">Consumable</span>
+      └── <span class="dim">Sandpaper / PPE / Packaging</span>
+      </div>
+    </div>
+
+    <!-- Manufacturing -->
+    <div class="sec" id="manufacturing">
+      <div class="sec-num">05</div>
+      <h2>MANUFACTURING FLOW</h2>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">Sales Order</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Work Order<br><span style="font-size:9px;color:var(--c-steel-600)">from BOM</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Job Cards<br><span style="font-size:9px;color:var(--c-steel-600)">per operation</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Stock Entry<br><span style="font-size:9px;color:var(--c-steel-600)">manufacture</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">QC &rarr; Ship</div>
+        </div>
+      </div>
+
+      <h3>Operations Routing (typical furniture)</h3>
+      <table class="doc-table">
+        <thead><tr><th>#</th><th>Operation</th><th>Workstation</th><th>Time</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>CNC Cutting</td><td>CNC Router</td><td>15-45 min</td></tr>
+          <tr><td>2</td><td>Machining</td><td>CNC Router / Mortiser</td><td>10-30 min</td></tr>
+          <tr><td>3</td><td>Joining</td><td>Assembly Bench</td><td>20-60 min</td></tr>
+          <tr><td>4</td><td>Sanding</td><td>Sanding Station</td><td>15-30 min</td></tr>
+          <tr><td>5</td><td>Finishing</td><td>Spray Booth / Oil Station</td><td>20-45 min</td></tr>
+          <tr><td>6</td><td>Upholstery</td><td>Upholstery Bench</td><td>30-60 min</td></tr>
+          <tr><td>7</td><td>Final Assembly</td><td>Assembly Line</td><td>15-45 min</td></tr>
+          <tr><td>8</td><td>QC</td><td>Inspection Station</td><td>10-20 min</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Example BOM — Dining Table</h3>
+      <pre><code>{
+  "item": "NOHA-DINING-TABLE-8",
+  "quantity": 1,
+  "items": [
+    {"item_code": "RM-OAK-25MM",     "qty": 24,  "uom": "Board Foot"},
+    {"item_code": "RM-OAK-VENEER",   "qty": 2.4, "uom": "Square Meter"},
+    {"item_code": "HW-BOLT-M8X60",   "qty": 16,  "uom": "Nos"},
+    {"item_code": "HW-BRACKET-L",    "qty": 8,   "uom": "Nos"},
+    {"item_code": "FN-DANISH-OIL",   "qty": 0.8, "uom": "Litre"},
+    {"item_code": "FN-SANDPAPER-180","qty": 4,   "uom": "Sheet"}
+  ]
+}</code></pre>
+    </div>
+
+    <!-- API Patterns -->
+    <div class="sec" id="queries">
+      <div class="sec-num">06</div>
+      <h2>API PATTERNS</h2>
+
+      <h3>List Records</h3>
+      <pre><code>GET /api/resource/Item
+  ?filters=[["item_group","=","Finished Goods"]]
+  &fields=["name","item_name","standard_rate","stock_uom"]
+  &limit_page_length=50
+  &order_by=item_name asc</code></pre>
+
+      <h3>Active Work Orders</h3>
+      <pre><code>GET /api/resource/Work Order
+  ?filters=[["status","in",["Not Started","In Process"]],["docstatus","=",1]]
+  &fields=["name","production_item","qty","produced_qty","status","planned_start_date"]
+  &order_by=planned_start_date asc</code></pre>
+
+      <h3>Explode BOM (get all materials for a batch)</h3>
+      <pre><code>POST /api/method/erpnext.manufacturing.doctype.bom.bom.get_bom_items
+{"bom":"BOM-NOHA-DINING-TABLE-001","qty":30,"fetch_exploded":1}</code></pre>
+
+      <h3>Stock Balance</h3>
+      <pre><code>POST /api/method/erpnext.stock.utils.get_stock_balance
+{"item_code":"RM-OAK-25MM","warehouse":"Raw Materials Store"}</code></pre>
+
+      <h3>Filter Operators</h3>
+      <table class="doc-table">
+        <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>=</code></td><td>Equals</td><td><code>["status","=","Open"]</code></td></tr>
+          <tr><td><code>!=</code></td><td>Not equals</td><td><code>["status","!=","Cancelled"]</code></td></tr>
+          <tr><td><code>></code> / <code>>=</code></td><td>Greater than</td><td><code>["qty",">",0]</code></td></tr>
+          <tr><td><code>like</code></td><td>Wildcard</td><td><code>["item_name","like","%Oak%"]</code></td></tr>
+          <tr><td><code>in</code></td><td>In list</td><td><code>["status","in",["Open","In Process"]]</code></td></tr>
+          <tr><td><code>between</code></td><td>Date range</td><td><code>["posting_date","between",["2026-01-01","2026-03-31"]]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Reporting -->
+    <div class="sec" id="reporting">
+      <div class="sec-num">07</div>
+      <h2>REPORTING PATTERNS</h2>
+      <p>ERPNext supports server-side aggregation via <code>frappe.client.get_list</code> with <code>group_by</code>.</p>
+
+      <h3>Revenue by Customer</h3>
+      <pre><code>POST /api/method/frappe.client.get_list
+{
+  "doctype": "Sales Invoice",
+  "filters": [["docstatus","=",1],["posting_date",">=","2026-01-01"]],
+  "fields": ["customer","sum(grand_total) as revenue"],
+  "group_by": "customer",
+  "order_by": "revenue desc",
+  "limit_page_length": 20
+}</code></pre>
+
+      <h3>Production Output by Product</h3>
+      <pre><code>POST /api/method/frappe.client.get_list
+{
+  "doctype": "Work Order",
+  "filters": [["status","=","Completed"],["actual_end_date",">=","2026-03-01"]],
+  "fields": ["production_item","sum(produced_qty) as total_produced"],
+  "group_by": "production_item",
+  "order_by": "total_produced desc"
+}</code></pre>
+
+      <h3>Material Usage This Month</h3>
+      <pre><code>GET /api/resource/Stock Ledger Entry
+  ?filters=[["voucher_type","=","Stock Entry"],["posting_date",">=","2026-03-01"],["actual_qty","<",0]]
+  &fields=["item_code","sum(actual_qty) as total_issued"]
+  &group_by=item_code
+  &order_by=total_issued asc</code></pre>
+    </div>
+
+    <!-- AI Integration -->
+    <div class="sec" id="ai-integration">
+      <div class="sec-num">08</div>
+      <h2>AI INTEGRATION</h2>
+      <p>Natural language in, operational intelligence out.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">User Question</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">LLM generates<br>API call</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Execute on<br>ERPNext</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">LLM analyzes<br>results</div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Report</div>
+        </div>
+      </div>
+
+      <h3>Cloudflare Worker Proxy</h3>
+      <pre><code>async function proxyERPNext(request, env) {
+  const url = new URL(request.url);
+  const erpPath = url.pathname.replace('/api/erp/', '/api/');
+  const erpUrl = `${env.ERPNEXT_URL}${erpPath}${url.search}`;
+
+  return fetch(erpUrl, {
+    method: request.method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `token ${env.ERPNEXT_API_KEY}:${env.ERPNEXT_API_SECRET}`,
+    },
+    body: request.method !== 'GET' ? await request.text() : undefined,
+  });
+}</code></pre>
+
+      <h3>System Prompt for Query Generation</h3>
+      <pre><code>You are an ERPNext API expert for a furniture manufacturer.
+Generate the API call for the user's question.
+
+API: GET /api/resource/&lt;DocType&gt;?filters=...&fields=...
+RPC: POST /api/method/&lt;dotted.path&gt;
+
+Key doctypes: Item, BOM, Work Order, Job Card, Stock Entry,
+Sales Order, Purchase Order, Quality Inspection, Bin.
+
+Filters: JSON arrays [field, operator, value].
+Always include docstatus=1 for submitted docs.
+Respond with HTTP method, path, and body only.</code></pre>
+    </div>
+
+    <!-- Install -->
+    <div class="sec" id="install">
+      <div class="sec-num">09</div>
+      <h2>INSTALL</h2>
+      <p>Works with Claude Code, Cursor, Windsurf, Cline, and 30+ other AI agents:</p>
+      <pre><code>npx skills add imbilawork/2nth-skills@erpnext-furniture</code></pre>
+      <p>Or install globally with no prompts:</p>
+      <pre><code>npx skills add imbilawork/2nth-skills@erpnext-furniture -g -y</code></pre>
+      <p>The skill loads automatically when your agent works on ERPNext or manufacturing tasks.</p>
+    </div>
+
+    <!-- Gotchas -->
+    <div class="sec" id="gotchas">
+      <div class="sec-num">10</div>
+      <h2>GOTCHAS</h2>
+      <table class="doc-table">
+        <thead><tr><th>Issue</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Docstatus</strong></td><td>0=Draft, 1=Submitted, 2=Cancelled. Most queries need <code>["docstatus","=",1]</code></td></tr>
+          <tr><td><strong>Pagination</strong></td><td>Default <code>limit_page_length=20</code>. Set explicitly or use <code>0</code> for all (careful)</td></tr>
+          <tr><td><strong>Child tables</strong></td><td>BOM items, SO items are child tables — fetch via parent or <code>fields=["items.item_code"]</code></td></tr>
+          <tr><td><strong>Rate limits</strong></td><td>Frappe defaults to 5 req/sec for API keys</td></tr>
+          <tr><td><strong>Naming series</strong></td><td>Use <code>name</code> (ID) not <code>item_name</code> for lookups</td></tr>
+          <tr><td><strong>BOM versioning</strong></td><td>Multiple BOMs per item — filter <code>is_active=1</code> and <code>is_default=1</code></td></tr>
+          <tr><td><strong>Stock Entry types</strong></td><td>"Material Issue", "Material Transfer for Manufacture", "Manufacture"</td></tr>
+          <tr><td><strong>CORS</strong></td><td>Browser requests may be blocked — use a server-side proxy</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
+    <div class="footer-links">
+      <a href="/">All Skills</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+      <a href="https://github.com/imbilawork">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script>
+function toggleTheme(){
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('2nth-theme',document.documentElement.classList.contains('light')?'light':'dark');
+  updateIcons();
+}
+function updateIcons(){
+  var l=document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden',!l);
+  document.getElementById('icon-moon').classList.toggle('hidden',l);
+}
+updateIcons();
+
+// TOC highlight on scroll
+var tocLinks=document.querySelectorAll('.toc a');
+var sections=document.querySelectorAll('.sec');
+window.addEventListener('scroll',function(){
+  var scrollPos=window.scrollY+120;
+  sections.forEach(function(sec,i){
+    if(sec.offsetTop<=scrollPos&&sec.offsetTop+sec.offsetHeight>scrollPos){
+      tocLinks.forEach(function(a){a.classList.remove('toc-active')});
+      if(tocLinks[i])tocLinks[i].classList.add('toc-active');
+    }
+  });
+});
+</script>
+</body>
+</html>
