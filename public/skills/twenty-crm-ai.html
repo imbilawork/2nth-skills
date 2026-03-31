@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twenty CRM AI Integration — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="How AI agents integrate with Twenty CRM — GraphQL API, webhooks, MCP server, data model, and production patterns for the open-source Salesforce alternative.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;--c-titanium:#fafafa;--c-brand:#06b6d4;--c-live:#22c55e;--c-twenty:#f59e0b;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.10);--c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;--c-titanium:#0a0a0a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.6}
+    a{color:inherit;text-decoration:none}
+    .hidden{display:none}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--c-carbon) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border)}
+    .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400)}
+    @media(max-width:768px){.nav-links .nav-link:not(:last-child){display:none}}
+
+    /* LAYOUT */
+    .page-wrap{display:grid;grid-template-columns:240px 1fr;max-width:1200px;margin:0 auto;padding:80px 24px 60px;gap:48px}
+    @media(max-width:900px){.page-wrap{grid-template-columns:1fr}.toc-col{display:none}}
+
+    /* TOC */
+    .toc-col{position:sticky;top:80px;height:fit-content}
+    .toc-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;text-transform:uppercase}
+    .toc-list{list-style:none;border-left:1px solid var(--c-border)}
+    .toc-list li a{display:block;padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s;line-height:1.4}
+    .toc-list li a:hover{color:var(--c-steel-400)}
+    .toc-list li a.active{color:var(--c-twenty);border-left:2px solid var(--c-twenty);margin-left:-1px}
+
+    /* HERO */
+    .hero{padding:40px 0 36px;border-bottom:1px solid var(--c-border);margin-bottom:48px}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:var(--c-brand)}
+    .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--c-twenty);margin-bottom:10px}
+    h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,64px);line-height:.95;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:14px}
+    h1 span{color:var(--c-twenty)}
+    .hero-sub{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.7;margin-bottom:20px}
+    .hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 10px;border-radius:3px;border:1px solid var(--c-border)}
+    .badge-live{background:rgba(34,197,94,.1);color:#22c55e;border-color:rgba(34,197,94,.2)}
+    .badge-oss{background:rgba(245,158,11,.1);color:#f59e0b;border-color:rgba(245,158,11,.2)}
+    .badge-gql{background:rgba(232,89,181,.1);color:#e857b3;border-color:rgba(232,89,181,.2)}
+    .badge-mcp{background:rgba(6,182,212,.1);color:#06b6d4;border-color:rgba(6,182,212,.2)}
+    .gh-link{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);transition:border-color .15s,color .15s}
+    .gh-link:hover{border-color:var(--c-twenty);color:var(--c-twenty)}
+
+    /* SECTIONS */
+    .sec{padding:36px 0;border-bottom:1px solid var(--c-border)}
+    .sec:last-child{border-bottom:none}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--c-twenty);margin-bottom:6px}
+    h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,4vw,38px);letter-spacing:.03em;color:var(--c-titanium);margin-bottom:10px;line-height:1}
+    h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.03em;color:var(--c-titanium);margin:24px 0 10px}
+    p{font-size:14px;color:var(--c-steel-500);line-height:1.75;margin-bottom:14px}
+    p:last-child{margin-bottom:0}
+
+    /* CODE */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 6px;border-radius:3px;color:var(--c-brand)}
+    pre code{background:none;border:none;padding:0;color:inherit}
+    .kw{color:#c678dd}
+    .str{color:#98c379}
+    .fn{color:#61afef}
+    .cm{color:var(--c-steel-700)}
+    .nb{color:#d19a66}
+    .ty{color:#e5c07b}
+
+    /* TABLES */
+    .doc-table{width:100%;border-collapse:collapse;border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0;font-size:13px}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:10px 14px;border-bottom:1px solid var(--c-border);color:var(--c-steel-400);vertical-align:top}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-twenty);white-space:nowrap}
+
+    /* CARDS */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:16px 0}
+    .card{background:var(--c-graphite);padding:20px}
+    .card-icon{font-size:22px;margin-bottom:10px}
+    .card-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:6px}
+    .card-body{font-size:13px;color:var(--c-steel-500);line-height:1.65}
+    .card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .ctag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c-steel-700);border:1px solid var(--c-border);border-radius:3px;padding:2px 6px}
+
+    /* CALLOUT */
+    .callout{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-left:3px solid var(--c-twenty);border-radius:4px;padding:14px 18px;margin:16px 0;font-size:13px;color:var(--c-steel-400);line-height:1.7}
+    .callout strong{color:var(--c-twenty)}
+
+    /* STEPS */
+    .steps{counter-reset:step;display:flex;flex-direction:column;gap:0}
+    .step{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--c-border)}
+    .step:last-child{border-bottom:none}
+    .step-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--c-twenty);line-height:1}
+    .step-content h4{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--c-titanium);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+    .step-content p{margin-bottom:0}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://skills.2nth.ai" class="nav-brand"><span>2</span>NTH SKILLS</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/" class="nav-link">All Skills</a>
+      <a href="/cloudflare/" class="nav-link">Cloudflare</a>
+      <a href="https://github.com/twentyhq/twenty" class="nav-link" target="_blank">Twenty on GitHub</a>
+      <a href="https://2nth.ai" class="nav-link">2nth.ai</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- TOC -->
+  <aside class="toc-col">
+    <div class="toc-label">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#what">01 — What is Twenty</a></li>
+      <li><a href="#data-model">02 — Data Model</a></li>
+      <li><a href="#auth">03 — Authentication</a></li>
+      <li><a href="#graphql">04 — GraphQL API</a></li>
+      <li><a href="#rest">05 — REST API</a></li>
+      <li><a href="#webhooks">06 — Webhooks</a></li>
+      <li><a href="#mcp">07 — MCP Server</a></li>
+      <li><a href="#agent-patterns">08 — Agent Patterns</a></li>
+      <li><a href="#workers-ai">09 — With Workers AI</a></li>
+      <li><a href="#self-host">10 — Self-Hosting</a></li>
+      <li><a href="#setup">11 — Setup Guide</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENT -->
+  <main>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="breadcrumb"><a href="/">Skills</a> / Twenty CRM</div>
+      <div class="hero-eyebrow">SKILL — CRM INTEGRATION</div>
+      <h1>TWENTY CRM<br><span>AI AGENTS</span></h1>
+      <p class="hero-sub">Twenty is the open-source alternative to Salesforce — GraphQL-first, self-hostable, fully customisable. This skill covers how AI agents read, write, and automate Twenty using the GraphQL API, REST API, webhooks, and the MCP server.</p>
+      <div class="hero-badges">
+        <span class="badge badge-oss">OPEN SOURCE — GPL</span>
+        <span class="badge badge-gql">GRAPHQL + REST</span>
+        <span class="badge badge-mcp">MCP SERVER</span>
+        <span class="badge badge-live">43K+ STARS</span>
+      </div>
+      <a href="https://github.com/twentyhq/twenty" target="_blank" class="gh-link">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        twentyhq/twenty
+      </a>
+    </div>
+
+    <!-- WHAT IS TWENTY -->
+    <div class="sec" id="what">
+      <div class="sec-num">01</div>
+      <h2>WHAT IS TWENTY</h2>
+      <p>Twenty is an open-source CRM built as a modern alternative to Salesforce. It's GraphQL-first, written in TypeScript (NestJS backend, React frontend), and stores data in PostgreSQL. The entire data model is customisable — you can add custom objects and fields without touching code.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🏗️</div>
+          <div class="card-title">TECH STACK</div>
+          <div class="card-body">NestJS + PostgreSQL + Redis backend. React + Jotai frontend. TypeScript throughout. Nx monorepo.</div>
+          <div class="card-tags"><span class="ctag">NestJS</span><span class="ctag">PostgreSQL</span><span class="ctag">Redis</span><span class="ctag">React</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔌</div>
+          <div class="card-title">DUAL API</div>
+          <div class="card-body">GraphQL for flexible queries and relationships. REST for simple CRUD. Both use the same Bearer token auth.</div>
+          <div class="card-tags"><span class="ctag">GraphQL</span><span class="ctag">REST</span><span class="ctag">Bearer token</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">MCP READY</div>
+          <div class="card-body">Official MCP server lets Claude and other AI assistants query and mutate Twenty data directly in context.</div>
+          <div class="card-tags"><span class="ctag">MCP</span><span class="ctag">Claude</span><span class="ctag">AI agents</span></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏠</div>
+          <div class="card-title">SELF-HOSTABLE</div>
+          <div class="card-body">Docker Compose for local/small deployments. Kubernetes for scale. Full data ownership, no vendor lock-in.</div>
+          <div class="card-tags"><span class="ctag">Docker</span><span class="ctag">Kubernetes</span><span class="ctag">Self-hosted</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA MODEL -->
+    <div class="sec" id="data-model">
+      <div class="sec-num">02</div>
+      <h2>DATA MODEL</h2>
+      <p>Twenty's core objects map to standard CRM concepts. Every object supports custom fields. The <strong>Metadata API</strong> lets agents inspect and extend the schema programmatically.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Object</th><th>Description</th><th>Key Fields</th><th>Relationships</th></tr></thead>
+        <tbody>
+          <tr><td>people</td><td>Individual contacts</td><td>name, email, phone, city, jobTitle</td><td>→ companies, opportunities, notes</td></tr>
+          <tr><td>companies</td><td>Organisations / accounts</td><td>name, domainName, employees, annualRecurringRevenue</td><td>→ people, opportunities</td></tr>
+          <tr><td>opportunities</td><td>Sales pipeline deals</td><td>name, amount, stage, closeDate, probability</td><td>→ companies, people, notes</td></tr>
+          <tr><td>notes</td><td>Activity notes</td><td>title, body, createdAt</td><td>→ people, companies, opportunities</td></tr>
+          <tr><td>tasks</td><td>Follow-up tasks</td><td>title, status, dueAt, assignee</td><td>→ any object</td></tr>
+          <tr><td>workspaceMember</td><td>Team members</td><td>name, email, role</td><td>→ tasks, notes</td></tr>
+          <tr><td>custom objects</td><td>Your domain models</td><td>any fields you define</td><td>→ any object via relations</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Import Order</h3>
+      <p>When seeding or migrating data, follow this sequence to satisfy foreign key constraints:</p>
+      <pre><span class="cm"># Required import sequence</span>
+1. Companies
+2. People        <span class="cm"># references companies</span>
+3. Opportunities <span class="cm"># references companies + people</span>
+4. Notes / Tasks <span class="cm"># reference any of the above</span>
+5. Custom Objects</pre>
+    </div>
+
+    <!-- AUTH -->
+    <div class="sec" id="auth">
+      <div class="sec-num">03</div>
+      <h2>AUTHENTICATION</h2>
+      <p>All Twenty APIs use Bearer token auth. Generate API keys in <strong>Settings → APIs & Webhooks</strong>. Keys are workspace-scoped and can have roles assigned to limit permissions.</p>
+
+      <pre><span class="cm"># All requests require this header</span>
+Authorization: Bearer <span class="str">YOUR_API_KEY</span>
+
+<span class="cm"># Cloud endpoint</span>
+https://api.twenty.com/
+
+<span class="cm"># Self-hosted endpoint</span>
+https://your-twenty-instance.com/</pre>
+
+      <div class="callout">
+        <strong>Security note:</strong> Copy your API key immediately after creation — Twenty does not show it again. Create separate keys per integration and assign minimum required permissions. Disable compromised keys immediately from the same settings page.
+      </div>
+
+      <h3>Webhook Signature Verification</h3>
+      <p>Incoming webhooks include two headers for verification:</p>
+      <pre><span class="ty">X-Twenty-Webhook-Signature</span>: <span class="str">hmac-sha256-signature</span>
+<span class="ty">X-Twenty-Webhook-Timestamp</span>: <span class="str">1712000000</span></pre>
+
+      <pre><span class="cm">// Verify in a Cloudflare Worker</span>
+<span class="kw">async function</span> <span class="fn">verifyTwentyWebhook</span>(request: Request, secret: string): Promise&lt;<span class="ty">boolean</span>&gt; {
+  <span class="kw">const</span> sig = request.headers.get(<span class="str">'X-Twenty-Webhook-Signature'</span>);
+  <span class="kw">const</span> ts  = request.headers.get(<span class="str">'X-Twenty-Webhook-Timestamp'</span>);
+  <span class="kw">const</span> body = <span class="kw">await</span> request.text();
+
+  <span class="kw">const</span> key = <span class="kw">await</span> crypto.subtle.importKey(
+    <span class="str">'raw'</span>, <span class="kw">new</span> TextEncoder().encode(secret),
+    { name: <span class="str">'HMAC'</span>, hash: <span class="str">'SHA-256'</span> }, <span class="kw">false</span>, [<span class="str">'sign'</span>]
+  );
+  <span class="kw">const</span> expected = <span class="kw">await</span> crypto.subtle.sign(
+    <span class="str">'HMAC'</span>, key, <span class="kw">new</span> TextEncoder().encode(<span class="str">`</span><span class="nb">${ts}</span><span class="str">.</span><span class="nb">${body}</span><span class="str">`</span>)
+  );
+  <span class="kw">return</span> btoa(String.fromCharCode(...<span class="kw">new</span> Uint8Array(expected))) === sig;
+}</pre>
+    </div>
+
+    <!-- GRAPHQL -->
+    <div class="sec" id="graphql">
+      <div class="sec-num">04</div>
+      <h2>GRAPHQL API</h2>
+      <p>The GraphQL API is Twenty's primary integration surface. It supports relationship traversal, filtering, sorting, pagination, and batch upserts — all in a single request. Rate limit: <strong>100 req/min</strong>, batch up to <strong>60 records per call</strong>.</p>
+
+      <h3>Query People with Company</h3>
+      <pre><span class="kw">query</span> <span class="fn">GetPeopleWithCompany</span> {
+  people(
+    filter: { city: { eq: <span class="str">"Cape Town"</span> } }
+    orderBy: { createdAt: <span class="ty">DescNullsLast</span> }
+    first: <span class="nb">20</span>
+  ) {
+    edges {
+      node {
+        id
+        name { firstName lastName }
+        email { primaryEmail }
+        jobTitle
+        company {
+          name
+          domainName { primaryLinkUrl }
+          annualRecurringRevenue { amountMicros currencyCode }
+        }
+      }
+    }
+    pageInfo { hasNextPage endCursor }
+  }
+}</pre>
+
+      <h3>Create an Opportunity</h3>
+      <pre><span class="kw">mutation</span> <span class="fn">CreateOpportunity</span> {
+  createOpportunity(data: {
+    name: <span class="str">"Acme Corp — Phase 1"</span>
+    amount: { amountMicros: <span class="nb">500000000</span>, currencyCode: <span class="str">"ZAR"</span> }
+    stage: <span class="str">"MEETING_SCHEDULED"</span>
+    closeDate: <span class="str">"2026-06-30"</span>
+    companyId: <span class="str">"company-uuid-here"</span>
+  }) {
+    id name stage
+    amount { amountMicros currencyCode }
+  }
+}</pre>
+
+      <h3>Batch Upsert People</h3>
+      <pre><span class="kw">mutation</span> <span class="fn">UpsertPeople</span> {
+  upsertPeople(
+    data: [
+      { name: { firstName: <span class="str">"Guy"</span>, lastName: <span class="str">"Smith"</span> }, email: { primaryEmail: <span class="str">"guy@acme.com"</span> } },
+      { name: { firstName: <span class="str">"Rowan"</span>, lastName: <span class="str">"Jones"</span> }, email: { primaryEmail: <span class="str">"rowan@acme.com"</span> } }
+    ]
+    uniqueOn: [<span class="ty">EMAIL_PRIMARY_EMAIL</span>]
+  ) {
+    id
+    name { firstName lastName }
+  }
+}</pre>
+
+      <h3>Filter Operators</h3>
+      <table class="doc-table">
+        <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>eq</td><td>Equals</td><td><code>stage: { eq: "CLOSED_WON" }</code></td></tr>
+          <tr><td>neq</td><td>Not equals</td><td><code>stage: { neq: "NEW_LEAD" }</code></td></tr>
+          <tr><td>like</td><td>Pattern match</td><td><code>name: { like: "%Acme%" }</code></td></tr>
+          <tr><td>gt / lt</td><td>Greater / less than</td><td><code>closeDate: { gt: "2026-01-01" }</code></td></tr>
+          <tr><td>in</td><td>In list</td><td><code>stage: { in: ["DEMO", "PROPOSAL"] }</code></td></tr>
+          <tr><td>is</td><td>Null check</td><td><code>email: { is: NOT_NULL }</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REST -->
+    <div class="sec" id="rest">
+      <div class="sec-num">05</div>
+      <h2>REST API</h2>
+      <p>The REST API mirrors the GraphQL API for standard CRUD. Use it when your agent stack doesn't support GraphQL, or for simple integrations. Endpoint: <code>/rest/{objectName}</code>.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td>/rest/people</td><td>List all people (supports filter, orderBy, limit, offset)</td></tr>
+          <tr><td>GET</td><td>/rest/people/:id</td><td>Get a single person by ID</td></tr>
+          <tr><td>POST</td><td>/rest/people</td><td>Create a person</td></tr>
+          <tr><td>PATCH</td><td>/rest/people/:id</td><td>Update a person</td></tr>
+          <tr><td>DELETE</td><td>/rest/people/:id</td><td>Delete a person</td></tr>
+          <tr><td>GET</td><td>/rest/metadata/objects</td><td>List all object types (standard + custom)</td></tr>
+          <tr><td>GET</td><td>/rest/metadata/fields</td><td>List all fields for an object</td></tr>
+        </tbody>
+      </table>
+
+      <pre><span class="cm"># List open opportunities, sorted by amount</span>
+curl https://api.twenty.com/rest/opportunities \
+  -H <span class="str">"Authorization: Bearer YOUR_KEY"</span> \
+  -G \
+  --data-urlencode <span class="str">'filter=stage[eq]:MEETING_SCHEDULED'</span> \
+  --data-urlencode <span class="str">'orderBy=amount[amountMicros][DescNullsLast]'</span> \
+  --data-urlencode <span class="str">'limit=50'</span></pre>
+    </div>
+
+    <!-- WEBHOOKS -->
+    <div class="sec" id="webhooks">
+      <div class="sec-num">06</div>
+      <h2>WEBHOOKS</h2>
+      <p>Twenty pushes real-time events to your endpoint when records change. Configure in <strong>Settings → APIs & Webhooks → Webhooks</strong>. Your endpoint must respond with HTTP 2xx.</p>
+
+      <h3>Event Types</h3>
+      <table class="doc-table">
+        <thead><tr><th>Event</th><th>Trigger</th></tr></thead>
+        <tbody>
+          <tr><td>person.created</td><td>New person added to workspace</td></tr>
+          <tr><td>person.updated</td><td>Any field on a person changed</td></tr>
+          <tr><td>person.deleted</td><td>Person removed</td></tr>
+          <tr><td>opportunity.created</td><td>New deal added to pipeline</td></tr>
+          <tr><td>opportunity.updated</td><td>Stage change, amount update, etc.</td></tr>
+          <tr><td>company.created</td><td>New company added</td></tr>
+          <tr><td>{customObject}.created</td><td>Custom object record created</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Webhook Payload</h3>
+      <pre>{
+  <span class="str">"event"</span>: <span class="str">"opportunity.updated"</span>,
+  <span class="str">"timestamp"</span>: <span class="str">"2026-03-31T12:00:00Z"</span>,
+  <span class="str">"data"</span>: {
+    <span class="str">"id"</span>: <span class="str">"opp-uuid"</span>,
+    <span class="str">"name"</span>: <span class="str">"Acme Corp — Phase 1"</span>,
+    <span class="str">"stage"</span>: <span class="str">"CLOSED_WON"</span>,
+    <span class="str">"amount"</span>: { <span class="str">"amountMicros"</span>: <span class="nb">500000000</span>, <span class="str">"currencyCode"</span>: <span class="str">"ZAR"</span> },
+    <span class="str">"updatedAt"</span>: <span class="str">"2026-03-31T12:00:00Z"</span>
+  },
+  <span class="str">"previousData"</span>: {
+    <span class="str">"stage"</span>: <span class="str">"PROPOSAL_SENT"</span>
+  }
+}</pre>
+
+      <h3>Cloudflare Worker Webhook Handler</h3>
+      <pre><span class="kw">export</span> <span class="kw">default</span> {
+  <span class="kw">async</span> <span class="fn">fetch</span>(req: Request, env: Env) {
+    <span class="kw">if</span> (req.method !== <span class="str">'POST'</span>) <span class="kw">return</span> <span class="kw">new</span> Response(<span class="str">'Method not allowed'</span>, { status: <span class="nb">405</span> });
+
+    <span class="kw">const</span> body = <span class="kw">await</span> req.text();
+    <span class="kw">const</span> payload = JSON.parse(body);
+
+    <span class="kw">switch</span> (payload.event) {
+      <span class="kw">case</span> <span class="str">'opportunity.updated'</span>:
+        <span class="kw">if</span> (payload.data.stage === <span class="str">'CLOSED_WON'</span>) {
+          <span class="kw">await</span> <span class="fn">triggerWinWorkflow</span>(payload.data, env);
+        }
+        <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">'person.created'</span>:
+        <span class="kw">await</span> <span class="fn">enrichNewContact</span>(payload.data, env);
+        <span class="kw">break</span>;
+    }
+
+    <span class="kw">return</span> <span class="kw">new</span> Response(<span class="str">'ok'</span>);
+  }
+};</pre>
+    </div>
+
+    <!-- MCP -->
+    <div class="sec" id="mcp">
+      <div class="sec-num">07</div>
+      <h2>MCP SERVER</h2>
+      <p>Twenty has a community MCP server that exposes CRM data as tools Claude (and other MCP-compatible agents) can call directly. The agent can query contacts, create opportunities, add notes, and search the pipeline — all in natural language, no code required.</p>
+
+      <div class="callout">
+        <strong>What this means for operators:</strong> You can give Claude access to a client's Twenty instance and ask it to "find all open deals over R500k in Cape Town and draft a follow-up email for each." Claude calls the MCP tools, gets the data, and produces the output — no custom integration code needed.
+      </div>
+
+      <h3>Setup in Claude Code</h3>
+      <pre><span class="cm"># Add to .claude/settings.json or claude_desktop_config.json</span>
+{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"twenty"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"twenty-mcp-server"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"TWENTY_API_URL"</span>: <span class="str">"https://api.twenty.com"</span>,
+        <span class="str">"TWENTY_API_KEY"</span>: <span class="str">"your-api-key"</span>
+      }
+    }
+  }
+}</pre>
+
+      <h3>Available MCP Tools</h3>
+      <table class="doc-table">
+        <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>search_people</td><td>Find contacts by name, email, company, city</td></tr>
+          <tr><td>get_person</td><td>Fetch full record for a contact by ID</td></tr>
+          <tr><td>create_person</td><td>Add a new contact to the workspace</td></tr>
+          <tr><td>update_person</td><td>Update fields on an existing contact</td></tr>
+          <tr><td>search_companies</td><td>Find companies by name or domain</td></tr>
+          <tr><td>get_opportunities</td><td>List pipeline deals with filter and sort</td></tr>
+          <tr><td>create_opportunity</td><td>Add a new deal to the pipeline</td></tr>
+          <tr><td>create_note</td><td>Add a note to any CRM record</td></tr>
+          <tr><td>create_task</td><td>Create a task assigned to a team member</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AGENT PATTERNS -->
+    <div class="sec" id="agent-patterns">
+      <div class="sec-num">08</div>
+      <h2>AGENT PATTERNS</h2>
+      <p>Six production patterns for AI agents working with Twenty CRM.</p>
+
+      <h3>Pattern 1 — Inbound Lead Enrichment</h3>
+      <p>A webhook fires when a new person is created. A Worker calls Workers AI to enrich the record — infer company size, industry, and likely role from the email domain and any available context — then patches the record back.</p>
+      <pre><span class="cm">// Worker: enrich new contact via Workers AI</span>
+<span class="kw">async function</span> <span class="fn">enrichNewContact</span>(person: TwentyPerson, env: Env) {
+  <span class="kw">const</span> prompt = <span class="str">`Analyse this contact and return JSON:
+  Email: </span><span class="nb">${person.email?.primaryEmail}</span><span class="str">
+  Company: </span><span class="nb">${person.company?.name}</span><span class="str">
+  Return: { industry, companySize, seniorityLevel, likelyBudget }`</span>;
+
+  <span class="kw">const</span> ai = <span class="kw">await</span> env.AI.run(<span class="str">'@cf/meta/llama-3.3-70b-instruct-fp8-fast'</span>, {
+    messages: [{ role: <span class="str">'user'</span>, content: prompt }]
+  });
+
+  <span class="kw">const</span> enriched = JSON.parse(ai.response);
+
+  <span class="cm">// Patch back to Twenty via GraphQL</span>
+  <span class="kw">await</span> <span class="fn">twentyMutation</span>(<span class="str">`
+    mutation { updatePerson(id: "</span><span class="nb">${person.id}</span><span class="str">", data: {
+      city: "</span><span class="nb">${enriched.industry}</span><span class="str">"
+    }) { id } }
+  `</span>, env.TWENTY_API_KEY);
+}</pre>
+
+      <h3>Pattern 2 — Pipeline Stage Alert</h3>
+      <p>When an opportunity moves to a key stage, fire a Slack message or email with AI-generated context about the deal and suggested next actions.</p>
+      <pre><span class="kw">case</span> <span class="str">'opportunity.updated'</span>: {
+  <span class="kw">const</span> { data, previousData } = payload;
+  <span class="kw">if</span> (data.stage !== previousData?.stage) {
+    <span class="kw">const</span> summary = <span class="kw">await</span> <span class="fn">generateDealBrief</span>(data, env);
+    <span class="kw">await</span> <span class="fn">sendSlack</span>(
+      <span class="str">`🎯 *</span><span class="nb">${data.name}</span><span class="str">* moved to *</span><span class="nb">${data.stage}</span><span class="str">*\n</span><span class="nb">${summary}</span><span class="str">`</span>,
+      env.SLACK_WEBHOOK
+    );
+  }
+  <span class="kw">break</span>;
+}</pre>
+
+      <h3>Pattern 3 — Natural Language CRM Query</h3>
+      <p>Accept a plain-English question, convert it to a GraphQL query via an LLM, execute against Twenty, and return a formatted answer.</p>
+      <pre><span class="kw">async function</span> <span class="fn">nlQuery</span>(question: string, env: Env) {
+  <span class="cm">// Step 1: Convert NL to GraphQL</span>
+  <span class="kw">const</span> gql = <span class="kw">await</span> env.AI.run(<span class="str">'@cf/meta/llama-3.3-70b-instruct-fp8-fast'</span>, {
+    messages: [{
+      role: <span class="str">'system'</span>,
+      content: <span class="str">'Convert the user question to a Twenty CRM GraphQL query. Return only valid GraphQL.'</span>
+    }, {
+      role: <span class="str">'user'</span>, content: question
+    }]
+  });
+
+  <span class="cm">// Step 2: Execute the query</span>
+  <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">twentyQuery</span>(gql.response, env.TWENTY_API_KEY);
+
+  <span class="cm">// Step 3: Summarise the result</span>
+  <span class="kw">const</span> answer = <span class="kw">await</span> env.AI.run(<span class="str">'@cf/meta/llama-3.3-70b-instruct-fp8-fast'</span>, {
+    messages: [{
+      role: <span class="str">'user'</span>,
+      content: <span class="str">`Question: </span><span class="nb">${question}</span><span class="str">\nData: </span><span class="nb">${JSON.stringify(data)}</span><span class="str">\nAnswer in plain English.`</span>
+    }]
+  });
+
+  <span class="kw">return</span> answer.response;
+}</pre>
+
+      <h3>Pattern 4 — Bulk Import from External Source</h3>
+      <p>Pull contacts from an external source (CSV, ERP, spreadsheet) and upsert into Twenty using batch mutations. Respects the import order and rate limits.</p>
+      <pre><span class="kw">async function</span> <span class="fn">batchImportPeople</span>(contacts: Contact[], apiKey: string) {
+  <span class="cm">// Twenty allows 60 records per batch call</span>
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="nb">0</span>; i &lt; contacts.length; i += <span class="nb">60</span>) {
+    <span class="kw">const</span> chunk = contacts.slice(i, i + <span class="nb">60</span>);
+    <span class="kw">await</span> <span class="fn">twentyMutation</span>(<span class="str">`
+      mutation {
+        upsertPeople(
+          data: [</span><span class="nb">${chunk.map(c =&gt; `{
+            name: { firstName: "${c.firstName}", lastName: "${c.lastName}" },
+            email: { primaryEmail: "${c.email}" }
+          }`).join(',')}</span><span class="str">]
+          uniqueOn: [EMAIL_PRIMARY_EMAIL]
+        ) { id }
+      }
+    `</span>, apiKey);
+    <span class="cm">// Respect rate limit: 100 req/min</span>
+    <span class="kw">await</span> <span class="kw">new</span> Promise(r =&gt; setTimeout(r, <span class="nb">700</span>));
+  }
+}</pre>
+
+      <h3>Pattern 5 — Meeting Note Processor</h3>
+      <p>After a meeting, pass the transcript to Workers AI. Extract action items, update the CRM record with a structured note, and create tasks for each action item.</p>
+
+      <h3>Pattern 6 — Data Quality Agent</h3>
+      <p>Periodically query contacts with incomplete records, enrich them via AI or external APIs, and patch back. Runs as a Cloudflare Cron Trigger.</p>
+    </div>
+
+    <!-- WORKERS AI -->
+    <div class="sec" id="workers-ai">
+      <div class="sec-num">09</div>
+      <h2>WITH WORKERS AI</h2>
+      <p>Running Twenty + Cloudflare Workers AI together gives you an AI-augmented CRM pipeline that runs entirely at the edge — no GPU servers, no separate AI provider, no data leaving your infrastructure.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">LEAD SCORING</div>
+          <div class="card-body">Feed contact + company data to LLaMA. Get a 0–100 score and reasoning. Write back to a custom Twenty field.</div>
+          <div class="card-tags"><span class="ctag">LLaMA 3.3</span><span class="ctag">Custom fields</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">EMAIL DRAFTING</div>
+          <div class="card-body">Pull opportunity context from Twenty. Generate a personalised follow-up email draft. Return to agent or send via Resend.</div>
+          <div class="card-tags"><span class="ctag">LLaMA 3.3</span><span class="ctag">Resend</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">SEMANTIC SEARCH</div>
+          <div class="card-body">Embed all notes and activities using BAAI. Store in Vectorize. Query semantically: "find all deals where pricing was a concern".</div>
+          <div class="card-tags"><span class="ctag">BAAI</span><span class="ctag">Vectorize</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">TRANSCRIPT → CRM</div>
+          <div class="card-body">Transcribe meeting audio with Whisper. Extract structured data. Create note + tasks in Twenty automatically.</div>
+          <div class="card-tags"><span class="ctag">Whisper</span><span class="ctag">LLaMA</span></div>
+        </div>
+      </div>
+
+      <h3>Helper: Twenty GraphQL client for Workers</h3>
+      <pre><span class="cm">// src/twenty.ts — reusable in any Worker</span>
+<span class="kw">export async function</span> <span class="fn">twentyQuery</span>(query: string, apiKey: string, variables?: object) {
+  <span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="str">'https://api.twenty.com/graphql'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: {
+      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      <span class="str">'Authorization'</span>: <span class="str">`Bearer </span><span class="nb">${apiKey}</span><span class="str">`</span>,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  <span class="kw">const</span> json = <span class="kw">await</span> res.json() <span class="kw">as</span> { data: <span class="ty">any</span>; errors?: <span class="ty">any</span>[] };
+  <span class="kw">if</span> (json.errors?.length) <span class="kw">throw new</span> Error(json.errors[<span class="nb">0</span>].message);
+  <span class="kw">return</span> json.data;
+}
+
+<span class="kw">export const</span> <span class="fn">twentyMutation</span> = <span class="fn">twentyQuery</span>; <span class="cm">// same function, different name for clarity</span></pre>
+    </div>
+
+    <!-- SELF-HOST -->
+    <div class="sec" id="self-host">
+      <div class="sec-num">10</div>
+      <h2>SELF-HOSTING</h2>
+      <p>Self-hosting Twenty gives clients full data ownership. 2nth.ai provisions Twenty instances on client infrastructure as part of a project delivery.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Method</th><th>Best for</th><th>Complexity</th></tr></thead>
+        <tbody>
+          <tr><td>Docker Compose</td><td>Local dev, small teams (&lt;20 users)</td><td>Low — one command</td></tr>
+          <tr><td>Railway</td><td>Small-medium teams, managed hosting</td><td>Low — click to deploy</td></tr>
+          <tr><td>Elestio</td><td>Any cloud or on-premise, managed</td><td>Low–medium</td></tr>
+          <tr><td>AWS / GCP</td><td>Enterprise, compliance requirements</td><td>Medium — use their guides</td></tr>
+          <tr><td>Kubernetes</td><td>High availability, large teams</td><td>High</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Docker Compose Quick Start</h3>
+      <pre><span class="cm"># Clone and start</span>
+git clone https://github.com/twentyhq/twenty.git
+cd twenty
+cp .env.example .env
+<span class="cm"># Edit .env: set APP_SECRET, PG_DATABASE_URL, REDIS_URL</span>
+docker compose up -d
+
+<span class="cm"># Access at http://localhost:3000</span>
+<span class="cm"># API at http://localhost:3000/graphql</span></pre>
+    </div>
+
+    <!-- SETUP -->
+    <div class="sec" id="setup">
+      <div class="sec-num">11</div>
+      <h2>SETUP GUIDE</h2>
+      <p>Get a Cloudflare Worker talking to Twenty in under 10 minutes.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4>Get your API key</h4>
+            <p>In Twenty: Settings → APIs & Webhooks → API Keys → Generate. Copy it immediately.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4>Store as a Worker secret</h4>
+            <pre style="margin:8px 0">npx wrangler secret put TWENTY_API_KEY</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4>Add the helper to your Worker</h4>
+            <p>Copy the <code>twentyQuery</code> helper above into <code>src/twenty.ts</code> in your Worker project.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4>Test a query</h4>
+            <pre style="margin:8px 0">const data = await twentyQuery(`
+  query { people(first: 5) {
+    edges { node { id name { firstName } } }
+  }}
+`, env.TWENTY_API_KEY);</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <h4>Register a webhook</h4>
+            <p>In Twenty: Settings → APIs & Webhooks → Webhooks → Add. Set your Worker URL as the endpoint. Select the events you need.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-content">
+            <h4>For Claude / MCP — add the MCP server config</h4>
+            <p>Add the Twenty MCP server to your <code>.claude/settings.json</code> as shown in section 07.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span style="color:var(--c-brand)">2</span>NTH SKILLS — Twenty CRM</div>
+    <div class="footer-links">
+      <a href="/">All Skills</a>
+      <a href="https://github.com/twentyhq/twenty" target="_blank">Twenty on GitHub</a>
+      <a href="https://docs.twenty.com" target="_blank">Twenty Docs</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+    </div>
+    <div class="footer-brand">&copy; 2026</div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){var l=document.documentElement.classList.toggle('light');localStorage.setItem('2nth-theme',l?'light':'dark');updateIcons();}
+function updateIcons(){var l=document.documentElement.classList.contains('light');document.getElementById('icon-sun').classList.toggle('hidden',!l);document.getElementById('icon-moon').classList.toggle('hidden',l);}
+updateIcons();
+
+// TOC active tracking
+var tocLinks = document.querySelectorAll('.toc-list a');
+var sections = Array.from(tocLinks).map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+window.addEventListener('scroll', function(){
+  var scrollY = window.scrollY + 120;
+  var active = sections[0];
+  for(var i=0;i<sections.length;i++){ if(sections[i].offsetTop <= scrollY) active = sections[i]; }
+  tocLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + active.id); });
+}, {passive:true});
+</script>
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script src="https://2nth.ai/auth-bar.js"></script>
+<script src="https://2nth.ai/browse-gate.js"></script>
+<script>window._asSwitcher.inject('#nav-links');window._authBar.inject('#nav-links');</script>
+</body>
+</html>
