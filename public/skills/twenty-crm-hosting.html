@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twenty CRM — Railway + Cloudflare Hosting | 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="Self-host Twenty CRM on Railway with Cloudflare R2 for file storage, CF DNS for your subdomain, and Zero Trust Access for team-only gating. Complete validated deployment guide.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-titanium:#fafafa;--c-brand:#06b6d4;--c-live:#22c55e;--c-cf:#F6821F;--c-twenty:#f59e0b;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.10)}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-titanium:#0a0a0a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.6;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+    .hidden{display:none}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--c-carbon) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border)}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .nav-link.active{color:var(--c-twenty)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer}
+    .theme-toggle:hover{color:var(--c-steel-400)}
+
+    .page{max-width:1100px;margin:0 auto;padding:96px 24px 60px;display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
+    @media(max-width:860px){.page{grid-template-columns:1fr}.toc{display:none}}
+
+    .toc{position:sticky;top:80px}
+    .toc-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);font-weight:600;margin-bottom:10px}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s;margin-bottom:1px}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.active{color:var(--c-twenty);border-left-color:var(--c-twenty)}
+    .toc-divider{border:none;border-top:1px solid var(--c-border);margin:10px 0}
+    .toc-back{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-brand);display:block;margin-bottom:16px}
+    .toc-back:hover{text-decoration:underline}
+
+    .content{min-width:0}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:20px}
+    .breadcrumb a{color:var(--c-brand)}
+    .skill-header{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--c-border)}
+    .skill-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;font-weight:600;color:var(--c-twenty);margin-bottom:10px}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,60px);line-height:.95;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:10px}
+    .skill-title span{color:var(--c-twenty)}
+    .skill-sub{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.7;margin-bottom:20px}
+    .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:4px}
+    .badge-twenty{background:rgba(245,158,11,.12);color:var(--c-twenty)}
+    .badge-cf{background:rgba(246,130,31,.12);color:var(--c-cf)}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-brand{background:rgba(6,182,212,.12);color:var(--c-brand)}
+    .badge-purple{background:rgba(129,140,248,.12);color:#818cf8}
+
+    .sec{margin-bottom:52px;scroll-margin-top:90px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--c-twenty);font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:14px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:28px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.7;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:14px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:5px}
+    .sec strong{color:var(--c-steel-300)}
+    .sec a{color:var(--c-brand)}
+    .sec a:hover{text-decoration:underline}
+
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:18px;margin:14px 0 18px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.65;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 6px;border-radius:3px;color:var(--c-twenty)}
+
+    .callout{background:var(--c-graphite);border-left:3px solid var(--c-twenty);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-twenty);font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0;color:var(--c-steel-400)}
+    .callout.green{border-left-color:#22c55e}.callout.green .callout-title{color:#22c55e}
+    .callout.brand{border-left-color:var(--c-brand)}.callout.brand .callout-title{color:var(--c-brand)}
+    .callout.cf{border-left-color:var(--c-cf)}.callout.cf .callout-title{color:var(--c-cf)}
+    .callout.warn{border-left-color:#ef4444}.callout.warn .callout-title{color:#ef4444}
+
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:6px;padding:28px 20px;margin:20px 0;overflow-x:auto}
+    .arch-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:20px;text-transform:uppercase}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:110px}
+    .arch-box.cf{border-color:var(--c-cf);color:var(--c-cf)}
+    .arch-box.twenty{border-color:var(--c-twenty);color:var(--c-twenty)}
+    .arch-box.green{border-color:#22c55e;color:#22c55e}
+    .arch-box.brand{border-color:var(--c-brand);color:var(--c-brand)}
+    .arch-box.purple{border-color:#818cf8;color:#818cf8}
+    .arch-box small{display:block;font-size:9px;color:var(--c-steel-700);margin-top:3px}
+    .arch-arrow{font-size:16px;color:var(--c-steel-700)}
+
+    .step-list{counter-reset:steps;margin:16px 0}
+    .step-item{counter-increment:steps;display:flex;gap:16px;padding:16px;background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;margin-bottom:8px;align-items:flex-start}
+    .step-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--c-twenty);line-height:1;flex-shrink:0;width:32px}
+    .step-body{flex:1;min-width:0}
+    .step-title{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-300);font-weight:700;margin-bottom:6px}
+    .step-desc{font-size:13px;color:var(--c-steel-500);line-height:1.6}
+
+    .env-block{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .env-hdr{padding:10px 14px;border-bottom:1px solid var(--c-border);font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-600);font-weight:700;display:flex;align-items:center;gap:8px}
+    .env-hdr-dot{width:6px;height:6px;border-radius:50%}
+    .env-body{padding:16px 18px}
+    .env-body pre{margin:0;border:none;padding:0;background:transparent}
+
+    .doc-table{width:100%;border-collapse:collapse;margin:14px 0;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:10px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border);vertical-align:top}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-twenty)}
+    .doc-table tr:hover td{background:var(--c-graphite)}
+    .req{color:#22c55e;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700}
+    .opt{color:var(--c-steel-700);font-size:10px;font-family:'JetBrains Mono',monospace}
+
+    .checklist{margin:16px 0}
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--c-border);font-size:13px;color:var(--c-steel-400)}
+    .check-item:first-child{border-top:1px solid var(--c-border);border-radius:4px 4px 0 0;background:var(--c-graphite)}
+    .check-item:last-child{border-radius:0 0 4px 4px;background:var(--c-graphite)}
+    .check-item:not(:first-child):not(:last-child){background:var(--c-graphite)}
+    .check-box{width:16px;height:16px;border:1px solid var(--c-border);border-radius:3px;flex-shrink:0;margin-top:1px}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:20px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#3f3f46;border-radius:3px}
+    @media(max-width:768px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://skills.2nth.ai" class="nav-brand"><span>2</span>NTH SKILLS</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">All Skills</a>
+      <a href="/skills/twenty-crm-ai.html" class="nav-link">Twenty CRM AI</a>
+      <a href="/skills/twenty-crm-hosting.html" class="nav-link active">Hosting</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <aside class="toc">
+    <a href="/skills/twenty-crm-ai.html" class="toc-back">&larr; Twenty CRM AI skill</a>
+    <div class="toc-label">On this page</div>
+    <a href="#why">Why this stack</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#prerequisites">Prerequisites</a>
+    <a href="#r2">R2 bucket setup</a>
+    <a href="#railway">Railway deployment</a>
+    <a href="#env-vars">Env vars reference</a>
+    <a href="#dns">Cloudflare DNS</a>
+    <a href="#zero-trust">Zero Trust Access</a>
+    <a href="#email">Email config</a>
+    <a href="#first-launch">First launch</a>
+    <a href="#updates">Updates & backups</a>
+    <a href="#cost">Cost breakdown</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </aside>
+
+  <main class="content">
+
+    <div class="breadcrumb"><a href="/">Skills</a> / <a href="/skills/twenty-crm-ai.html">Twenty CRM</a> / Hosting</div>
+
+    <div class="skill-header">
+      <div class="skill-eyebrow">TWENTY CRM — DEPLOYMENT PATTERN</div>
+      <h1 class="skill-title">TWENTY CRM<br><span>RAILWAY + CLOUDFLARE</span></h1>
+      <p class="skill-sub">Self-host Twenty CRM on Railway with Cloudflare R2 for file storage, Cloudflare DNS for your subdomain, and Zero Trust Access to gate it to your team only. Validated env vars, step-by-step deployment, zero VPS management.</p>
+      <div class="badges">
+        <span class="badge badge-twenty">Twenty CRM</span>
+        <span class="badge badge-purple">Railway</span>
+        <span class="badge badge-cf">Cloudflare R2</span>
+        <span class="badge badge-cf">CF DNS + Zero Trust</span>
+        <span class="badge badge-green">~$15–25/month</span>
+        <span class="badge badge-brand">Validated pattern</span>
+      </div>
+    </div>
+
+    <!-- WHY -->
+    <div class="sec" id="why">
+      <div class="sec-num">01 — RATIONALE</div>
+      <h2>WHY THIS STACK</h2>
+      <p>Twenty CRM requires PostgreSQL, Redis, and a persistent process — none of which exist natively on Cloudflare. The closest alternative (CF Containers) is beta, has ephemeral disk, and would still need external Postgres and Redis. For a production CRM you rely on daily, that's the wrong tradeoff.</p>
+      <p>Railway is the clean answer: Docker-native, managed Postgres and Redis, persistent volumes, one-command deploys from the Twenty Docker image, and a custom domain in two minutes. Cloudflare wraps the outside — DNS, TLS, and Zero Trust access control so only your team can reach it.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Layer</th><th>Platform</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Application (server + worker)</td><td>Railway</td><td>Docker-native, managed deps, one-command deploy</td></tr>
+          <tr><td>PostgreSQL database</td><td>Railway Postgres</td><td>Managed, auto-backups, same network as app</td></tr>
+          <tr><td>Redis (queues + cache)</td><td>Railway Redis or Upstash</td><td>Bull queue support, no external broker</td></tr>
+          <tr><td>File storage</td><td>Cloudflare R2</td><td>S3-compatible, zero egress cost, global CDN</td></tr>
+          <tr><td>Domain + TLS</td><td>Cloudflare DNS</td><td>Proxied CNAME, free TLS, DDoS protection</td></tr>
+          <tr><td>Access control</td><td>Cloudflare Zero Trust</td><td>Team-only gate, no Twenty auth complexity needed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="sec" id="architecture">
+      <div class="sec-num">02 — ARCHITECTURE</div>
+      <h2>ARCHITECTURE</h2>
+
+      <div class="arch">
+        <div class="arch-title">Request flow — team member to CRM</div>
+        <div class="arch-flow">
+          <div class="arch-box">Team member<small>Browser</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">CF Access<small>Zero Trust gate</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">CF DNS proxy<small>CNAME to Railway</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box twenty">Railway<small>twenty-server :3000</small></div>
+        </div>
+      </div>
+
+      <div class="arch" style="margin-top:12px">
+        <div class="arch-title">Railway services</div>
+        <div class="arch-flow">
+          <div class="arch-box twenty">twenty-server<small>NestJS + React frontend</small></div>
+          <div class="arch-arrow">+</div>
+          <div class="arch-box twenty">twenty-worker<small>Bull queue processor</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">Postgres 16<small>Railway managed</small></div>
+          <div class="arch-arrow">+</div>
+          <div class="arch-box green">Redis 8<small>Railway managed</small></div>
+          <div class="arch-arrow">+</div>
+          <div class="arch-box cf">R2 bucket<small>File attachments</small></div>
+        </div>
+      </div>
+
+      <p><strong>twenty-server</strong> is the main NestJS application. It serves both the API (<code>/api</code>, <code>/graphql</code>) and the compiled React frontend as static files from the same port 3000. There is no separate frontend deployment needed — Twenty bundles everything into one Docker image.</p>
+      <p><strong>twenty-worker</strong> runs from the same Docker image but with a different start command (<code>yarn worker:prod</code>). It processes background jobs — email syncing, webhook delivery, reminder tasks — from the Bull queue backed by Redis.</p>
+    </div>
+
+    <!-- PREREQUISITES -->
+    <div class="sec" id="prerequisites">
+      <div class="sec-num">03 — PREREQUISITES</div>
+      <h2>PREREQUISITES</h2>
+      <ul>
+        <li><strong>Railway account</strong> — Hobby plan minimum ($5/month). Free plan's 512 MB RAM limit causes crashes under Twenty's workload.</li>
+        <li><strong>Cloudflare account</strong> — the 2nth.ai zone already exists. You need R2 access and Zero Trust enabled.</li>
+        <li><strong>Resend account</strong> — for transactional email (magic links, notifications). Already used by the 2nth.ai platform.</li>
+        <li><strong>Railway CLI</strong> — optional but speeds up deployment. <code>npm install -g @railway/cli</code></li>
+      </ul>
+
+      <pre><code># Install Railway CLI
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Verify
+railway whoami</code></pre>
+    </div>
+
+    <!-- R2 SETUP -->
+    <div class="sec" id="r2">
+      <div class="sec-num">04 — CLOUDFLARE R2</div>
+      <h2>R2 BUCKET SETUP</h2>
+      <p>Twenty stores file attachments, profile pictures, and workspace logos in S3-compatible object storage. R2 is zero-egress-cost and already in your CF account.</p>
+
+      <h3>Create the bucket</h3>
+      <pre><code># Via Wrangler (run from 2nth-site project)
+npx wrangler r2 bucket create twenty-crm-files
+
+# Verify
+npx wrangler r2 bucket list</code></pre>
+
+      <h3>Create an R2 API token</h3>
+      <p>In the Cloudflare dashboard: <strong>R2 → Manage R2 API Tokens → Create API Token</strong></p>
+      <ul>
+        <li>Permissions: <strong>Object Read &amp; Write</strong></li>
+        <li>Bucket: restrict to <code>twenty-crm-files</code> only</li>
+        <li>Save the <strong>Access Key ID</strong> and <strong>Secret Access Key</strong> — shown once</li>
+      </ul>
+
+      <h3>Get your R2 endpoint</h3>
+      <pre><code># Your R2 endpoint format:
+https://&lt;ACCOUNT_ID&gt;.r2.cloudflarestorage.com
+
+# Find your Account ID:
+# Cloudflare dashboard → right sidebar → Account ID
+# Or: npx wrangler whoami</code></pre>
+
+      <div class="callout cf">
+        <div class="callout-title">CORS for file uploads</div>
+        <p>Twenty uploads files directly from the browser to R2. You need to set a CORS policy on the bucket allowing <code>https://20crm.client.2nth.ai</code> as an origin. Do this in CF dashboard → R2 → your bucket → Settings → CORS policy.</p>
+      </div>
+
+      <pre><code>// R2 CORS policy (paste in CF dashboard)
+[
+  {
+    "AllowedOrigins": ["https://20crm.client.2nth.ai"],
+    "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]</code></pre>
+    </div>
+
+    <!-- RAILWAY DEPLOYMENT -->
+    <div class="sec" id="railway">
+      <div class="sec-num">05 — RAILWAY DEPLOYMENT</div>
+      <h2>RAILWAY DEPLOYMENT</h2>
+      <p>Two services from the official Twenty Docker image (<code>twentycrm/twenty:latest</code>) — one for the server, one for the worker — plus managed Postgres and Redis.</p>
+
+      <h3>Option A — Railway template (fastest)</h3>
+      <p>Railway maintains an official Twenty CRM template. Visit <a href="https://railway.app/template/twenty-crm-7c281a9b" target="_blank">railway.app/template/twenty-crm</a> and click Deploy. It scaffolds all 4 services. You still need to set the env vars below before the first deploy succeeds.</p>
+
+      <h3>Option B — Manual setup via CLI</h3>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Create a new Railway project</div>
+            <div class="step-desc">
+              <pre style="margin:8px 0 0"><code>railway init twenty-crm
+cd twenty-crm</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Add PostgreSQL and Redis</div>
+            <div class="step-desc">
+              <pre style="margin:8px 0 0"><code>railway add --service postgres
+railway add --service redis</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Add twenty-server service</div>
+            <div class="step-desc">In Railway dashboard → New Service → Docker Image → <code>twentycrm/twenty:latest</code><br>
+            Set start command: <code>yarn start:prod</code><br>
+            Set pre-deploy command: <code>yarn database:init:prod</code><br>
+            Expose port: <code>3000</code></div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Add twenty-worker service</div>
+            <div class="step-desc">Same Docker image: <code>twentycrm/twenty:latest</code><br>
+            Set start command: <code>yarn worker:prod</code><br>
+            No port needed — this service processes queues, not HTTP requests.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Set environment variables</div>
+            <div class="step-desc">Add all vars from the reference below to <strong>both</strong> twenty-server and twenty-worker. See Section 06.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Add custom domain to twenty-server</div>
+            <div class="step-desc">Railway → twenty-server → Settings → Custom Domain → <code>20crm.client.2nth.ai</code><br>
+            Railway gives you a CNAME target. You'll point Cloudflare DNS at it in Section 07.</div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">Deploy</div>
+            <div class="step-desc">
+              <pre style="margin:8px 0 0"><code>railway up
+
+# Watch logs
+railway logs --service twenty-server</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Pre-deploy command is critical</div>
+        <p>The <code>yarn database:init:prod</code> pre-deploy command runs database migrations before the server starts. Without it, the server will crash on first boot with migration errors. Set this on the twenty-server service only — not the worker.</p>
+      </div>
+    </div>
+
+    <!-- ENV VARS -->
+    <div class="sec" id="env-vars">
+      <div class="sec-num">06 — ENV VARS REFERENCE</div>
+      <h2>ENVIRONMENT VARIABLES</h2>
+      <p>Set these on <strong>both</strong> twenty-server and twenty-worker in Railway. Railway injects Postgres and Redis connection strings automatically via reference variables — use the <code>${{Postgres.DATABASE_URL}}</code> syntax to avoid hardcoding credentials.</p>
+
+      <div class="callout brand">
+        <div class="callout-title">Infrastructure vars — cannot be changed via UI</div>
+        <p>These 5 vars are read at process start before the database is available. They must be set as Railway env vars — they cannot be set through Twenty's admin panel even when <code>IS_CONFIG_VARIABLES_IN_DB_ENABLED=true</code>.</p>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#22c55e"></div>REQUIRED — Core infrastructure</div>
+        <div class="env-body">
+          <pre><code>NODE_ENV=production
+
+# Railway injects these automatically — use reference syntax
+PG_DATABASE_URL=${{Postgres.DATABASE_URL}}
+REDIS_URL=${{Redis.REDIS_URL}}
+
+# Generate: openssl rand -base64 32
+APP_SECRET=replace_with_64_char_random_string
+
+# Must match your custom domain exactly — set BEFORE first deploy
+SERVER_URL=https://20crm.client.2nth.ai
+FRONTEND_URL=https://20crm.client.2nth.ai</code></pre>
+        </div>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#F6821F"></div>REQUIRED — Cloudflare R2 file storage</div>
+        <div class="env-body">
+          <pre><code># Use S_3 (not s3 or S3) — Twenty's enum value
+STORAGE_TYPE=S_3
+STORAGE_S3_REGION=auto
+STORAGE_S3_NAME=twenty-crm-files
+STORAGE_S3_ENDPOINT=https://&lt;ACCOUNT_ID&gt;.r2.cloudflarestorage.com
+STORAGE_S3_ACCESS_KEY_ID=&lt;your-r2-access-key-id&gt;
+STORAGE_S3_SECRET_ACCESS_KEY=&lt;your-r2-secret-access-key&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#06b6d4"></div>REQUIRED — Email via Resend SMTP</div>
+        <div class="env-body">
+          <pre><code>EMAIL_DRIVER=SMTP
+EMAIL_FROM_ADDRESS=hello@2nth.ai
+EMAIL_FROM_NAME=2NTH CRM
+EMAIL_SMTP_HOST=smtp.resend.com
+EMAIL_SMTP_PORT=465
+EMAIL_SMTP_USER=resend
+EMAIL_SMTP_PASSWORD=&lt;your-resend-api-key&gt;
+IS_EMAIL_VERIFICATION_REQUIRED=false</code></pre>
+        </div>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#818cf8"></div>RECOMMENDED — Security &amp; privacy</div>
+        <div class="env-body">
+          <pre><code># Enable password auth (used alongside CF Access)
+AUTH_PASSWORD_ENABLED=true
+
+# Single workspace — we're not a SaaS
+IS_MULTIWORKSPACE_ENABLED=false
+IS_WORKSPACE_CREATION_LIMITED_TO_SERVER_ADMINS=true
+IS_BILLING_ENABLED=false
+
+# Disable telemetry sending to Twenty's servers
+ANALYTICS_ENABLED=false
+TELEMETRY_ENABLED=false
+
+# Disable sign-in prefill (security)
+SIGN_IN_PREFILLED=false</code></pre>
+        </div>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#f59e0b"></div>OPTIONAL — AI providers for Twenty's native AI features</div>
+        <div class="env-body">
+          <pre><code># Twenty has native AI features — wire to Anthropic for best results
+ANTHROPIC_API_KEY=&lt;your-anthropic-key&gt;
+
+# Or use a custom gateway (e.g. CF AI Gateway proxying Anthropic)
+# AI_PROVIDERS='{"cf-gateway":{"type":"openai-compatible","baseUrl":"https://gateway.ai.cloudflare.com/v1/...","apiKey":"..."}}'</code></pre>
+        </div>
+      </div>
+
+      <div class="env-block">
+        <div class="env-hdr"><div class="env-hdr-dot" style="background:#52525b"></div>OPTIONAL — Token expiry (adjust to taste)</div>
+        <div class="env-body">
+          <pre><code>ACCESS_TOKEN_EXPIRES_IN=30m
+LOGIN_TOKEN_EXPIRES_IN=15m
+REFRESH_TOKEN_EXPIRES_IN=90d
+FILE_TOKEN_EXPIRES_IN=1d</code></pre>
+        </div>
+      </div>
+
+      <h3>Complete env var table</h3>
+      <table class="doc-table">
+        <thead><tr><th>Variable</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>NODE_ENV</td><td><span class="req">required</span></td><td>Set to <code>production</code></td></tr>
+          <tr><td>PG_DATABASE_URL</td><td><span class="req">required</span></td><td>Use Railway reference var</td></tr>
+          <tr><td>REDIS_URL</td><td><span class="req">required</span></td><td>Use Railway reference var</td></tr>
+          <tr><td>APP_SECRET</td><td><span class="req">required</span></td><td><code>openssl rand -base64 32</code> — never change after first deploy</td></tr>
+          <tr><td>SERVER_URL</td><td><span class="req">required</span></td><td>Must match custom domain exactly, set before first deploy</td></tr>
+          <tr><td>FRONTEND_URL</td><td><span class="req">required</span></td><td>Same as SERVER_URL for single-instance</td></tr>
+          <tr><td>STORAGE_TYPE</td><td><span class="req">required</span></td><td>Use <code>S_3</code> not <code>s3</code></td></tr>
+          <tr><td>STORAGE_S3_*</td><td><span class="req">required</span></td><td>All 5 R2 vars required when STORAGE_TYPE=S_3</td></tr>
+          <tr><td>EMAIL_DRIVER</td><td><span class="req">required</span></td><td><code>SMTP</code> for Resend</td></tr>
+          <tr><td>EMAIL_SMTP_*</td><td><span class="req">required</span></td><td>All SMTP vars when EMAIL_DRIVER=SMTP</td></tr>
+          <tr><td>AUTH_PASSWORD_ENABLED</td><td><span class="opt">optional</span></td><td>Set <code>true</code> to allow email+password login</td></tr>
+          <tr><td>IS_MULTIWORKSPACE_ENABLED</td><td><span class="opt">optional</span></td><td>Keep <code>false</code> for internal use</td></tr>
+          <tr><td>ANALYTICS_ENABLED</td><td><span class="opt">optional</span></td><td>Set <code>false</code> to stop data leaving your instance</td></tr>
+          <tr><td>TELEMETRY_ENABLED</td><td><span class="opt">optional</span></td><td>Set <code>false</code> — same as above</td></tr>
+          <tr><td>ANTHROPIC_API_KEY</td><td><span class="opt">optional</span></td><td>Enables Twenty's native AI features</td></tr>
+          <tr><td>IS_CONFIG_VARIABLES_IN_DB_ENABLED</td><td><span class="opt">optional</span></td><td>Default <code>true</code> — non-infra vars configurable via admin UI</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DNS -->
+    <div class="sec" id="dns">
+      <div class="sec-num">07 — CLOUDFLARE DNS</div>
+      <h2>CLOUDFLARE DNS</h2>
+      <p>Point <code>20crm.client.2nth.ai</code> at your Railway deployment. Railway provides a CNAME target from the custom domain settings of your twenty-server service.</p>
+
+      <pre><code># In Cloudflare DNS dashboard → 2nth.ai zone
+# Add a CNAME record:
+
+Type:    CNAME
+Name:    20crm.client     (creates 20crm.client.2nth.ai)
+Target:  &lt;your-railway-cname&gt;.up.railway.app
+Proxy:   ✓ Proxied (orange cloud)
+TTL:     Auto</code></pre>
+
+      <div class="callout warn">
+        <div class="callout-title">Proxied is required for Zero Trust</div>
+        <p>Cloudflare Access (Zero Trust) only intercepts requests that pass through CF's proxy. If you set the record to DNS-only (grey cloud), the access gate won't fire and the CRM will be publicly accessible. Always proxy this record.</p>
+      </div>
+
+      <p>After adding the CNAME, go back to Railway → twenty-server → custom domain and verify the domain is confirmed. Railway validates via a TXT record that Cloudflare resolves automatically.</p>
+    </div>
+
+    <!-- ZERO TRUST -->
+    <div class="sec" id="zero-trust">
+      <div class="sec-num">08 — CLOUDFLARE ZERO TRUST</div>
+      <h2>ZERO TRUST ACCESS</h2>
+      <p>Lock the CRM to your team only. Every browser request to <code>20crm.client.2nth.ai</code> passes through CF Access before hitting Railway. No valid CF Access session = redirect to a login page — Twenty's own auth never even sees the request.</p>
+
+      <h3>Create the Access application</h3>
+      <pre><code># Cloudflare Zero Trust dashboard:
+# Access → Applications → Add an Application → Self-hosted
+
+Application name:  2NTH CRM
+Application URL:   https://20crm.client.2nth.ai
+Session duration:  24 hours (adjust to taste)
+
+# Under Identity Providers:
+# Add "One-time PIN" (email OTP) — works immediately, no OAuth app needed
+# Optional: add Google Workspace for @2nth.ai SSO</code></pre>
+
+      <h3>Create an access policy</h3>
+      <pre><code># Policy name: 2nth Team
+# Action: Allow
+# Rules:
+
+# Option A — allow specific emails:
+Include → Emails → craig@2nth.ai, craig@b2bs.co.za, [team emails]
+
+# Option B — allow entire domain (cleaner for growing teams):
+Include → Email domain → 2nth.ai
+
+# Option C — combine both domains:
+Include → Emails → [list]
+OR
+Include → Email domain → b2bs.co.za</code></pre>
+
+      <div class="callout green">
+        <div class="callout-title">No VPN, no passwords to share</div>
+        <p>Team members visit the URL, enter their email, and get a one-time code. CF Access validates the code, sets a JWT cookie, and forwards the request to Railway. Twenty sees an already-authenticated user. You can also disable Twenty's own auth entirely and rely purely on CF Access as the gate.</p>
+      </div>
+
+      <h3>Bypass for API/webhook access</h3>
+      <p>If you want your CF Workers or agents to call Twenty's GraphQL API programmatically, they need to bypass CF Access. Use a <strong>service token</strong>:</p>
+      <pre><code># Zero Trust → Access → Service Auth → Service Tokens → Create
+# Store the Client ID and Client Secret as Worker secrets
+
+# Use in Worker requests to Twenty:
+fetch("https://20crm.client.2nth.ai/api/graphql", {
+  headers: {
+    "CF-Access-Client-Id": env.TWENTY_CF_CLIENT_ID,
+    "CF-Access-Client-Secret": env.TWENTY_CF_CLIENT_SECRET,
+    "Authorization": `Bearer ${env.TWENTY_API_TOKEN}`,
+    "Content-Type": "application/json"
+  },
+  // ...
+})</code></pre>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="sec" id="email">
+      <div class="sec-num">09 — EMAIL CONFIGURATION</div>
+      <h2>EMAIL CONFIGURATION</h2>
+      <p>Twenty sends transactional email for magic links, workspace invitations, and task reminders. Use Resend — already in the 2nth.ai stack, same domain, same DKIM/SPF.</p>
+
+      <pre><code># Railway env vars:
+EMAIL_DRIVER=SMTP
+EMAIL_FROM_ADDRESS=hello@2nth.ai
+EMAIL_FROM_NAME=2NTH CRM
+EMAIL_SMTP_HOST=smtp.resend.com
+EMAIL_SMTP_PORT=465
+EMAIL_SMTP_USER=resend
+EMAIL_SMTP_PASSWORD=&lt;resend-api-key&gt;   # re:prefix keys work too
+IS_EMAIL_VERIFICATION_REQUIRED=false</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">Resend API key scope</div>
+        <p>Create a separate Resend API key scoped to sending only — don't reuse the 2nth.ai platform key. Name it <code>twenty-crm</code> in the Resend dashboard so it's auditable separately.</p>
+      </div>
+
+      <h3>Optional — Gmail / Microsoft integration</h3>
+      <p>Twenty can sync your Gmail and Google Calendar into the CRM. This requires a Google Cloud OAuth app with the Gmail and Calendar APIs enabled. Set these vars after the initial deployment is stable:</p>
+      <pre><code>AUTH_GOOGLE_ENABLED=true
+AUTH_GOOGLE_CLIENT_ID=&lt;oauth-client-id&gt;
+AUTH_GOOGLE_CLIENT_SECRET=&lt;oauth-client-secret&gt;
+AUTH_GOOGLE_CALLBACK_URL=https://20crm.client.2nth.ai/auth/google/redirect
+AUTH_GOOGLE_APIS_CALLBACK_URL=https://20crm.client.2nth.ai/auth/google-apis/get-access-token
+MESSAGING_PROVIDER_GMAIL_ENABLED=true
+CALENDAR_PROVIDER_GOOGLE_ENABLED=true</code></pre>
+    </div>
+
+    <!-- FIRST LAUNCH -->
+    <div class="sec" id="first-launch">
+      <div class="sec-num">10 — FIRST LAUNCH</div>
+      <h2>FIRST LAUNCH CHECKLIST</h2>
+      <p>After Railway shows the deployment as healthy, run through this checklist before sharing access with the team.</p>
+
+      <div class="checklist">
+        <div class="check-item"><div class="check-box"></div>Railway shows all 4 services as healthy (green)</div>
+        <div class="check-item"><div class="check-box"></div>twenty-server logs show <code>🚀 Server is running</code> on port 3000</div>
+        <div class="check-item"><div class="check-box"></div><code>https://20crm.client.2nth.ai/healthz</code> returns <code>{"status":"ok"}</code></div>
+        <div class="check-item"><div class="check-box"></div>CF Access login page appears when visiting the URL in a private tab</div>
+        <div class="check-item"><div class="check-box"></div>Email OTP received and login succeeds</div>
+        <div class="check-item"><div class="check-box"></div>Twenty workspace setup wizard completes (first visit only)</div>
+        <div class="check-item"><div class="check-box"></div>Create a test contact — confirm it saves to Postgres</div>
+        <div class="check-item"><div class="check-box"></div>Upload a profile photo — confirm it appears (served from R2)</div>
+        <div class="check-item"><div class="check-box"></div>Check R2 bucket in CF dashboard — file should appear</div>
+        <div class="check-item"><div class="check-box"></div>Invite a second team member — confirm invite email arrives</div>
+        <div class="check-item"><div class="check-box"></div>Set up Twenty API token in workspace settings (for agent access)</div>
+      </div>
+
+      <h3>Create your Twenty API token</h3>
+      <p>For CF Workers and agents to call Twenty's GraphQL API, generate a long-lived API token in the workspace settings:</p>
+      <pre><code># In Twenty → Settings → API → Generate Token
+# Copy the token — store as a Worker secret:
+npx wrangler secret put TWENTY_API_TOKEN --config path/to/worker/wrangler.toml</code></pre>
+    </div>
+
+    <!-- UPDATES -->
+    <div class="sec" id="updates">
+      <div class="sec-num">11 — UPDATES &amp; BACKUPS</div>
+      <h2>UPDATES &amp; BACKUPS</h2>
+
+      <h3>Updating Twenty</h3>
+      <pre><code># Railway dashboard → twenty-server → Deployments → Redeploy
+# OR update the image tag in service settings from 'latest' to a specific version
+
+# Pin to a specific version (recommended for production):
+# Image: twentycrm/twenty:0.43.0   (check releases at github.com/twentyhq/twenty)
+
+# Railway will:
+# 1. Pull the new image
+# 2. Run yarn database:init:prod (migrations)
+# 3. Perform a rolling deploy with zero downtime</code></pre>
+
+      <div class="callout warn">
+        <div class="callout-title">Always check the Twenty changelog before updating</div>
+        <p>Twenty moves fast. Some minor versions include breaking database migrations. Read the release notes at <a href="https://github.com/twentyhq/twenty/releases" target="_blank">github.com/twentyhq/twenty/releases</a> before updating. Take a manual Postgres snapshot from Railway before any version jump.</p>
+      </div>
+
+      <h3>Database backups</h3>
+      <pre><code># Railway Postgres has built-in point-in-time recovery on Hobby+ plans
+# For manual snapshots before a major update:
+
+railway connect postgres   # Opens a psql shell
+
+# Or via pg_dump:
+pg_dump $DATABASE_URL > twenty_backup_$(date +%Y%m%d).sql
+
+# Store snapshot in R2:
+npx wrangler r2 object put twenty-backups/twenty_backup_$(date +%Y%m%d).sql \
+  --file=twenty_backup_$(date +%Y%m%d).sql</code></pre>
+
+      <h3>Monitoring</h3>
+      <pre><code># Watch server logs
+railway logs --service twenty-server
+
+# Watch worker logs (queue processing)
+railway logs --service twenty-worker
+
+# Health endpoint
+curl https://20crm.client.2nth.ai/healthz</code></pre>
+    </div>
+
+    <!-- COST -->
+    <div class="sec" id="cost">
+      <div class="sec-num">12 — COST BREAKDOWN</div>
+      <h2>COST BREAKDOWN</h2>
+
+      <table class="doc-table">
+        <thead><tr><th>Item</th><th>Cost / month</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Railway Hobby plan</td><td>$5</td><td>Required minimum plan</td></tr>
+          <tr><td>twenty-server (usage)</td><td>~$5–8</td><td>Depends on traffic; 512 MB RAM+ recommended</td></tr>
+          <tr><td>twenty-worker (usage)</td><td>~$2–4</td><td>Light CPU, mostly idle between queue jobs</td></tr>
+          <tr><td>Railway Postgres</td><td>~$5</td><td>Hobby Postgres with backups</td></tr>
+          <tr><td>Railway Redis</td><td>~$3</td><td>Or use Upstash free tier (10K requests/day free)</td></tr>
+          <tr><td>Cloudflare R2</td><td>~$0</td><td>10 GB free, $0.015/GB after — CRM files stay well under 10 GB</td></tr>
+          <tr><td>Cloudflare Zero Trust</td><td>$0</td><td>Free for up to 50 users</td></tr>
+          <tr><td>Resend email</td><td>$0</td><td>3,000 emails/month free; CRM sends far fewer</td></tr>
+          <tr><td><strong>Total estimate</strong></td><td><strong>~$20–25/month</strong></td><td>For a small team CRM with light usage</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout green">
+        <div class="callout-title">Cost vs managed CRM alternatives</div>
+        <p>HubSpot Starter is $15/user/month. Salesforce Essentials is $25/user/month. At $20–25 total for the whole team, self-hosted Twenty with full ownership of your data is an obvious call at early-stage team size.</p>
+      </div>
+    </div>
+
+    <!-- TROUBLESHOOTING -->
+    <div class="sec" id="troubleshooting">
+      <div class="sec-num">13 — TROUBLESHOOTING</div>
+      <h2>TROUBLESHOOTING</h2>
+
+      <table class="doc-table">
+        <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Server crashes on startup</td><td>Free plan RAM limit (512 MB)</td><td>Upgrade Railway to Hobby plan ($5/month)</td></tr>
+          <tr><td>Migration error on first boot</td><td>Pre-deploy command not set</td><td>Set <code>yarn database:init:prod</code> as pre-deploy on twenty-server</td></tr>
+          <tr><td>Files not uploading</td><td>Wrong STORAGE_TYPE value</td><td>Use <code>S_3</code> exactly — not <code>s3</code> or <code>S3</code></td></tr>
+          <tr><td>Files upload but broken URLs</td><td>R2 CORS not configured</td><td>Add CORS policy on R2 bucket allowing your domain</td></tr>
+          <tr><td>Emails not sending</td><td>Wrong SMTP port or auth</td><td>Resend uses port 465 with SSL; user is literally <code>resend</code></td></tr>
+          <tr><td>CF Access loop / infinite redirect</td><td>Domain not proxied via CF</td><td>Ensure DNS record is proxied (orange cloud), not DNS-only</td></tr>
+          <tr><td>Workers can't call Twenty API</td><td>CF Access blocking programmatic requests</td><td>Use CF Access service token in request headers</td></tr>
+          <tr><td>SERVER_URL mismatch errors</td><td>URL set after first deploy</td><td>SERVER_URL must be set before first migration run — nuke DB and redeploy</td></tr>
+          <tr><td>GraphQL endpoint 401</td><td>API token expired or wrong</td><td>Regenerate token in Twenty → Settings → API</td></tr>
+          <tr><td>Worker not processing jobs</td><td>REDIS_URL not set on worker service</td><td>Ensure all env vars are set on both services, not just server</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-title">Nuclear reset</div>
+        <p>If the database ends up in a broken state (bad migration, wrong SERVER_URL baked in): drop and recreate the Railway Postgres database, clear the Redis instance, and redeploy. Twenty's migrations run fresh. You'll need to redo workspace setup but all env vars stay the same.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">2nth.ai Skills — <a href="https://twenty.dev" target="_blank">twenty.dev</a> &nbsp;·&nbsp; <a href="https://railway.app" target="_blank">railway.app</a></div>
+    <div class="footer-links">
+      <a href="/skills/twenty-crm-ai.html">Twenty CRM AI</a>
+      <a href="/">All Skills</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script src="https://2nth.ai/browse-gate.js"></script>
+<script>
+const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+const sections = Array.from(document.querySelectorAll('.sec[id]'));
+function updateToc() {
+  let active = sections[0];
+  for (const s of sections) {
+    if (window.scrollY >= s.offsetTop - 120) active = s;
+  }
+  tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + (active?.id || '')));
+}
+window.addEventListener('scroll', updateToc, { passive: true });
+updateToc();
+
+function toggleTheme() {
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('2nth-theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
+}
+(function(){
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
+})();
+</script>
+</body>
+</html>
