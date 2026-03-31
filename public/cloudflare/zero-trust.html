@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare Zero Trust — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="Cloudflare Zero Trust explained — Access, Tunnel, WARP, Gateway, Browser Isolation. Never trust, always verify. How 2nth.ai uses it and how to set it up.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;--c-titanium:#fafafa;--c-brand:#06b6d4;--c-live:#22c55e;--c-cf:#F6821F;--c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.10);--c-input-bg:#141414}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;--c-titanium:#0a0a0a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-input-bg:#f7f8fa}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.6;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+    .hidden{display:none}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--c-carbon) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border)}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .nav-link.active{color:var(--c-cf)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer}
+    .theme-toggle:hover{color:var(--c-steel-400)}
+
+    /* TWO-COL LAYOUT */
+    .page{max-width:1100px;margin:0 auto;padding:96px 24px 60px;display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
+    @media(max-width:860px){.page{grid-template-columns:1fr}.toc{display:none}}
+
+    /* TOC */
+    .toc{position:sticky;top:80px}
+    .toc-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);font-weight:600;margin-bottom:10px}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s;margin-bottom:1px}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.active{color:var(--c-cf);border-left-color:var(--c-cf)}
+    .toc-divider{border:none;border-top:1px solid var(--c-border);margin:10px 0}
+    .toc-back{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-brand);display:block;margin-bottom:16px}
+    .toc-back:hover{text-decoration:underline}
+
+    /* CONTENT */
+    .content{min-width:0}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:20px}
+    .breadcrumb a{color:var(--c-brand)}
+    .skill-header{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--c-border)}
+    .skill-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;font-weight:600;color:var(--c-cf);margin-bottom:10px}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,60px);line-height:.95;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:10px}
+    .skill-title span{color:var(--c-cf)}
+    .skill-sub{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.7;margin-bottom:20px}
+    .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:4px}
+    .badge-cf{background:rgba(246,130,31,.12);color:var(--c-cf)}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-brand{background:rgba(6,182,212,.12);color:var(--c-brand)}
+
+    /* SECTIONS */
+    .sec{margin-bottom:52px;scroll-margin-top:90px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--c-cf);font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:14px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:28px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.7;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:14px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:5px}
+    .sec strong{color:var(--c-steel-300)}
+    .sec a{color:var(--c-brand)}
+    .sec a:hover{text-decoration:underline}
+
+    /* CODE */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:18px;margin:14px 0 18px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.65;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 6px;border-radius:3px;color:var(--c-cf)}
+
+    /* CALLOUT */
+    .callout{background:var(--c-graphite);border-left:3px solid var(--c-cf);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-cf);font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0;color:var(--c-steel-400)}
+    .callout.green{border-left-color:#22c55e}
+    .callout.green .callout-title{color:#22c55e}
+    .callout.brand{border-left-color:var(--c-brand)}
+    .callout.brand .callout-title{color:var(--c-brand)}
+
+    /* ARCH DIAGRAMS */
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:6px;padding:28px 20px;margin:20px 0;overflow-x:auto}
+    .arch-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:20px;text-transform:uppercase}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:110px}
+    .arch-box.cf{border-color:var(--c-cf);color:var(--c-cf)}
+    .arch-box.green{border-color:#22c55e;color:#22c55e}
+    .arch-box.red{border-color:#EF4444;color:#EF4444}
+    .arch-box.brand{border-color:var(--c-brand);color:var(--c-brand)}
+    .arch-box small{display:block;font-size:9px;color:var(--c-steel-700);margin-top:3px}
+    .arch-arrow{font-size:16px;color:var(--c-steel-700)}
+    .arch-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c-steel-700);text-align:center;margin-top:8px}
+
+    /* COMPONENT CARDS */
+    .component-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:16px 0}
+    .component-card{background:var(--c-graphite);padding:20px}
+    .comp-accent{height:2px;margin:-20px -20px 14px;background:linear-gradient(90deg,var(--c-cf),transparent)}
+    .comp-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:4px}
+    .comp-role{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-cf);letter-spacing:1px;margin-bottom:8px}
+    .comp-body{font-size:13px;color:var(--c-steel-500);line-height:1.6}
+
+    /* TABLE */
+    .doc-table{width:100%;border-collapse:collapse;margin:14px 0;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:10px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border);vertical-align:top}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-cf)}
+
+    /* VS PANEL */
+    .vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:16px 0}
+    @media(max-width:600px){.vs-grid{grid-template-columns:1fr}}
+    .vs-cell{background:var(--c-graphite);padding:20px}
+    .vs-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;font-weight:600;margin-bottom:10px}
+    .vs-cell.bad .vs-label{color:#EF4444}
+    .vs-cell.good .vs-label{color:#22c55e}
+    .vs-cell ul{padding-left:16px}
+    .vs-cell li{font-size:13px;color:var(--c-steel-500);margin-bottom:5px;line-height:1.5}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:20px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+    @media(max-width:768px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://skills.2nth.ai" class="nav-brand"><span>2</span>NTH SKILLS</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/" class="nav-link">All Skills</a>
+      <a href="/cloudflare/" class="nav-link">Cloudflare</a>
+      <a href="/cloudflare/zero-trust.html" class="nav-link active">Zero Trust</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- TOC -->
+  <aside class="toc">
+    <a href="/cloudflare/" class="toc-back">&larr; Cloudflare hub</a>
+    <div class="toc-label">On this page</div>
+    <a href="#what">What is Zero Trust</a>
+    <a href="#why">Why it replaces VPN</a>
+    <a href="#components">The 5 components</a>
+    <a href="#access">Access</a>
+    <a href="#tunnel">Tunnel</a>
+    <a href="#warp">WARP</a>
+    <a href="#gateway">Gateway</a>
+    <a href="#browser">Browser Isolation</a>
+    <a href="#arch">Architecture</a>
+    <a href="#how-2nth">How 2nth uses it</a>
+    <a href="#setup">Setup guide</a>
+    <a href="#policies">Policy patterns</a>
+    <a href="#mtls">mTLS &amp; service tokens</a>
+    <a href="#cost">Pricing</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="breadcrumb"><a href="/">Skills</a> / <a href="/cloudflare/">Cloudflare</a> / Zero Trust</div>
+
+    <div class="skill-header">
+      <div class="skill-eyebrow">CLOUDFLARE — SECURITY</div>
+      <h1 class="skill-title">CLOUDFLARE<br><span>ZERO TRUST</span></h1>
+      <p class="skill-sub">Never trust, always verify. Cloudflare Zero Trust replaces the corporate VPN with identity-aware, policy-driven access — for every user, device, and application, on any network.</p>
+      <div class="badges">
+        <span class="badge badge-cf">Access</span>
+        <span class="badge badge-cf">Tunnel</span>
+        <span class="badge badge-cf">WARP</span>
+        <span class="badge badge-cf">Gateway</span>
+        <span class="badge badge-cf">Browser Isolation</span>
+        <span class="badge badge-green">Free for &lt;50 users</span>
+        <span class="badge badge-brand">Used by 2nth.ai</span>
+      </div>
+    </div>
+
+    <!-- WHAT -->
+    <div class="sec" id="what">
+      <div class="sec-num">01</div>
+      <h2>WHAT IS ZERO TRUST</h2>
+      <p>Zero Trust is a security model, not a product. The principle: <strong>no user, device, or network location is trusted by default</strong> — even inside your own network. Every request for access must be authenticated, authorised, and continuously validated.</p>
+      <p>The traditional model assumes that anything inside the corporate network is safe. That assumption broke the moment teams went remote, started using SaaS, and attackers learned to move laterally after a single breach. The perimeter disappeared. Zero Trust acknowledges that and removes the concept of "inside" entirely.</p>
+      <p>Cloudflare Zero Trust is the implementation: a suite of five products that enforce Zero Trust principles at the network level, between users and applications, and between services and services — all running on Cloudflare's global network.</p>
+      <div class="callout">
+        <div class="callout-title">The core principle</div>
+        <p>Treat every access request as if it originates from an untrusted network. Verify identity. Enforce policy. Log everything. Assume breach.</p>
+      </div>
+    </div>
+
+    <!-- WHY -->
+    <div class="sec" id="why">
+      <div class="sec-num">02</div>
+      <h2>WHY IT REPLACES VPN</h2>
+      <div class="vs-grid">
+        <div class="vs-cell bad">
+          <div class="vs-label">TRADITIONAL VPN</div>
+          <ul>
+            <li>Binary access — you're in or you're out</li>
+            <li>Full network access once connected</li>
+            <li>No per-application policies</li>
+            <li>Lateral movement after breach is trivial</li>
+            <li>Slow — all traffic hairpins through a central server</li>
+            <li>Painful to manage at scale</li>
+            <li>No device posture checks</li>
+            <li>Hard to audit who accessed what</li>
+          </ul>
+        </div>
+        <div class="vs-cell good">
+          <div class="vs-label">CLOUDFLARE ZERO TRUST</div>
+          <ul>
+            <li>Per-application, per-resource policies</li>
+            <li>Identity + device posture required every session</li>
+            <li>Breach is contained — no lateral movement</li>
+            <li>Traffic routes via nearest Cloudflare PoP (fast)</li>
+            <li>Works on any network, any device</li>
+            <li>Full audit log of every access event</li>
+            <li>Free for teams under 50 users</li>
+            <li>Integrates with any IdP (Google, Okta, GitHub, etc.)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPONENTS -->
+    <div class="sec" id="components">
+      <div class="sec-num">03</div>
+      <h2>THE 5 COMPONENTS</h2>
+      <p>Cloudflare Zero Trust is five products that work together. You can deploy them independently or as a suite.</p>
+      <div class="component-grid">
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">ACCESS</div>
+          <div class="comp-role">Application gateway + SSO</div>
+          <p class="comp-body">Sits in front of your apps. Every request goes through Cloudflare. Access checks identity and policy before passing the request on.</p>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">TUNNEL</div>
+          <div class="comp-role">Secure inbound connector</div>
+          <p class="comp-body">A daemon running on your server that creates an outbound-only encrypted tunnel to Cloudflare. No open inbound ports. No public IP needed.</p>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">WARP</div>
+          <div class="comp-role">Device agent</div>
+          <p class="comp-body">Client installed on user devices. Routes device traffic through Cloudflare. Enables device posture checks and private network access.</p>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">GATEWAY</div>
+          <div class="comp-role">DNS + HTTP filtering</div>
+          <p class="comp-body">Cloudflare's Secure Web Gateway. Filters DNS queries and HTTP traffic. Blocks malware, phishing, and content categories. Full inspection.</p>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">BROWSER ISOLATION</div>
+          <div class="comp-role">Remote browser</div>
+          <p class="comp-body">Runs the browser in Cloudflare's network. Nothing executes on the user device. Protects against malicious web content and data exfiltration.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCESS -->
+    <div class="sec" id="access">
+      <div class="sec-num">04</div>
+      <h2>ACCESS — APPLICATION GATEWAY</h2>
+      <p>Cloudflare Access is the front door for every application you want to protect. Instead of putting a login form on the app itself, Access intercepts every request and checks identity and policy before the request reaches your app.</p>
+      <p>The user experience: hit a protected URL → Cloudflare redirects to your IdP (Google, GitHub, Okta, etc.) → user authenticates → Cloudflare issues a signed JWT → app receives the request with the JWT as proof of identity.</p>
+
+      <h3>How it works</h3>
+      <div class="arch">
+        <div class="arch-title">Access request flow</div>
+        <div class="arch-flow">
+          <div class="arch-box">User<small>any network</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">Cloudflare Edge<small>Access policy check</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box">IdP<small>Google / GitHub / Okta</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">JWT issued<small>signed by CF</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">App<small>receives request + JWT</small></div>
+        </div>
+      </div>
+
+      <h3>Policy rules</h3>
+      <p>Access policies define who can reach what. Rules can be based on:</p>
+      <ul>
+        <li><strong>Email</strong> — <code>craig@2nth.ai</code> or <code>*@2nth.ai</code></li>
+        <li><strong>Identity provider groups</strong> — GitHub org, Google Workspace group</li>
+        <li><strong>Country</strong> — allow ZA, block specific regions</li>
+        <li><strong>Device posture</strong> — require WARP, check OS version, require disk encryption</li>
+        <li><strong>mTLS certificate</strong> — for machine-to-machine service access</li>
+      </ul>
+
+      <h3>Self-hosted vs SaaS applications</h3>
+      <table class="doc-table">
+        <thead><tr><th>Type</th><th>What it protects</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Self-hosted</td><td>Apps on your own infrastructure (admin panels, internal tools, APIs)</td><td>Combine with Cloudflare Tunnel — no public IP needed</td></tr>
+          <tr><td>SaaS</td><td>Third-party apps that support SAML/OIDC (Jira, Notion, GitHub)</td><td>Access acts as IdP proxy — enforces additional policy before SSO</td></tr>
+          <tr><td>SSH / RDP</td><td>Server access via browser</td><td>Access renders SSH in browser — no client needed</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Validating the JWT in your app</h3>
+      <p>Once Access is in front of your app, every request carries a <code>Cf-Access-Jwt-Assertion</code> header. You should validate it to prevent bypassing Access by hitting your origin directly.</p>
+      <pre><code>// Cloudflare Worker — validate Access JWT
+import { jwtVerify, importX509 } from 'jose';
+
+const TEAM_DOMAIN = 'https://your-team.cloudflareaccess.com';
+const CERTS_URL = `${TEAM_DOMAIN}/cdn-cgi/access/certs`;
+
+export async function validateAccessJWT(request: Request): Promise&lt;boolean&gt; {
+  const token = request.headers.get('Cf-Access-Jwt-Assertion');
+  if (!token) return false;
+
+  // Fetch public keys from Cloudflare
+  const certsRes = await fetch(CERTS_URL);
+  const { public_cert } = await certsRes.json() as any;
+
+  try {
+    const key = await importX509(public_cert, 'RS256');
+    await jwtVerify(token, key, { issuer: TEAM_DOMAIN });
+    return true;
+  } catch {
+    return false;
+  }
+}</code></pre>
+    </div>
+
+    <!-- TUNNEL -->
+    <div class="sec" id="tunnel">
+      <div class="sec-num">05</div>
+      <h2>TUNNEL — SECURE INBOUND CONNECTOR</h2>
+      <p>Cloudflare Tunnel (formerly Argo Tunnel) solves a fundamental problem: how do you expose a service to the internet without opening inbound firewall ports or having a public IP address?</p>
+      <p>The answer: run <code>cloudflared</code> on your server. It creates an outbound-only encrypted connection to Cloudflare's nearest data centre. Traffic flows in through Cloudflare, down the tunnel to your service. The internet never touches your server directly.</p>
+
+      <h3>Tunnel architecture</h3>
+      <div class="arch">
+        <div class="arch-title">How Tunnel routes traffic</div>
+        <div class="arch-flow">
+          <div class="arch-box">Internet<small>user request</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">Cloudflare Edge<small>DNS → proxied</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">Tunnel<small>encrypted outbound</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">cloudflared<small>on your server</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">localhost:3000<small>your app</small></div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Key security property</div>
+        <p>No inbound ports open. No public IP required. Your server firewall can drop all incoming connections. The only traffic that reaches your app came through Cloudflare.</p>
+      </div>
+
+      <h3>Setup</h3>
+      <pre><code># Install cloudflared
+brew install cloudflare/cloudflare/cloudflared  # macOS
+# or download from https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/
+
+# Authenticate
+cloudflared tunnel login
+
+# Create a named tunnel
+cloudflared tunnel create my-app
+
+# Create config file (~/.cloudflared/config.yml)
+tunnel: &lt;TUNNEL-ID&gt;
+credentials-file: /home/user/.cloudflared/&lt;TUNNEL-ID&gt;.json
+
+ingress:
+  - hostname: app.example.com
+    service: http://localhost:3000
+  - hostname: api.example.com
+    service: http://localhost:8787
+  - service: http_status:404
+
+# Add DNS record (proxied CNAME to &lt;tunnel-id&gt;.cfargotunnel.com)
+cloudflared tunnel route dns my-app app.example.com
+
+# Run the tunnel
+cloudflared tunnel run my-app
+
+# Or run as a system service
+cloudflared service install</code></pre>
+
+      <h3>Using Tunnel with Access</h3>
+      <p>Tunnel + Access is the standard pattern for protecting internal apps without a VPN:</p>
+      <ol>
+        <li>Tunnel exposes your app at <code>app.example.com</code> through Cloudflare</li>
+        <li>Access policy sits in front — only authenticated users matching the policy reach the tunnel</li>
+        <li>Your server sees only traffic that already passed the Access check</li>
+        <li>Close all inbound firewall ports entirely</li>
+      </ol>
+    </div>
+
+    <!-- WARP -->
+    <div class="sec" id="warp">
+      <div class="sec-num">06</div>
+      <h2>WARP — DEVICE AGENT</h2>
+      <p>WARP is the client application installed on user devices (Mac, Windows, iOS, Android, Linux). It routes device traffic through Cloudflare's network and is the enforcement point for device posture policies.</p>
+      <p>For Zero Trust, WARP does two things: (1) it identifies the device to Cloudflare so Access policies can include device posture rules, and (2) it routes traffic through Gateway for DNS and HTTP filtering.</p>
+
+      <h3>WARP modes</h3>
+      <table class="doc-table">
+        <thead><tr><th>Mode</th><th>What it does</th><th>Use case</th></tr></thead>
+        <tbody>
+          <tr><td>WARP</td><td>Routes all traffic through Cloudflare. DNS + HTTP filtering active.</td><td>Endpoint protection for team devices</td></tr>
+          <tr><td>Gateway with WARP</td><td>Enables Gateway policies and device posture checks</td><td>Required for ZT Access device posture rules</td></tr>
+          <tr><td>Proxy mode</td><td>Routes only traffic bound for private networks</td><td>Accessing internal apps without full traffic routing</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Device posture checks</h3>
+      <p>Once WARP is deployed, Access policies can require device health checks before granting access:</p>
+      <ul>
+        <li><strong>WARP running</strong> — device must have WARP active</li>
+        <li><strong>OS version</strong> — macOS 14+, Windows 11+</li>
+        <li><strong>Disk encryption</strong> — FileVault / BitLocker enabled</li>
+        <li><strong>Application running</strong> — e.g. require CrowdStrike or Sentinel</li>
+        <li><strong>Domain joined</strong> — device registered with your organisation's directory</li>
+      </ul>
+      <pre><code># Deploy WARP via MDM (example: Jamf)
+# Set the organisation name to your Zero Trust team name
+# Users get WARP pre-configured — just needs authentication on first launch
+
+# Or manually:
+# 1. Install WARP from cloudflare.com/warp
+# 2. Click Preferences → Account → Login with Cloudflare Zero Trust
+# 3. Enter team name (your-team.cloudflareaccess.com)</code></pre>
+    </div>
+
+    <!-- GATEWAY -->
+    <div class="sec" id="gateway">
+      <div class="sec-num">07</div>
+      <h2>GATEWAY — DNS &amp; HTTP FILTERING</h2>
+      <p>Cloudflare Gateway is the Secure Web Gateway (SWG) component. It sits between your users and the internet, inspecting DNS queries and HTTP/S traffic, applying filtering policies, and logging everything.</p>
+
+      <h3>DNS filtering</h3>
+      <p>All DNS queries from WARP-enrolled devices go through Cloudflare's resolver. Gateway can block queries based on:</p>
+      <ul>
+        <li>Categories (malware, phishing, adult content, social media)</li>
+        <li>Domain lists (custom blocklists)</li>
+        <li>Security intelligence (Cloudflare's threat feeds)</li>
+        <li>New domains (flag domains registered in the last 30 days)</li>
+      </ul>
+
+      <h3>HTTP filtering</h3>
+      <p>Gateway can perform full TLS inspection, enabling policy enforcement on HTTPS traffic:</p>
+      <ul>
+        <li>Block file uploads to unauthorised cloud storage</li>
+        <li>Prevent data exfiltration via HTTP POST</li>
+        <li>Enforce Safe Search on Google/Bing/YouTube</li>
+        <li>Block OAuth to unauthorised SaaS apps</li>
+      </ul>
+
+      <div class="callout">
+        <div class="callout-title">Setup: DNS-only (no WARP needed)</div>
+        <p>Point your DNS resolver to <code>1.1.1.1</code> using your Gateway DoH/DoT endpoint: <code>https://&lt;team&gt;.cloudflareaccess.com/dns-query</code>. Instant filtering with no client software.</p>
+      </div>
+
+      <h3>Resolver policies (example)</h3>
+      <pre><code># Gateway DNS policy examples (configured in dashboard)
+
+# Block known malware/phishing domains
+IF Security Category = Malware OR Phishing
+THEN Block
+
+# Block social media during work hours (optional)
+IF Category = Social Networks AND Time = 09:00-17:00
+THEN Block
+
+# Log all new/uncategorised domains
+IF Domain Age < 30 days
+THEN Log + Allow (review)
+
+# Allow everything else
+THEN Allow</code></pre>
+    </div>
+
+    <!-- BROWSER ISOLATION -->
+    <div class="sec" id="browser">
+      <div class="sec-num">08</div>
+      <h2>BROWSER ISOLATION</h2>
+      <p>Browser Isolation runs the web browser inside Cloudflare's network rather than on the user's device. The user sees a pixel stream of the browser — interactive but with no code executing locally.</p>
+      <p>This eliminates an entire class of attack: malicious JavaScript, drive-by downloads, browser exploits — none of them can reach the user's device because the browser isn't running there.</p>
+
+      <h3>Use cases</h3>
+      <ul>
+        <li><strong>Unmanaged device access</strong> — contractors using personal devices accessing corporate apps</li>
+        <li><strong>Risky web categories</strong> — any URL matching a risky policy opens in isolated browser automatically</li>
+        <li><strong>Data protection</strong> — copy/paste, download, and printing can be disabled for sensitive apps</li>
+        <li><strong>Legacy browser support</strong> — old apps that require IE-era rendering</li>
+      </ul>
+      <div class="callout">
+        <div class="callout-title">Isolation without inconvenience</div>
+        <p>For end users, an isolated browser looks and feels like a normal browser tab. The isolation is transparent — there's no separate app to open or noticeable latency for most content.</p>
+      </div>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="sec" id="arch">
+      <div class="sec-num">09</div>
+      <h2>FULL ZERO TRUST ARCHITECTURE</h2>
+      <p>How all five components work together in a complete deployment:</p>
+      <div class="arch">
+        <div class="arch-title">Complete Zero Trust stack</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--c-steel-400);line-height:2;overflow-x:auto;">
+          <div style="color:var(--c-cf)">┌─────────────────────────────────────────────────────┐</div>
+          <div style="color:var(--c-cf)">│            CLOUDFLARE EDGE (330+ PoPs)              │</div>
+          <div style="color:var(--c-cf)">│                                                     │</div>
+          <div>│  ┌─────────────┐  ┌─────────────┐  ┌───────────┐  │</div>
+          <div>│  │   GATEWAY   │  │   ACCESS    │  │ ISOLATION │  │</div>
+          <div>│  │ DNS/HTTP    │  │  App proxy  │  │  Browser  │  │</div>
+          <div>│  │  filtering  │  │  + policy   │  │  sandbox  │  │</div>
+          <div>│  └──────┬──────┘  └──────┬──────┘  └───────────┘  │</div>
+          <div style="color:var(--c-cf)">└─────────┼───────────────┼─────────────────────────────┘</div>
+          <div style="margin-top:8px">         ↓ DNS queries    ↓ App requests</div>
+          <div style="margin-top:4px;color:var(--c-steel-600)">  ┌──────────────────────────────────────────────────┐</div>
+          <div style="color:var(--c-steel-600)">  │                  PRIVATE NETWORK                 │</div>
+          <div style="color:var(--c-steel-600)">  │                                                  │</div>
+          <div style="color:var(--c-steel-600)">  │  ┌─────────────────┐   ┌──────────────────────┐  │</div>
+          <div style="color:var(--c-steel-600)">  │  │   cloudflared   │   │   Internal services  │  │</div>
+          <div style="color:var(--c-steel-600)">  │  │   (Tunnel)      │──▶│   localhost:3000     │  │</div>
+          <div style="color:var(--c-steel-600)">  │  │  no open ports  │   │   no public IP       │  │</div>
+          <div style="color:var(--c-steel-600)">  │  └─────────────────┘   └──────────────────────┘  │</div>
+          <div style="color:var(--c-steel-600)">  └──────────────────────────────────────────────────┘</div>
+          <div style="margin-top:12px;color:var(--c-brand)">  User devices running WARP → routes to Gateway → posture checked → Access policies enforced</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW 2NTH USES IT -->
+    <div class="sec" id="how-2nth">
+      <div class="sec-num">10</div>
+      <h2>HOW 2NTH.AI USES ZERO TRUST</h2>
+      <p>2nth.ai runs its admin infrastructure behind Cloudflare Zero Trust. Here's the current and planned deployment:</p>
+      <table class="doc-table">
+        <thead><tr><th>Resource</th><th>Protection</th><th>Policy</th></tr></thead>
+        <tbody>
+          <tr><td>Admin API routes</td><td>Access policy on <code>/admin/*</code></td><td>Email in <code>@2nth.ai</code>, <code>@imbila.ai</code>, or <code>@b2bs.co.za</code></td></tr>
+          <tr><td>bill.2nth.ai admin view</td><td>Role check in Worker session</td><td>Admin email list from env var — moving to Access policy</td></tr>
+          <tr><td>Wrangler / CF API access</td><td>API tokens with scoped permissions</td><td>Separate token per project, minimum required scopes</td></tr>
+          <tr><td>Client portals (planned)</td><td>Access per-client subdomain</td><td>Per-client email domain + WARP device posture</td></tr>
+          <tr><td>Internal tooling (planned)</td><td>Tunnel + Access</td><td>No public IP, identity gate for every tool</td></tr>
+        </tbody>
+      </table>
+      <div class="callout brand">
+        <div class="callout-title">The operator model</div>
+        <p>Zero Trust is how one operator secures infrastructure that would normally need a dedicated security team. No VPN to manage. No firewall rules to maintain. Policy-as-config in the Cloudflare dashboard.</p>
+      </div>
+    </div>
+
+    <!-- SETUP GUIDE -->
+    <div class="sec" id="setup">
+      <div class="sec-num">11</div>
+      <h2>SETUP GUIDE</h2>
+      <p>Getting a basic Access + Tunnel deployment running from scratch.</p>
+
+      <h3>Step 1 — Create a Zero Trust organisation</h3>
+      <ol>
+        <li>Go to <strong>dash.cloudflare.com</strong> → Zero Trust (left sidebar)</li>
+        <li>Choose a team name (e.g. <code>2nth</code> → your apps will be at <code>*.cloudflareaccess.com</code>)</li>
+        <li>Select the Free plan (up to 50 users, no credit card)</li>
+      </ol>
+
+      <h3>Step 2 — Connect an identity provider</h3>
+      <pre><code># In Zero Trust dashboard → Settings → Authentication → Add new IdP
+
+# Google Workspace
+# 1. Create OAuth2 app in Google Cloud Console
+# 2. Authorised redirect URI: https://&lt;team&gt;.cloudflareaccess.com/cdn-cgi/access/callback
+# 3. Add Client ID + Secret to Cloudflare
+
+# GitHub (good for dev teams)
+# 1. Create OAuth app in GitHub → Settings → Developer settings
+# 2. Homepage: https://&lt;team&gt;.cloudflareaccess.com
+# 3. Callback: https://&lt;team&gt;.cloudflareaccess.com/cdn-cgi/access/callback
+
+# One-time PIN (no IdP needed — email OTP)
+# Built-in, no setup required — good for testing</code></pre>
+
+      <h3>Step 3 — Create an Access application</h3>
+      <pre><code># Zero Trust → Access → Applications → Add an application
+
+Type: Self-hosted
+Application name: 2nth Admin
+Subdomain: admin  (→ admin.2nth.ai)
+Session duration: 24 hours
+
+# Add a policy
+Policy name: 2nth team
+Action: Allow
+Include: Email ends in @2nth.ai OR @imbila.ai</code></pre>
+
+      <h3>Step 4 — Create a Tunnel</h3>
+      <pre><code># Install cloudflared
+brew install cloudflare/cloudflare/cloudflared
+
+# Login
+cloudflared tunnel login
+
+# Create tunnel
+cloudflared tunnel create 2nth-admin
+
+# Create ~/.cloudflared/config.yml
+tunnel: &lt;your-tunnel-id&gt;
+credentials-file: /Users/you/.cloudflared/&lt;tunnel-id&gt;.json
+
+ingress:
+  - hostname: admin.2nth.ai
+    service: http://localhost:8788   # your local admin server
+  - service: http_status:404
+
+# Route DNS
+cloudflared tunnel route dns 2nth-admin admin.2nth.ai
+
+# Run
+cloudflared tunnel run 2nth-admin</code></pre>
+
+      <h3>Step 5 — Verify</h3>
+      <ol>
+        <li>Visit <code>admin.2nth.ai</code> in a browser</li>
+        <li>Cloudflare Access redirects you to your IdP login</li>
+        <li>After login, Access issues a JWT and passes the request to your tunnel</li>
+        <li>Your local service handles the request — never exposed publicly</li>
+      </ol>
+    </div>
+
+    <!-- POLICY PATTERNS -->
+    <div class="sec" id="policies">
+      <div class="sec-num">12</div>
+      <h2>POLICY PATTERNS</h2>
+      <p>Common policy configurations for 2nth-style operator deployments:</p>
+      <table class="doc-table">
+        <thead><tr><th>Pattern</th><th>Rule</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td>Email domain allow</td><td>Email ends in <code>@yourcompany.com</code></td><td>Team-wide access to internal tools</td></tr>
+          <tr><td>Specific emails</td><td>Email in [list]</td><td>Tightly scoped admin access</td></tr>
+          <tr><td>Country block</td><td>Country NOT in [ZA, GB, US]</td><td>Geo-restrict sensitive apps</td></tr>
+          <tr><td>Device posture required</td><td>WARP enrolled + OS version ≥ X</td><td>High-security apps requiring managed devices</td></tr>
+          <tr><td>IdP group</td><td>GitHub org = imbilawork</td><td>Grant access to all org members</td></tr>
+          <tr><td>Bypass (no auth)</td><td>IP in [known CIDRs]</td><td>Server-to-server calls that don't carry a user token</td></tr>
+          <tr><td>Service token</td><td>Service token = [token]</td><td>Machine-to-machine API calls through Access</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- mTLS -->
+    <div class="sec" id="mtls">
+      <div class="sec-num">13</div>
+      <h2>mTLS AND SERVICE TOKENS</h2>
+      <p>For machine-to-machine communication — where there's no user to authenticate — Zero Trust uses either <strong>mutual TLS (mTLS)</strong> or <strong>service tokens</strong>.</p>
+
+      <h3>Service tokens</h3>
+      <p>A service token is a Client ID + Client Secret pair. The calling service includes these as headers. Access validates them and passes the request.</p>
+      <pre><code># Calling a Zero Trust protected API from a Worker
+const response = await fetch('https://internal-api.example.com/data', {
+  headers: {
+    'CF-Access-Client-Id': env.CF_ACCESS_CLIENT_ID,
+    'CF-Access-Client-Secret': env.CF_ACCESS_CLIENT_SECRET,
+  }
+});
+
+# In Access policy:
+# Action: Service Auth
+# Include: Service Token = [your token name]</code></pre>
+
+      <h3>mTLS</h3>
+      <p>mTLS requires both sides of a connection to present a certificate. Cloudflare can validate client certificates before passing requests to your origin — useful for IoT devices, embedded hardware, and B2B API integrations where you control both ends.</p>
+      <pre><code># Upload your CA certificate to Cloudflare
+# (Settings → mTLS → Upload Certificate Authority)
+
+# In Access policy or WAF rule:
+# Require: client certificate issued by your CA
+# This blocks any request that doesn't present a valid cert — regardless of other auth</code></pre>
+    </div>
+
+    <!-- COST -->
+    <div class="sec" id="cost">
+      <div class="sec-num">14</div>
+      <h2>PRICING</h2>
+      <table class="doc-table">
+        <thead><tr><th>Plan</th><th>Users</th><th>Cost</th><th>What you get</th></tr></thead>
+        <tbody>
+          <tr><td>Free</td><td>Up to 50</td><td>$0</td><td>Access, Tunnel, WARP, Gateway DNS filtering, basic policies</td></tr>
+          <tr><td>Pay-as-you-go</td><td>51+</td><td>$3/user/month</td><td>All Free features + HTTP filtering, Browser Isolation (add-on), more policy types</td></tr>
+          <tr><td>Zero Trust Enterprise</td><td>Unlimited</td><td>Custom</td><td>Full Browser Isolation, DLP, CASB, Remote Network, Priority support</td></tr>
+        </tbody>
+      </table>
+      <div class="callout green">
+        <div class="callout-title">For 2nth operators</div>
+        <p>The Free plan handles all operator-scale infrastructure. 50 users is enough for a 2nth team + client portal access. You hit pay-as-you-go only when running client environments at scale — and at $3/user/month, it's cheaper than any alternative.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span style="color:var(--c-brand)">2</span>NTH SKILLS — Cloudflare Zero Trust</div>
+    <div class="footer-links">
+      <a href="/cloudflare/">Cloudflare Hub</a>
+      <a href="/">All Skills</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+    </div>
+    <div class="footer-brand">&copy; 2026</div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){var l=document.documentElement.classList.toggle('light');localStorage.setItem('2nth-theme',l?'light':'dark');updateIcons();}
+function updateIcons(){var l=document.documentElement.classList.contains('light');document.getElementById('icon-sun').classList.toggle('hidden',!l);document.getElementById('icon-moon').classList.toggle('hidden',l);}
+updateIcons();
+
+// TOC active tracking
+var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+var sections = Array.from(tocLinks).map(function(l){return document.querySelector(l.getAttribute('href'))}).filter(Boolean);
+window.addEventListener('scroll',function(){
+  var pos = window.scrollY + 120;
+  var current = sections[0];
+  sections.forEach(function(s){if(s.offsetTop<=pos)current=s;});
+  tocLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+current.id);});
+},{passive:true});
+</script>
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script src="https://2nth.ai/auth-bar.js"></script>
+<script src="https://2nth.ai/browse-gate.js"></script>
+<script>window._asSwitcher.inject('#nav-links');window._authBar.inject('#nav-links');</script>
+</body>
+</html>

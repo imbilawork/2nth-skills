@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare — 2nth.ai Infrastructure Stack</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="Cloudflare is the infrastructure backbone of 2nth.ai. Pages, Workers, D1, KV, R2, AI, Zero Trust, DNS — the full stack explained.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;--c-titanium:#fafafa;--c-brand:#06b6d4;--c-live:#22c55e;--c-cf:#F6821F;--c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.10)}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;--c-titanium:#0a0a0a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.6;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+    .hidden{display:none}
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--c-carbon) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border)}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .nav-link.active{color:var(--c-steel-300)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400)}
+
+    .page{max-width:1100px;margin:0 auto;padding:0 24px}
+
+    /* HERO */
+    .hero{padding:100px 24px 60px;max-width:1100px;margin:0 auto;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:20px}
+    .breadcrumb a{color:var(--c-brand)}
+    .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;font-weight:600;color:var(--c-cf);margin-bottom:12px}
+    h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,7vw,72px);line-height:.95;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:16px}
+    h1 span{color:var(--c-cf)}
+    .hero-sub{font-size:18px;color:var(--c-steel-400);max-width:640px;line-height:1.7;margin-bottom:24px}
+    .cf-logo{display:inline-flex;align-items:center;gap:10px;background:var(--c-graphite);border:1px solid var(--c-border);border-radius:6px;padding:10px 18px;margin-bottom:24px}
+    .cf-logo-icon{width:32px;height:32px}
+
+    /* STATS BAR */
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:32px 0}
+    @media(max-width:640px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+    .stat-cell{background:var(--c-graphite);padding:20px;text-align:center}
+    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--c-titanium)}
+    .stat-val span{color:var(--c-cf)}
+    .stat-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--c-steel-700);margin-top:2px}
+
+    /* PRODUCT GRID */
+    section{padding:60px 0}
+    .sec-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--c-steel-700);font-weight:600;margin-bottom:8px}
+    h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5vw,44px);letter-spacing:.03em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec-intro{font-size:15px;color:var(--c-steel-500);max-width:560px;line-height:1.7;margin-bottom:32px}
+    .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden}
+    .product-card{background:var(--c-graphite);padding:24px;transition:background .15s;position:relative}
+    .product-card:hover{background:var(--c-gunmetal)}
+    .product-card.clickable{cursor:pointer}
+    a.product-card{display:block}
+    .product-accent{position:absolute;top:0;left:0;right:0;height:2px}
+    .product-status{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+    .dot-live{background:var(--c-live)}
+    .dot-soon{background:#F59E0B}
+    .product-category{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:8px}
+    .product-name{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:4px;line-height:1}
+    .product-tagline{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);margin-bottom:10px}
+    .product-body{font-size:13px;color:var(--c-steel-500);line-height:1.65;margin-bottom:16px}
+    .product-tags{display:flex;flex-wrap:wrap;gap:5px}
+    .ptag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c-steel-700);border:1px solid var(--c-border);border-radius:3px;padding:2px 7px}
+    .product-link{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-brand);margin-top:14px;display:block}
+    .product-card.inactive{opacity:.45;pointer-events:none}
+
+    /* HOW 2NTH USES IT */
+    .usage-table{width:100%;border-collapse:collapse;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .usage-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:10px 16px;text-align:left;border-bottom:1px solid var(--c-border)}
+    .usage-table td{padding:12px 16px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border);vertical-align:top}
+    .usage-table tr:last-child td{border-bottom:none}
+    .usage-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-cf);white-space:nowrap}
+    .usage-table td:nth-child(2){color:var(--c-steel-300);font-weight:500}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    @media(max-width:768px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="https://skills.2nth.ai" class="nav-brand"><span>2</span>NTH SKILLS</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/" class="nav-link">All Skills</a>
+      <a href="/cloudflare/" class="nav-link active">Cloudflare</a>
+      <a href="https://2nth.ai" class="nav-link">2nth.ai</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="breadcrumb"><a href="/">Skills</a> / Cloudflare</div>
+  <div class="hero-eyebrow">INFRASTRUCTURE STACK — CLOUDFLARE</div>
+  <h1>CLOUDFLARE.<br><span>EDGE TO EDGE.</span></h1>
+  <p class="hero-sub">Cloudflare is the entire infrastructure layer of 2nth.ai. Not just DNS — Workers, Pages, D1, KV, R2, AI, Zero Trust, Queues, and Durable Objects. Every product, explained for operators who build on it.</p>
+
+  <div class="stats-bar">
+    <div class="stat-cell"><div class="stat-val"><span>330</span>+</div><div class="stat-lbl">Edge locations</div></div>
+    <div class="stat-cell"><div class="stat-val"><span>0</span>ms</div><div class="stat-lbl">Cold start (Workers)</div></div>
+    <div class="stat-cell"><div class="stat-val"><span>10</span>+</div><div class="stat-lbl">Products we use</div></div>
+    <div class="stat-cell"><div class="stat-val"><span>1</span></div><div class="stat-lbl">Vendor for infra</div></div>
+  </div>
+</div>
+
+<!-- COMPUTE -->
+<section>
+  <div class="page">
+    <div class="sec-label">Build — Compute</div>
+    <h2>COMPUTE</h2>
+    <p class="sec-intro">The full Cloudflare compute stack — from serverless functions to stateful objects, workflow engines, and browser automation. All running at the edge, globally distributed.</p>
+    <div class="product-grid">
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">WORKERS &amp; PAGES</div>
+        <div class="product-tagline">Serverless functions + full-stack deployment</div>
+        <p class="product-body">Every 2nth.ai API endpoint is a Worker. Auth, billing, agents, webhooks — deployed globally, zero cold starts. Pages deploys 2nth.ai, skills, demo, agents from GitHub.</p>
+        <div class="product-tags"><span class="ptag">V8 isolates</span><span class="ptag">0ms cold start</span><span class="ptag">PagesFunction</span><span class="ptag">GitHub CI</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">OBSERVABILITY</div>
+        <div class="product-tagline">Logs, metrics, traces for Workers</div>
+        <p class="product-body">Workers Logpush, Tail Workers, and Analytics Engine. Stream request logs to R2 or third-party tools. Trace every invocation across your worker graph.</p>
+        <div class="product-tags"><span class="ptag">Tail Workers</span><span class="ptag">Logpush</span><span class="ptag">Analytics Engine</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">WORKERS FOR PLATFORMS</div>
+        <div class="product-tagline">Multi-tenant serverless for SaaS</div>
+        <p class="product-body">Run customer-provided code in isolated Workers per tenant. Build platforms where each user or client gets their own sandboxed execution environment.</p>
+        <div class="product-tags"><span class="ptag">Multi-tenant</span><span class="ptag">Dynamic dispatch</span><span class="ptag">Isolation</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">BETA — COMING</span></div>
+        <div class="product-category">COMPUTE — BETA</div>
+        <div class="product-name">CONTAINERS</div>
+        <div class="product-tagline">Docker containers at the Cloudflare edge</div>
+        <p class="product-body">Run Docker containers co-located with Workers — no separate container cluster needed. Longer-running workloads, GPU inference, or any OCI image, edge-deployed.</p>
+        <div class="product-tags"><span class="ptag">Docker / OCI</span><span class="ptag">Beta</span><span class="ptag">GPU</span><span class="ptag">Edge co-location</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">DURABLE OBJECTS</div>
+        <div class="product-tagline">Stateful edge compute with strong consistency</div>
+        <p class="product-body">Single-threaded objects with global unique ID. Strongly consistent state at the edge — real-time collaboration, WebSocket hubs, per-user state machines.</p>
+        <div class="product-tags"><span class="ptag">Stateful</span><span class="ptag">WebSockets</span><span class="ptag">Consistency</span><span class="ptag">Unique ID</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">QUEUES</div>
+        <div class="product-tagline">Message queuing between Workers</div>
+        <p class="product-body">Background jobs, event processing, async pipelines. Queue a task in one Worker, consume it in another. Guaranteed at-least-once delivery with automatic retry and dead-letter support.</p>
+        <div class="product-tags"><span class="ptag">Async</span><span class="ptag">Retry</span><span class="ptag">Dead letter</span><span class="ptag">Batching</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">WORKFLOWS</div>
+        <div class="product-tagline">Durable multi-step execution engine</div>
+        <p class="product-body">Long-running, resumable workflows built on Durable Objects. Define multi-step processes — AI pipelines, onboarding flows, approval chains — that survive failures and retries.</p>
+        <div class="product-tags"><span class="ptag">Durable steps</span><span class="ptag">Resumable</span><span class="ptag">AI pipelines</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">BROWSER RENDERING</div>
+        <div class="product-tagline">Headless Chrome at the edge</div>
+        <p class="product-body">Full Puppeteer-compatible browser running in a Worker. Screenshot any URL, scrape dynamic content, generate PDFs, test UI flows — all serverless, no infrastructure.</p>
+        <div class="product-tags"><span class="ptag">Puppeteer</span><span class="ptag">Screenshots</span><span class="ptag">PDF</span><span class="ptag">Scraping</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">BETA — COMING</span></div>
+        <div class="product-category">COMPUTE — BETA</div>
+        <div class="product-name">VPC</div>
+        <div class="product-tagline">Private networking for Workers &amp; services</div>
+        <p class="product-body">Connect Workers to private resources — databases, internal APIs — via a Cloudflare-managed VPC. No public IP exposure, no firewall rules needed.</p>
+        <div class="product-tags"><span class="ptag">Beta</span><span class="ptag">Private IP</span><span class="ptag">Tunnel</span><span class="ptag">mTLS</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">EMAIL SERVICE</div>
+        <div class="product-tagline">Send and receive email from Workers</div>
+        <p class="product-body">Route inbound email to Workers, send transactional email via the API. SPF, DKIM, DMARC all handled. Use with Email Routing to build full email workflows without an ESP.</p>
+        <div class="product-tags"><span class="ptag">Send</span><span class="ptag">Receive</span><span class="ptag">Routing</span><span class="ptag">DKIM</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">COMPUTE</div>
+        <div class="product-name">WORKERS PLANS</div>
+        <div class="product-tagline">Free → Paid → Enterprise pricing model</div>
+        <p class="product-body">Free: 100K requests/day. Workers Paid ($5/mo): 10M requests, unlimited scripts, Queues, Durable Objects, Workflows. Enterprise: custom SLA, dedicated support, higher limits.</p>
+        <div class="product-tags"><span class="ptag">Free tier</span><span class="ptag">$5/mo Paid</span><span class="ptag">Enterprise</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI -->
+<section style="padding-top:0">
+  <div class="page">
+    <div class="sec-label">Category — AI</div>
+    <h2>AI</h2>
+    <p class="sec-intro">Run AI models, manage inference pipelines, and build vector search — all within the Cloudflare network, billed by token not by uptime.</p>
+    <div class="product-grid">
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">AI</div>
+        <div class="product-name">WORKERS AI</div>
+        <div class="product-tagline">AI model inference at the edge</div>
+        <p class="product-body">LLaMA 3, Whisper, Stable Diffusion, BAAI embeddings — callable from any Worker. No GPU provisioning, no model hosting. AI as a function call, billed per token.</p>
+        <div class="product-tags"><span class="ptag">LLaMA 3</span><span class="ptag">Embeddings</span><span class="ptag">Whisper</span><span class="ptag">Stable Diffusion</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">AI</div>
+        <div class="product-name">AI GATEWAY</div>
+        <div class="product-tagline">Proxy, cache, and observe all AI calls</div>
+        <p class="product-body">Single endpoint for OpenAI, Anthropic, Workers AI, Replicate, and more. Caches identical prompts, logs all requests, rate limits, and falls back across providers.</p>
+        <div class="product-tags"><span class="ptag">Multi-provider</span><span class="ptag">Caching</span><span class="ptag">Logging</span><span class="ptag">Rate limiting</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">AI</div>
+        <div class="product-name">VECTORIZE</div>
+        <div class="product-tagline">Vector database for RAG and semantic search</div>
+        <p class="product-body">Store, index, and query embedding vectors at scale. Pair with Workers AI embeddings for retrieval-augmented generation. Native to the Workers runtime — no external calls.</p>
+        <div class="product-tags"><span class="ptag">Embeddings</span><span class="ptag">RAG</span><span class="ptag">Semantic search</span><span class="ptag">HNSW</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORAGE & DATABASES -->
+<section style="padding-top:0">
+  <div class="page">
+    <div class="sec-label">Category — Storage &amp; Databases</div>
+    <h2>STORAGE &amp; DATABASES</h2>
+    <p class="sec-intro">Relational, key-value, and object storage — all living at the edge, co-located with compute, zero separate connection overhead.</p>
+    <div class="product-grid">
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">STORAGE — RELATIONAL</div>
+        <div class="product-name">D1</div>
+        <div class="product-tagline">SQLite at the edge, fully replicated</div>
+        <p class="product-body">2nth.ai's primary database. Users, tokens, contracts, projects, activity logs — all in D1. Queried directly from Workers with zero network hop. Wrangler-managed migrations.</p>
+        <div class="product-tags"><span class="ptag">SQLite</span><span class="ptag">Migrations</span><span class="ptag">Wrangler</span><span class="ptag">Replicated</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">STORAGE — KEY-VALUE</div>
+        <div class="product-name">KV</div>
+        <div class="product-tagline">Low-latency global key-value store</div>
+        <p class="product-body">Session tokens, magic link JWTs, rate limiting counters — stored in KV. Microsecond reads from anywhere on the Cloudflare network. Built-in TTL, no server needed.</p>
+        <div class="product-tags"><span class="ptag">TTL</span><span class="ptag">Global reads</span><span class="ptag">Sessions</span><span class="ptag">Eventual</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">STORAGE — OBJECT</div>
+        <div class="product-name">R2</div>
+        <div class="product-tagline">S3-compatible object storage, zero egress fees</div>
+        <p class="product-body">Assets, uploads, generated files. Any S3-compatible SDK works. No egress fees — unlike AWS S3, you pay only for storage and operations, never for bandwidth out.</p>
+        <div class="product-tags"><span class="ptag">S3 API</span><span class="ptag">Zero egress</span><span class="ptag">Public buckets</span><span class="ptag">CORS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEDIA -->
+<section style="padding-top:0">
+  <div class="page">
+    <div class="sec-label">Category — Media</div>
+    <h2>MEDIA</h2>
+    <p class="sec-intro">Image optimisation and video streaming — globally cached, resized on the fly, no CDN configuration required.</p>
+    <div class="product-grid">
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">MEDIA</div>
+        <div class="product-name">IMAGES</div>
+        <div class="product-tagline">Resize, optimise, and serve images at the edge</div>
+        <p class="product-body">Store images in Cloudflare Images or use Image Resizing via URL params. WebP/AVIF auto-conversion, responsive variants, on-the-fly transforms — all cached globally.</p>
+        <div class="product-tags"><span class="ptag">WebP</span><span class="ptag">AVIF</span><span class="ptag">Resize</span><span class="ptag">Variants</span></div>
+      </div>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">MEDIA</div>
+        <div class="product-name">STREAM</div>
+        <div class="product-tagline">Video upload, encoding, and delivery</div>
+        <p class="product-body">Upload any video — Cloudflare encodes it for adaptive bitrate playback. Embed with a signed URL, set expiry, restrict to domains. No egress costs for video delivery.</p>
+        <div class="product-tags"><span class="ptag">HLS</span><span class="ptag">DASH</span><span class="ptag">Signed URLs</span><span class="ptag">No egress</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ZERO TRUST + NETWORKING -->
+<section style="padding-top:0">
+  <div class="page">
+    <div class="sec-label">Category — Security &amp; Networking</div>
+    <h2>SECURITY &amp; NETWORKING</h2>
+    <p class="sec-intro">Zero Trust access control, DNS, and DDoS protection — the perimeter layer that everything else sits behind.</p>
+    <div class="product-grid">
+      <a href="/cloudflare/zero-trust.html" class="product-card clickable">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-live"></span><span style="color:var(--c-live)">EXPLAINER LIVE</span></div>
+        <div class="product-category">SECURITY</div>
+        <div class="product-name">ZERO TRUST</div>
+        <div class="product-tagline">Never trust, always verify</div>
+        <p class="product-body">Access, Tunnel, WARP, Gateway, Browser Isolation. Replaces VPN with identity-aware access. Every connection verified — regardless of network location.</p>
+        <div class="product-tags"><span class="ptag">Access</span><span class="ptag">Tunnel</span><span class="ptag">WARP</span><span class="ptag">Gateway</span><span class="ptag">mTLS</span></div>
+        <span class="product-link">Read the explainer &rarr;</span>
+      </a>
+      <div class="product-card inactive">
+        <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
+        <div class="product-category">NETWORKING</div>
+        <div class="product-name">DNS</div>
+        <div class="product-tagline">The world's fastest authoritative DNS</div>
+        <p class="product-body">All 2nth.ai and imbila.ai DNS runs on Cloudflare. Sub-millisecond resolution, DNSSEC, proxied records for DDoS protection and origin hiding, API-managed records.</p>
+        <div class="product-tags"><span class="ptag">Authoritative</span><span class="ptag">DNSSEC</span><span class="ptag">API</span><span class="ptag">Proxied</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW 2NTH USES CLOUDFLARE -->
+<section style="padding-top:0">
+  <div class="page">
+    <div class="sec-label">2nth.ai usage map</div>
+    <h2>HOW WE USE IT</h2>
+    <p class="sec-intro">Every Cloudflare product 2nth.ai runs on today — and why.</p>
+    <div style="overflow-x:auto">
+      <table class="usage-table">
+        <thead><tr><th>Product</th><th>Used for</th><th>Why Cloudflare</th></tr></thead>
+        <tbody>
+          <tr><td>Workers &amp; Pages</td><td>All 2nth.ai properties — API functions, static sites, preview deploys</td><td>Zero cold starts, GitHub CI, free tier, same deploy unit</td></tr>
+          <tr><td>Durable Objects</td><td>Per-agent state, real-time session coordination</td><td>Strongly consistent edge state — no separate state server</td></tr>
+          <tr><td>Queues</td><td>Async job processing — email sends, webhook fanout</td><td>Guaranteed delivery, retry, dead-letter, no separate broker</td></tr>
+          <tr><td>Workflows</td><td>Multi-step agent pipelines, onboarding flows (planned)</td><td>Durable steps that survive failures without external orchestrator</td></tr>
+          <tr><td>D1</td><td>Users, tokens, contracts, projects, activity logs, costs</td><td>SQLite native, no connection pool, wrangler migrations</td></tr>
+          <tr><td>KV</td><td>Sessions, magic link JWTs, rate limiting counters</td><td>Microsecond global reads, built-in TTL, no server needed</td></tr>
+          <tr><td>R2</td><td>Asset uploads, generated files (planned)</td><td>Zero egress vs S3, same S3 API, no bandwidth cost</td></tr>
+          <tr><td>Workers AI</td><td>Brief analysis, context enrichment, embeddings</td><td>No GPU provisioning, billed per token, stays on Cloudflare network</td></tr>
+          <tr><td>AI Gateway</td><td>Proxy + cache for Anthropic/OpenAI calls (planned)</td><td>Unified logging, caching, fallback across providers</td></tr>
+          <tr><td>Zero Trust</td><td>Admin route protection, team access, future client portals</td><td>Identity-aware access without VPN, any IdP</td></tr>
+          <tr><td>DNS</td><td>2nth.ai, imbila.ai, b2bs.co.za zones</td><td>Fastest authoritative DNS, proxied records, full API control</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span style="color:var(--c-brand)">2</span>NTH SKILLS — Cloudflare</div>
+    <div class="footer-links">
+      <a href="/">All Skills</a>
+      <a href="/cloudflare/zero-trust.html">Zero Trust</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+    </div>
+    <div class="footer-brand">&copy; 2026</div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){var l=document.documentElement.classList.toggle('light');localStorage.setItem('2nth-theme',l?'light':'dark');updateIcons();}
+function updateIcons(){var l=document.documentElement.classList.contains('light');document.getElementById('icon-sun').classList.toggle('hidden',!l);document.getElementById('icon-moon').classList.toggle('hidden',l);}
+updateIcons();
+</script>
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script src="https://2nth.ai/auth-bar.js"></script>
+<script src="https://2nth.ai/browse-gate.js"></script>
+<script>window._asSwitcher.inject('#nav-links');window._authBar.inject('#nav-links');</script>
+</body>
+</html>
