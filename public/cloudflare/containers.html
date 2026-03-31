@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare Containers — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
+  <meta name="description" content="Cloudflare Containers explained — run Docker containers on the edge, controlled by Workers and Durable Objects. Architecture, instance types, pricing, and deployment patterns.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;--c-titanium:#fafafa;--c-brand:#06b6d4;--c-live:#22c55e;--c-cf:#F6821F;--c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.10);--c-input-bg:#141414}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;--c-titanium:#0a0a0a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-input-bg:#f7f8fa}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.6;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+    .hidden{display:none}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--c-carbon) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--c-border)}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .nav-link.active{color:var(--c-cf)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer}
+    .theme-toggle:hover{color:var(--c-steel-400)}
+
+    /* TWO-COL LAYOUT */
+    .page{max-width:1100px;margin:0 auto;padding:96px 24px 60px;display:grid;grid-template-columns:220px 1fr;gap:48px;align-items:start}
+    @media(max-width:860px){.page{grid-template-columns:1fr}.toc{display:none}}
+
+    /* TOC */
+    .toc{position:sticky;top:80px}
+    .toc-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);font-weight:600;margin-bottom:10px}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s;margin-bottom:1px}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.active{color:var(--c-cf);border-left-color:var(--c-cf)}
+    .toc-divider{border:none;border-top:1px solid var(--c-border);margin:10px 0}
+    .toc-back{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-brand);display:block;margin-bottom:16px}
+    .toc-back:hover{text-decoration:underline}
+
+    /* CONTENT */
+    .content{min-width:0}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:20px}
+    .breadcrumb a{color:var(--c-brand)}
+    .skill-header{margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--c-border)}
+    .skill-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;font-weight:600;color:var(--c-cf);margin-bottom:10px}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,60px);line-height:.95;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:10px}
+    .skill-title span{color:var(--c-cf)}
+    .skill-sub{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.7;margin-bottom:20px}
+    .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:4px}
+    .badge-cf{background:rgba(246,130,31,.12);color:var(--c-cf)}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-brand{background:rgba(6,182,212,.12);color:var(--c-brand)}
+    .badge-warn{background:rgba(245,158,11,.12);color:#f59e0b}
+
+    /* SECTIONS */
+    .sec{margin-bottom:52px;scroll-margin-top:90px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--c-cf);font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:14px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:28px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.7;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:14px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:5px}
+    .sec strong{color:var(--c-steel-300)}
+    .sec a{color:var(--c-brand)}
+    .sec a:hover{text-decoration:underline}
+
+    /* CODE */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:18px;margin:14px 0 18px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.65;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 6px;border-radius:3px;color:var(--c-cf)}
+
+    /* CALLOUT */
+    .callout{background:var(--c-graphite);border-left:3px solid var(--c-cf);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-cf);font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0;color:var(--c-steel-400)}
+    .callout.green{border-left-color:#22c55e}
+    .callout.green .callout-title{color:#22c55e}
+    .callout.brand{border-left-color:var(--c-brand)}
+    .callout.brand .callout-title{color:var(--c-brand)}
+    .callout.warn{border-left-color:#f59e0b}
+    .callout.warn .callout-title{color:#f59e0b}
+
+    /* ARCH DIAGRAMS */
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:6px;padding:28px 20px;margin:20px 0;overflow-x:auto}
+    .arch-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:20px;text-transform:uppercase}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:110px}
+    .arch-box.cf{border-color:var(--c-cf);color:var(--c-cf)}
+    .arch-box.green{border-color:#22c55e;color:#22c55e}
+    .arch-box.brand{border-color:var(--c-brand);color:var(--c-brand)}
+    .arch-box.purple{border-color:#818cf8;color:#818cf8}
+    .arch-box small{display:block;font-size:9px;color:var(--c-steel-700);margin-top:3px}
+    .arch-arrow{font-size:16px;color:var(--c-steel-700)}
+
+    /* COMPONENT CARDS */
+    .component-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:16px 0}
+    .component-card{background:var(--c-graphite);padding:20px}
+    .comp-accent{height:2px;margin:-20px -20px 14px;background:linear-gradient(90deg,var(--c-cf),transparent)}
+    .comp-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.03em;color:var(--c-titanium);margin-bottom:4px}
+    .comp-role{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-cf);letter-spacing:1px;margin-bottom:8px}
+    .comp-body{font-size:13px;color:var(--c-steel-500);line-height:1.6}
+
+    /* TABLE */
+    .doc-table{width:100%;border-collapse:collapse;margin:14px 0;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:10px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border);vertical-align:top}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-cf)}
+    .doc-table tr:hover td{background:var(--c-graphite)}
+
+    /* VS PANEL */
+    .vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;margin:16px 0}
+    @media(max-width:600px){.vs-grid{grid-template-columns:1fr}}
+    .vs-cell{background:var(--c-graphite);padding:20px}
+    .vs-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;font-weight:600;margin-bottom:10px}
+    .vs-cell.bad .vs-label{color:#EF4444}
+    .vs-cell.good .vs-label{color:#22c55e}
+    .vs-cell ul{padding-left:16px}
+    .vs-cell li{font-size:13px;color:var(--c-steel-500);margin-bottom:5px;line-height:1.5}
+
+    /* LIFECYCLE STATES */
+    .lifecycle{display:flex;gap:0;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0;flex-wrap:wrap}
+    .lc-state{flex:1;min-width:120px;background:var(--c-graphite);padding:16px;border-right:1px solid var(--c-border)}
+    .lc-state:last-child{border-right:none}
+    .lc-dot{width:8px;height:8px;border-radius:50%;margin-bottom:8px}
+    .lc-name{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-300);font-weight:600;margin-bottom:6px}
+    .lc-desc{font-size:12px;color:var(--c-steel-600);line-height:1.5}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:20px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+    @media(max-width:768px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://skills.2nth.ai" class="nav-brand"><span>2</span>NTH SKILLS</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">All Skills</a>
+      <a href="/cloudflare/" class="nav-link">Cloudflare</a>
+      <a href="/cloudflare/containers.html" class="nav-link active">Containers</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- TOC -->
+  <aside class="toc">
+    <a href="/cloudflare/" class="toc-back">&larr; Cloudflare hub</a>
+    <div class="toc-label">On this page</div>
+    <a href="#what">What are Containers</a>
+    <a href="#vs-workers">Containers vs Workers</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#lifecycle">Container lifecycle</a>
+    <a href="#instance-types">Instance types</a>
+    <a href="#config">wrangler.toml config</a>
+    <a href="#deployment">Deployment</a>
+    <a href="#registry">Image registry</a>
+    <a href="#networking">Networking</a>
+    <a href="#use-cases">Use cases</a>
+    <a href="#how-2nth">How 2nth uses it</a>
+    <a href="#setup">Setup guide</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#limits">Platform limits</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <div class="breadcrumb"><a href="/">Skills</a> / <a href="/cloudflare/">Cloudflare</a> / Containers</div>
+
+    <div class="skill-header">
+      <div class="skill-eyebrow">CLOUDFLARE — COMPUTE</div>
+      <h1 class="skill-title">CLOUDFLARE<br><span>CONTAINERS</span></h1>
+      <p class="skill-sub">Run Docker containers on the Cloudflare edge — spawned on demand, managed by Workers and Durable Objects. Any language, any runtime, full Linux environment, with Workers handling the ingress and routing.</p>
+      <div class="badges">
+        <span class="badge badge-cf">Beta</span>
+        <span class="badge badge-cf">Workers Paid Required</span>
+        <span class="badge badge-cf">Durable Objects</span>
+        <span class="badge badge-green">Any Docker Image</span>
+        <span class="badge badge-green">Auto-sleep</span>
+        <span class="badge badge-brand">linux/amd64</span>
+        <span class="badge badge-warn">Max 4 vCPU / 16 GiB RAM</span>
+      </div>
+    </div>
+
+    <!-- WHAT -->
+    <div class="sec" id="what">
+      <div class="sec-num">01 — OVERVIEW</div>
+      <h2>WHAT ARE CLOUDFLARE CONTAINERS</h2>
+      <p>Cloudflare Containers lets you run standard Docker containers as part of your Workers application. The Worker handles all the incoming requests, authentication, and routing — then hands off to a container when the work needs a full Linux environment, more memory, heavier CPU, or a specific runtime that V8 isolates can't provide.</p>
+      <p>The key difference from every other container platform: <strong>you don't deploy a container to a fixed server or cluster</strong>. Containers are spawned on demand, globally, and managed by a Durable Object that acts as the container's programmable lifecycle controller. When traffic stops, the container sleeps. When a request arrives, it wakes up within seconds.</p>
+      <p>Currently in <strong>beta</strong> — requires the Workers Paid plan ($5/month). The container itself bills by active usage (CPU-seconds, GiB-seconds, GB-seconds for disk).</p>
+
+      <div class="callout warn">
+        <div class="callout-title">Beta Status</div>
+        <p>Containers is in open beta as of early 2026. The API and configuration format may change before GA. Check <a href="https://developers.cloudflare.com/containers/" target="_blank">developers.cloudflare.com/containers</a> for the latest.</p>
+      </div>
+    </div>
+
+    <!-- VS WORKERS -->
+    <div class="sec" id="vs-workers">
+      <div class="sec-num">02 — DECISION GUIDE</div>
+      <h2>CONTAINERS VS WORKERS</h2>
+      <p>Workers (V8 isolates) remain the default. Use Containers when the work genuinely requires what Workers can't provide. The two are designed to compose — not compete.</p>
+
+      <div class="vs-grid">
+        <div class="vs-cell good">
+          <div class="vs-label">Use Workers when</div>
+          <ul>
+            <li>Request/response latency is critical — sub-millisecond cold start</li>
+            <li>You can write in JavaScript, TypeScript, or WebAssembly</li>
+            <li>The task completes in a single event loop turn</li>
+            <li>You need global distribution across 300+ PoPs</li>
+            <li>Storage via KV, D1, R2, Durable Objects is sufficient</li>
+            <li>CPU execution time under 30 seconds per request</li>
+          </ul>
+        </div>
+        <div class="vs-cell good">
+          <div class="vs-label">Use Containers when</div>
+          <ul>
+            <li>You need Python, Go, Rust, Java, or any language beyond JS/Wasm</li>
+            <li>The task is CPU-intensive (ML inference, image processing, video encoding)</li>
+            <li>You need more than 128 MB RAM — up to 16 GiB available</li>
+            <li>A full filesystem or specific Linux tools are required</li>
+            <li>You're running an existing Docker image without rewriting it</li>
+            <li>Long-running stateful sessions with session-affinity routing</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>The <strong>practical pattern</strong>: Worker handles auth, rate limiting, request parsing, and routing. Container handles the heavy computation. Worker calls container via <code>fetch()</code> on its exposed port — same as calling any internal service.</p>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="sec" id="architecture">
+      <div class="sec-num">03 — ARCHITECTURE</div>
+      <h2>HOW IT WORKS</h2>
+      <p>Three layers compose to give you programmable container lifecycle management on the Cloudflare edge.</p>
+
+      <div class="arch">
+        <div class="arch-title">Request → Worker → Durable Object → Container</div>
+        <div class="arch-flow">
+          <div class="arch-box">Client<small>Browser / API</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box cf">CF Worker<small>Auth, routing, logic</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box purple">Durable Object<small>Lifecycle controller</small></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">Container<small>Your Docker image</small></div>
+        </div>
+      </div>
+
+      <div class="component-grid">
+        <div class="component-card">
+          <div class="comp-accent"></div>
+          <div class="comp-name">Worker</div>
+          <div class="comp-role">Ingress layer</div>
+          <div class="comp-body">Receives all external requests. Handles auth, parses the request, decides which container instance to route to, then proxies via <code>fetch()</code>. The Worker has no state — it's stateless by design.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#818cf8,transparent)"></div>
+          <div class="comp-name">Durable Object</div>
+          <div class="comp-role">Lifecycle controller</div>
+          <div class="comp-body">One Durable Object per container instance. It starts the container, holds the container handle, manages sleep/wake, passes environment variables, and executes hooks on status changes. <code>class_name</code> in wrangler.toml must match your DO class.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#22c55e,transparent)"></div>
+          <div class="comp-name">Container</div>
+          <div class="comp-role">Your workload</div>
+          <div class="comp-body">Standard Docker container. Must expose a port (typically 8080) and run as <code>linux/amd64</code>. Receives HTTP requests from the Durable Object. Full Linux environment — any language, any tool, any filesystem layout.</div>
+        </div>
+      </div>
+
+      <h3>Location selection</h3>
+      <p>When a container is first spawned, Cloudflare selects the nearest edge location that has your container image pre-fetched. All subsequent requests to that Durable Object route to the same physical location (session affinity). If the container stops and restarts, it may land in a different location based on availability and image presence.</p>
+
+      <h3>Session affinity</h3>
+      <p>Because Durable Objects are globally unique and have a fixed home location, every request that goes to a given Durable Object will go to the same container instance. This makes stateful patterns — browser sessions, long-running jobs, game servers, language runtimes — straightforward to implement.</p>
+    </div>
+
+    <!-- LIFECYCLE -->
+    <div class="sec" id="lifecycle">
+      <div class="sec-num">04 — LIFECYCLE</div>
+      <h2>CONTAINER LIFECYCLE</h2>
+      <p>Containers have five distinct states. Understanding them determines your cold start strategy and cost model.</p>
+
+      <div class="lifecycle">
+        <div class="lc-state">
+          <div class="lc-dot" style="background:#52525b"></div>
+          <div class="lc-name">Stopped</div>
+          <div class="lc-desc">Not running, not billing. Counts zero toward <code>max_instances</code>. Starts on next request.</div>
+        </div>
+        <div class="lc-state">
+          <div class="lc-dot" style="background:#f59e0b"></div>
+          <div class="lc-name">Cold start</div>
+          <div class="lc-desc">2–3 seconds typical. Image already fetched to edge location. First request waits.</div>
+        </div>
+        <div class="lc-state">
+          <div class="lc-dot" style="background:#22c55e;animation:blink 2s infinite"></div>
+          <div class="lc-name">Running</div>
+          <div class="lc-desc">Actively serving requests. Billing by 10ms increments. Session-affinity active.</div>
+        </div>
+        <div class="lc-state">
+          <div class="lc-dot" style="background:#818cf8"></div>
+          <div class="lc-name">Sleeping</div>
+          <div class="lc-desc">Idle for <code>sleepAfter</code> duration. Memory preserved. Billing paused. Sub-second wake.</div>
+        </div>
+        <div class="lc-state">
+          <div class="lc-dot" style="background:#ef4444"></div>
+          <div class="lc-name">Shutdown</div>
+          <div class="lc-desc">SIGTERM sent. 15-minute grace window before SIGKILL. All disk ephemeral — lost on shutdown.</div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Sleep vs Stop</div>
+        <p>Configure <code>sleepAfter</code> to keep the container in a cheap sleeping state between requests. Without it, the container shuts down when traffic stops — next request incurs a full cold start. For interactive sessions (coding assistants, game servers), sleep is almost always the right default.</p>
+      </div>
+
+      <h3>Graceful shutdown</h3>
+      <p>When a container is stopped — manually or due to a deployment rollout — it receives <code>SIGTERM</code>. Your process should catch this and complete in-flight work within the 15-minute window. After 15 minutes, <code>SIGKILL</code> terminates the process immediately. All disk content is lost — containers have <strong>no persistent storage</strong> between restarts.</p>
+
+      <pre><code># Python: catch SIGTERM for graceful shutdown
+import signal, sys
+
+def handle_sigterm(sig, frame):
+    print("SIGTERM received, flushing work...")
+    # flush queues, write final state to R2 or D1
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, handle_sigterm)</code></pre>
+    </div>
+
+    <!-- INSTANCE TYPES -->
+    <div class="sec" id="instance-types">
+      <div class="sec-num">05 — RESOURCES</div>
+      <h2>INSTANCE TYPES</h2>
+      <p>Six predefined instance sizes cover most workloads. For unusual ratios, custom sizing is available with any combination within the platform maximums.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>vCPU</th>
+            <th>Memory</th>
+            <th>Disk</th>
+            <th>Best for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>lite</td>
+            <td>1/16 (0.0625)</td>
+            <td>256 MiB</td>
+            <td>2 GB</td>
+            <td>Lightweight daemons, small scripts, proxies</td>
+          </tr>
+          <tr>
+            <td>basic</td>
+            <td>0.25</td>
+            <td>512 MiB</td>
+            <td>2 GB</td>
+            <td>REST APIs, small Python/Go services</td>
+          </tr>
+          <tr>
+            <td>standard-1</td>
+            <td>1</td>
+            <td>2 GiB</td>
+            <td>5 GB</td>
+            <td>Web apps, LLM tokenisation, data processing</td>
+          </tr>
+          <tr>
+            <td>standard-2</td>
+            <td>2</td>
+            <td>4 GiB</td>
+            <td>10 GB</td>
+            <td>ML inference (small models), parallel jobs</td>
+          </tr>
+          <tr>
+            <td>standard-3</td>
+            <td>3</td>
+            <td>8 GiB</td>
+            <td>15 GB</td>
+            <td>Image processing, medium model inference</td>
+          </tr>
+          <tr>
+            <td>standard-4</td>
+            <td>4</td>
+            <td>12 GiB</td>
+            <td>20 GB</td>
+            <td>Heavy compute, large model inference, ffmpeg</td>
+          </tr>
+          <tr>
+            <td>custom</td>
+            <td>0.0625–4.0</td>
+            <td>up to 16 GiB</td>
+            <td>up to 20 GB</td>
+            <td>Any ratio — min 3 GiB per vCPU</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout brand">
+        <div class="callout-title">No GPU — yet</div>
+        <p>GPU instances are not available in the current beta. For heavy inference, use <strong>Workers AI</strong> (which runs on Cloudflare's GPU fleet) and call it from your Worker or container. Use containers for CPU-bound preprocessing, postprocessing, or custom Python toolchains around Workers AI calls.</p>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="sec" id="config">
+      <div class="sec-num">06 — CONFIGURATION</div>
+      <h2>WRANGLER.TOML CONFIGURATION</h2>
+      <p>Containers are declared in <code>wrangler.toml</code> alongside your Durable Object bindings. The <code>class_name</code> field is the bridge — it must match the Durable Object class that manages the container lifecycle.</p>
+
+      <pre><code>name = "my-worker"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# ── Container declaration ─────────────────────────────────
+[[containers]]
+class_name = "MyContainer"      # Must match a Durable Object class
+image = "./Dockerfile"          # Local Dockerfile, or registry URL
+instance_type = "basic"         # lite | basic | standard-1..4 | custom
+max_instances = 10              # Default: 20 (stopped don't count)
+
+# ── Durable Object binding ─────────────────────────────────
+[[durable_objects.bindings]]
+name = "MY_CONTAINER"           # How you reference it in Worker code
+class_name = "MyContainer"      # Same class_name as above
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MyContainer"]
+
+# ── For custom instance sizing ─────────────────────────────
+# [[containers]]
+# class_name = "HeavyWorker"
+# image = "./Dockerfile.heavy"
+# instance_type = "custom"
+# [containers.resources]
+# vcpu = 2.0
+# memory_mib = 8192
+# disk_mb = 15000</code></pre>
+
+      <h3>Referencing from Worker code</h3>
+      <pre><code>// src/index.ts
+export default {
+  async fetch(req: Request, env: Env): Promise&lt;Response&gt; {
+    // Route to a specific container instance by ID
+    const id = env.MY_CONTAINER.idFromName("session-abc123");
+    const stub = env.MY_CONTAINER.get(id);
+
+    // Forward the request to the container
+    return stub.fetch(req);
+  }
+};
+
+// Container Durable Object class
+export class MyContainer extends Container {
+  defaultPort = 8080;
+  sleepAfter = "5m";             // Sleep after 5 minutes of inactivity
+
+  override async containerStarted(): Promise&lt;void&gt; {
+    console.log("Container is up and serving");
+  }
+}</code></pre>
+    </div>
+
+    <!-- DEPLOYMENT -->
+    <div class="sec" id="deployment">
+      <div class="sec-num">07 — DEPLOYMENT</div>
+      <h2>DEPLOYING CONTAINERS</h2>
+      <p>Deployment is a single command — <code>wrangler deploy</code> — but it does more work under the hood than a standard Worker deploy.</p>
+
+      <pre><code># Prerequisites: Docker must be running
+docker info   # Verify Docker is up
+
+# Bootstrap from template
+npm create cloudflare@latest -- --template=cloudflare/templates/containers-template
+
+# Deploy (builds image, pushes to CF registry, deploys Worker)
+npx wrangler deploy
+
+# Monitor running containers
+npx wrangler containers list
+
+# View deployed images in registry
+npx wrangler containers images list</code></pre>
+
+      <h3>What happens during <code>wrangler deploy</code></h3>
+      <ol class="sec">
+        <li>Wrangler calls Docker locally to build the image from your Dockerfile</li>
+        <li>Built image is pushed to Cloudflare's Container Registry (backed by R2)</li>
+        <li>Only changed layers are pushed on subsequent deploys — fast incremental updates</li>
+        <li>Worker code is deployed and linked to the container class</li>
+        <li>Cloudflare pre-fetches the image to edge locations based on your traffic patterns</li>
+        <li>First deployment takes several minutes before containers are ready to serve</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-title">Rolling deployments</div>
+        <p>New container versions deploy via a rolling strategy. Running instances receive SIGTERM and drain gracefully while new instances come up. There is no downtime if your container handles SIGTERM correctly.</p>
+      </div>
+
+      <h3>Bringing an external image</h3>
+      <p>You can use any public Docker Hub image or a private image from Amazon ECR or Docker Hub. Configure registry credentials first, then push the image manually to Cloudflare's registry:</p>
+
+      <pre><code># Configure private registry credentials (stored as secrets)
+npx wrangler containers registries configure
+
+# Push an external image
+npx wrangler containers push docker.io/myorg/myimage:latest
+
+# Reference in wrangler.toml
+# image = "registry.cloudflare.com/myaccount/myimage:latest"</code></pre>
+    </div>
+
+    <!-- REGISTRY -->
+    <div class="sec" id="registry">
+      <div class="sec-num">08 — REGISTRY</div>
+      <h2>IMAGE REGISTRY</h2>
+      <p>Cloudflare maintains a private container registry at <code>registry.cloudflare.com</code>, backed by R2. Every <code>wrangler deploy</code> with a local Dockerfile pushes to this registry automatically. You never need to manage registry credentials for your own images.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Registry</th>
+            <th>Private repos</th>
+            <th>Auth</th>
+            <th>Egress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>registry.cloudflare.com</td>
+            <td>Yes (your account)</td>
+            <td>Automatic via wrangler</td>
+            <td>Free (R2 backed)</td>
+          </tr>
+          <tr>
+            <td>Docker Hub (public)</td>
+            <td>No</td>
+            <td>None needed</td>
+            <td>Rate limits apply</td>
+          </tr>
+          <tr>
+            <td>Docker Hub (private)</td>
+            <td>Yes</td>
+            <td><code>wrangler containers registries configure</code></td>
+            <td>May incur egress</td>
+          </tr>
+          <tr>
+            <td>Amazon ECR</td>
+            <td>Yes</td>
+            <td><code>wrangler containers registries configure</code></td>
+            <td>AWS egress charges apply</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <div class="callout-title">Image deletion is permanent</div>
+        <p>Deleting an image from the Cloudflare registry is irreversible. If you delete an image that a previous Worker version references, rolling back that Worker version will fail. Tag images carefully and retain images for any Worker version you may need to roll back to.</p>
+      </div>
+
+      <p>Total image storage per account is capped at <strong>50 GB</strong> during beta. Images must use the <code>linux/amd64</code> architecture — ARM images are not supported.</p>
+    </div>
+
+    <!-- NETWORKING -->
+    <div class="sec" id="networking">
+      <div class="sec-num">09 — NETWORKING</div>
+      <h2>NETWORKING</h2>
+      <p>Containers communicate with the outside world exclusively through their Durable Object. The Durable Object holds a handle to the container and proxies HTTP requests to whatever port the container exposes.</p>
+
+      <h3>Port configuration</h3>
+      <p>Set <code>defaultPort</code> in your Durable Object class — this is the port your container process must listen on. Standard convention is 8080. Requests arrive as plain HTTP <code>fetch()</code> calls, not raw TCP.</p>
+
+      <pre><code>export class MyContainer extends Container {
+  defaultPort = 8080;   // Must match EXPOSE in Dockerfile
+
+  // Override to use a different port per-request
+  async fetch(req: Request): Promise&lt;Response&gt; {
+    return this.containerFetch(req, { port: 8080 });
+  }
+}</code></pre>
+
+      <h3>Environment variables</h3>
+      <p>Pass environment variables to the container process via the Durable Object's <code>envVars</code> option. Cloudflare also injects a <code>CLOUDFLARE_DEPLOYMENT_ID</code> variable automatically. Never hardcode secrets — pass them from <code>wrangler secret put</code> through the Worker binding:</p>
+
+      <pre><code>export class MyContainer extends Container {
+  defaultPort = 8080;
+
+  override getOptions(): ContainerOptions {
+    return {
+      envVars: {
+        OPENAI_API_KEY: this.env.OPENAI_API_KEY,   // From Worker secret
+        APP_ENV: "production",
+      }
+    };
+  }
+}</code></pre>
+
+      <h3>Container-to-container communication</h3>
+      <p>Containers cannot directly call each other. All inter-container communication goes through Workers or Durable Objects. The Worker acts as the broker — it calls Durable Object A, which calls its container, then calls Durable Object B if needed. This keeps the routing model clean and auditable.</p>
+    </div>
+
+    <!-- USE CASES -->
+    <div class="sec" id="use-cases">
+      <div class="sec-num">10 — USE CASES</div>
+      <h2>USE CASES</h2>
+      <p>The right mental model: Workers do everything they can. Containers handle the rest. Real-world patterns where containers fit naturally:</p>
+
+      <div class="component-grid">
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#818cf8,transparent)"></div>
+          <div class="comp-name">Code Sandboxes</div>
+          <div class="comp-role">Isolated execution environments</div>
+          <div class="comp-body">Run user-submitted Python, Node, or R code in an isolated container per session. The Durable Object provides session affinity — the user always lands on their container. Auto-sleep between interactions keeps costs minimal.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#06b6d4,transparent)"></div>
+          <div class="comp-name">Headless Browsers</div>
+          <div class="comp-role">Playwright / Puppeteer at the edge</div>
+          <div class="comp-body">Run Chromium headless for web scraping, PDF generation, or screenshot capture. A Worker receives the request and routes to a sleeping browser container, which wakes and completes the task. Result can be stored in R2.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#22c55e,transparent)"></div>
+          <div class="comp-name">Language Runtimes</div>
+          <div class="comp-role">Python, Ruby, Java, Go, Rust</div>
+          <div class="comp-body">Deploy existing backend services without rewriting them as Workers. Worker handles CORS, auth, and rate limiting. Container handles the actual business logic in whatever language it was originally written in.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#f59e0b,transparent)"></div>
+          <div class="comp-name">Heavy ML Pipelines</div>
+          <div class="comp-role">Pre/post-processing for AI</div>
+          <div class="comp-body">Workers AI handles GPU inference. Containers handle the CPU-intensive steps: chunking documents, running OCR via Tesseract, embedding preprocessing, re-ranking with FAISS, or complex prompt assembly logic in Python.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#ef4444,transparent)"></div>
+          <div class="comp-name">Media Processing</div>
+          <div class="comp-role">ffmpeg, ImageMagick, audio</div>
+          <div class="comp-body">Transcode video, resize and optimise images, strip metadata, or process audio. Worker receives upload, routes to a standard-4 container with ffmpeg installed, result is written to R2. No custom server infrastructure needed.</div>
+        </div>
+        <div class="component-card">
+          <div class="comp-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
+          <div class="comp-name">Stateful Game Servers</div>
+          <div class="comp-role">Session-affinity, long-running</div>
+          <div class="comp-body">Durable Objects give containers a persistent identity. Multiple players connect to the same DO, which routes to the same container instance. Auto-sleep handles idle rooms. No fixed servers to maintain.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW 2NTH USES IT -->
+    <div class="sec" id="how-2nth">
+      <div class="sec-num">11 — 2NTH PATTERN</div>
+      <h2>HOW 2NTH.AI USES CONTAINERS</h2>
+      <p>At 2nth.ai, Workers handle the vast majority of workloads — API routing, auth, session management, token tracking, KV reads. Containers are reserved for tasks that specifically need what Workers can't provide.</p>
+
+      <h3>Python AI toolchains</h3>
+      <p>Some agent pipelines use Python libraries (LangChain, sentence-transformers, custom parsers) that can't run in a V8 isolate. These run as <code>basic</code> or <code>standard-1</code> containers with a <code>sleepAfter</code> of 10 minutes. The Worker calls the container, waits for the result, and returns it. Container stays warm for repeat calls within the window.</p>
+
+      <h3>Document processing</h3>
+      <p>Uploading a large PDF or Excel file to an agent? The Worker writes it to R2, then calls a container with the R2 object key. The container reads from R2, parses the document using Python libraries (pdfplumber, openpyxl), extracts structured data, writes the result back to R2, and the Worker picks it up. No timeouts, no memory pressure on the isolate.</p>
+
+      <h3>Cost pattern</h3>
+      <p>With <code>sleepAfter = "10m"</code> and typical 2–3 second per-document processing at <code>basic</code> instance type, the per-document cost is under $0.0001. The sleeping container costs nothing. Wake-up on demand keeps the experience snappy without paying for idle compute.</p>
+
+      <pre><code>// Worker — calls Python container for document parsing
+export default {
+  async fetch(req: Request, env: Env): Promise&lt;Response&gt; {
+    const { r2Key } = await req.json();
+
+    // Route to document parser container (session by r2Key)
+    const id = env.DOC_PARSER.idFromName(r2Key);
+    const stub = env.DOC_PARSER.get(id);
+
+    const result = await stub.fetch(new Request("http://container/parse", {
+      method: "POST",
+      body: JSON.stringify({ r2Key }),
+      headers: { "Content-Type": "application/json" }
+    }));
+
+    return result;
+  }
+};</code></pre>
+    </div>
+
+    <!-- SETUP -->
+    <div class="sec" id="setup">
+      <div class="sec-num">12 — SETUP GUIDE</div>
+      <h2>SETUP GUIDE</h2>
+
+      <h3>Step 1 — Prerequisites</h3>
+      <pre><code># Verify Docker is running
+docker info
+
+# Ensure you have the latest wrangler
+npm install -g wrangler@latest
+wrangler --version   # 3.x or higher required
+
+# Confirm Workers Paid plan is active in your Cloudflare dashboard</code></pre>
+
+      <h3>Step 2 — Scaffold from template</h3>
+      <pre><code>npm create cloudflare@latest my-container-app \
+  -- --template=cloudflare/templates/containers-template
+
+cd my-container-app</code></pre>
+
+      <h3>Step 3 — Inspect the template structure</h3>
+      <pre><code>my-container-app/
+├── Dockerfile         # Your container image
+├── src/
+│   └── index.ts       # Worker + Durable Object class
+└── wrangler.toml      # [[containers]] configuration</code></pre>
+
+      <h3>Step 4 — Write your Dockerfile</h3>
+      <pre><code># Example: Python FastAPI container
+FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+EXPOSE 8080
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]</code></pre>
+
+      <h3>Step 5 — Configure wrangler.toml</h3>
+      <pre><code>name = "my-container-app"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+[[containers]]
+class_name = "MyContainer"
+image = "./Dockerfile"
+instance_type = "basic"
+max_instances = 5
+
+[[durable_objects.bindings]]
+name = "MY_CONTAINER"
+class_name = "MyContainer"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MyContainer"]</code></pre>
+
+      <h3>Step 6 — Add secrets</h3>
+      <pre><code>npx wrangler secret put DATABASE_URL
+npx wrangler secret put API_KEY</code></pre>
+
+      <h3>Step 7 — Deploy</h3>
+      <pre><code># First deploy — takes several minutes for image pre-fetch
+npx wrangler deploy
+
+# Watch containers spin up
+npx wrangler containers list
+
+# Tail live logs
+npx wrangler tail</code></pre>
+
+      <div class="callout green">
+        <div class="callout-title">First deploy is slow — expected</div>
+        <p>Cloudflare needs to pre-fetch your image to edge locations after the first deploy. Allow 3–5 minutes before the container is ready to serve requests. Subsequent deploys with unchanged images are much faster.</p>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="sec" id="pricing">
+      <div class="sec-num">13 — PRICING</div>
+      <h2>PRICING</h2>
+      <p>Containers bill by active usage in 10-millisecond increments. Sleeping containers incur no charges. The Workers Paid plan ($5/month) is a prerequisite and includes free allocations that cover light container usage.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Free included</th>
+            <th>Beyond free tier</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Memory (GiB-seconds)</td>
+            <td>25 GiB-hours/month</td>
+            <td>$0.0000025 per GiB-second</td>
+          </tr>
+          <tr>
+            <td>CPU (vCPU-seconds)</td>
+            <td>375 vCPU-minutes/month</td>
+            <td>$0.000020 per vCPU-second</td>
+          </tr>
+          <tr>
+            <td>Disk (GB-seconds)</td>
+            <td>200 GB-hours/month</td>
+            <td>$0.00000007 per GB-second</td>
+          </tr>
+          <tr>
+            <td>Egress — NA / Europe</td>
+            <td>1 TB/month</td>
+            <td>$0.025/GB</td>
+          </tr>
+          <tr>
+            <td>Egress — other regions</td>
+            <td>500 GB/month</td>
+            <td>$0.04/GB (Oceania/Korea: $0.05)</td>
+          </tr>
+          <tr>
+            <td>Image storage</td>
+            <td>Included up to 50 GB (beta)</td>
+            <td>TBD post-beta</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Worked example — document parser at basic tier</h3>
+      <p>Processing 10,000 documents/month, 3 seconds each, <code>basic</code> instance (0.25 vCPU, 512 MiB RAM):</p>
+      <pre><code>Active time: 10,000 × 3s = 30,000 seconds
+
+CPU:    0.25 vCPU × 30,000s = 7,500 vCPU-seconds
+        Free: 22,500 vCPU-seconds → Covered by free tier
+
+Memory: 0.5 GiB × 30,000s = 15,000 GiB-seconds
+        Free: 90,000 GiB-seconds → Covered by free tier
+
+Disk:   2 GB × 30,000s = 60,000 GB-seconds
+        Free: 720,000 GB-seconds → Covered by free tier
+
+Estimated container cost: ~$0 beyond Workers Paid plan base</code></pre>
+
+      <div class="callout brand">
+        <div class="callout-title">Sleep is free</div>
+        <p>A sleeping container incurs zero container charges. The only cost during sleep is the underlying Durable Object storage — negligible. Configure <code>sleepAfter</code> aggressively for workloads with bursty traffic patterns.</p>
+      </div>
+    </div>
+
+    <!-- LIMITS -->
+    <div class="sec" id="limits">
+      <div class="sec-num">14 — PLATFORM LIMITS</div>
+      <h2>PLATFORM LIMITS</h2>
+      <p>Beta-phase limits apply per account. These are expected to increase at GA.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Limit</th>
+            <th>Value (beta)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>max_instances per container</td>
+            <td>20 (default)</td>
+            <td>Configurable; stopped instances don't count</td>
+          </tr>
+          <tr>
+            <td>Total vCPU across all active instances</td>
+            <td>1,500</td>
+            <td>Per account</td>
+          </tr>
+          <tr>
+            <td>Total memory across all active instances</td>
+            <td>6 TiB</td>
+            <td>Per account</td>
+          </tr>
+          <tr>
+            <td>Total disk across all active instances</td>
+            <td>30 TB</td>
+            <td>Per account</td>
+          </tr>
+          <tr>
+            <td>Image storage</td>
+            <td>50 GB</td>
+            <td>Per account; may change at GA</td>
+          </tr>
+          <tr>
+            <td>Max vCPU per instance</td>
+            <td>4.0</td>
+            <td>Custom sizing up to this limit</td>
+          </tr>
+          <tr>
+            <td>Max memory per instance</td>
+            <td>16 GiB</td>
+            <td>Minimum 3 GiB per vCPU</td>
+          </tr>
+          <tr>
+            <td>Max disk per instance</td>
+            <td>20 GB</td>
+            <td>All ephemeral — lost on restart</td>
+          </tr>
+          <tr>
+            <td>Architecture</td>
+            <td>linux/amd64 only</td>
+            <td>ARM not supported in beta</td>
+          </tr>
+          <tr>
+            <td>Cold start time</td>
+            <td>2–3 seconds typical</td>
+            <td>Depends on image size and edge location</td>
+          </tr>
+          <tr>
+            <td>SIGTERM grace window</td>
+            <td>15 minutes</td>
+            <td>Before SIGKILL on shutdown</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-title">Persistent storage</div>
+        <p>Container disk is fully ephemeral. For data that must survive restarts, write to <strong>R2</strong> (object storage), <strong>D1</strong> (SQLite), or <strong>KV</strong> from inside the container. Use the Cloudflare REST API or the Workers SDK imported via HTTP — the container has full outbound network access.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">2nth.ai Skills — <a href="https://developers.cloudflare.com/containers/" target="_blank">Cloudflare Containers docs</a></div>
+    <div class="footer-links">
+      <a href="/cloudflare/">Cloudflare Hub</a>
+      <a href="/">All Skills</a>
+      <a href="https://2nth.ai">2nth.ai</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://2nth.ai/app-switcher.js"></script>
+<script src="https://2nth.ai/browse-gate.js"></script>
+<script src="https://2nth.ai/tier-gate.js"></script>
+<script>
+// Active TOC tracking
+const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+const sections = Array.from(document.querySelectorAll('.sec[id]'));
+function updateToc() {
+  let active = sections[0];
+  for (const s of sections) {
+    if (window.scrollY >= s.offsetTop - 120) active = s;
+  }
+  tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + (active?.id || '')));
+}
+window.addEventListener('scroll', updateToc, { passive: true });
+updateToc();
+
+function toggleTheme() {
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('2nth-theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
+}
+(function(){
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
+})();
+</script>
+</body>
+</html>

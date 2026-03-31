@@ -157,15 +157,16 @@
         <p class="product-body">Run customer-provided code in isolated Workers per tenant. Build platforms where each user or client gets their own sandboxed execution environment.</p>
         <div class="product-tags"><span class="ptag">Multi-tenant</span><span class="ptag">Dynamic dispatch</span><span class="ptag">Isolation</span></div>
       </div>
-      <div class="product-card inactive">
+      <a href="/cloudflare/containers.html" class="product-card clickable">
         <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
-        <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">BETA — COMING</span></div>
+        <div class="product-status"><span class="dot dot-live"></span><span style="color:var(--c-live)">EXPLAINER LIVE</span></div>
         <div class="product-category">COMPUTE — BETA</div>
         <div class="product-name">CONTAINERS</div>
         <div class="product-tagline">Docker containers at the Cloudflare edge</div>
-        <p class="product-body">Run Docker containers co-located with Workers — no separate container cluster needed. Longer-running workloads, GPU inference, or any OCI image, edge-deployed.</p>
-        <div class="product-tags"><span class="ptag">Docker / OCI</span><span class="ptag">Beta</span><span class="ptag">GPU</span><span class="ptag">Edge co-location</span></div>
-      </div>
+        <p class="product-body">Run any Docker image on-demand, controlled by Workers and Durable Objects. Full Linux environment, 6 instance sizes, auto-sleep billing — no container cluster to manage.</p>
+        <div class="product-tags"><span class="ptag">Docker</span><span class="ptag">Durable Objects</span><span class="ptag">Auto-sleep</span><span class="ptag">14 sections</span></div>
+        <span class="product-link">Read the explainer &rarr;</span>
+      </a>
       <div class="product-card inactive">
         <div class="product-accent" style="background:linear-gradient(90deg,#F6821F,transparent)"></div>
         <div class="product-status"><span class="dot dot-soon"></span><span style="color:#F59E0B">EXPLAINER COMING</span></div>
@@ -385,6 +386,7 @@
           <tr><td>D1</td><td>Users, tokens, contracts, projects, activity logs, costs</td><td>SQLite native, no connection pool, wrangler migrations</td></tr>
           <tr><td>KV</td><td>Sessions, magic link JWTs, rate limiting counters</td><td>Microsecond global reads, built-in TTL, no server needed</td></tr>
           <tr><td>R2</td><td>Asset uploads, generated files (planned)</td><td>Zero egress vs S3, same S3 API, no bandwidth cost</td></tr>
+          <tr><td>Containers</td><td>Python toolchains, document parsing, heavy ML preprocessing</td><td>Any language/runtime, auto-sleep billing, no cluster management</td></tr>
           <tr><td>Workers AI</td><td>Brief analysis, context enrichment, embeddings</td><td>No GPU provisioning, billed per token, stays on Cloudflare network</td></tr>
           <tr><td>AI Gateway</td><td>Proxy + cache for Anthropic/OpenAI calls (planned)</td><td>Unified logging, caching, fallback across providers</td></tr>
           <tr><td>Zero Trust</td><td>Admin route protection, team access, future client portals</td><td>Identity-aware access without VPN, any IdP</td></tr>
@@ -401,6 +403,7 @@
     <div class="footer-links">
       <a href="/">All Skills</a>
       <a href="/cloudflare/zero-trust.html">Zero Trust</a>
+      <a href="/cloudflare/containers.html">Containers</a>
       <a href="https://2nth.ai">2nth.ai</a>
     </div>
     <div class="footer-brand">&copy; 2026</div>
