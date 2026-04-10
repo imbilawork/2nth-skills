@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI & Data Warehousing — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth-marketing.pages.dev/favicon.svg">
+  <meta name="description" content="Modern data stack architecture — dimensional modeling, dbt, warehouse selection, semantic layer, and BI tool integration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root {
+      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
+      --c-titanium:#fafafa;
+      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
+      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
+      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
+      --c-grid-line:hsla(0,0%,100%,.018);
+      --c-input-bg:#141414;
+      --c-brand:#3b82f6;
+    }
+    .light {
+      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
+      --c-titanium:#0a0a0a;
+      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
+      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
+      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
+      --c-grid-line:rgba(0,0,0,.03);
+      --c-input-bg:#f7f8fa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
+    @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
+    .hidden{display:none}
+
+    .page{max-width:1100px;margin:0 auto;padding:100px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+    @media(max-width:900px){.page{grid-template-columns:1fr;gap:24px}.toc{display:none}}
+
+    .toc{position:sticky;top:80px;height:fit-content}
+    .toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;font-weight:600}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.toc-active{color:var(--c-brand);border-left-color:var(--c-brand)}
+
+    .content{min-width:0}
+    .skill-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:var(--c-brand)}
+    .breadcrumb a:hover{text-decoration:underline}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:8px}
+    .skill-title span{color:var(--c-brand)}
+    .skill-subtitle{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.6;margin-bottom:16px}
+    .skill-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600}
+    .badge-brand{background:rgba(59,130,246,.12);color:var(--c-brand)}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-purple{background:rgba(99,102,241,.12);color:#6366f1}
+    .badge-orange{background:rgba(249,115,22,.12);color:#f97316}
+    .install-box{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .install-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--c-brand)}
+    .install-copy{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);background:var(--c-carbon);border:1px solid var(--c-border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .15s}
+    .install-copy:hover{color:var(--c-steel-300);border-color:var(--c-border-s)}
+
+    .sec{margin-bottom:48px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--c-brand);font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:24px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:12px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.6;margin-bottom:4px}
+    .sec strong{color:var(--c-steel-300)}
+
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:16px;margin:12px 0 16px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 5px;border-radius:3px;color:var(--c-brand)}
+
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .info-cell{background:var(--c-graphite);padding:16px}
+    .info-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:4px}
+    .info-value{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);line-height:1}
+
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:24px;margin:16px 0}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:120px}
+    .arch-box.highlight{border-color:var(--c-brand);color:var(--c-brand)}
+    .arch-arrow{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c-steel-700)}
+
+    .doc-table{width:100%;border-collapse:collapse;margin:12px 0 16px;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:8px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border)}
+    .doc-table tr:last-child td{border-bottom:none}
+
+    .callout{background:var(--c-graphite);border-left:3px solid var(--c-brand);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-brand);font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://2nth-marketing.pages.dev" class="nav-brand"><span>2</span>NTH</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Skills</a>
+      <a href="https://2nth-marketing.pages.dev" class="nav-link">Home</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <aside class="toc">
+    <div class="toc-title">ON THIS PAGE</div>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#modeling">Dimensional Modeling</a>
+    <a href="#etl">ETL/ELT & dbt</a>
+    <a href="#warehouses">Warehouse Selection</a>
+    <a href="#bi-tools">BI Tools</a>
+    <a href="#governance">Data Governance</a>
+    <a href="#install">Install</a>
+  </aside>
+
+  <div class="content">
+
+    <div class="skill-header">
+      <div class="breadcrumb"><a href="/">Skills</a> / BI & Data Warehousing</div>
+      <div class="skill-title">BI & DATA <span>WAREHOUSING</span></div>
+      <div class="skill-subtitle">Modern data stack architecture for teams that need reliable, queryable analytics infrastructure. From raw source data to a semantic layer powering dashboards, AI queries, and executive reporting.</div>
+      <div class="skill-badges">
+        <span class="badge badge-green">LIVE</span>
+        <span class="badge badge-brand">v1.0</span>
+        <span class="badge badge-brand">dbt</span>
+        <span class="badge badge-orange">Dimensional Modeling</span>
+        <span class="badge badge-purple">ETL/ELT</span>
+        <span class="badge badge-brand">ClickHouse</span>
+      </div>
+      <div class="install-box">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@bi-datawarehouse</code>
+        <button class="install-copy" onclick="navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@bi-datawarehouse');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',1500)">COPY</button>
+      </div>
+      <div style="margin-top:14px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.25);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--c-brand);margin-bottom:4px">▶ Live Concept Demo</div>
+          <div style="font-size:13px;color:var(--c-steel-400)">See the full BI stack in action — integration map, Superset dashboards, AI query demo, and architecture walkthrough.</div>
+        </div>
+        <a href="https://biz-demos.pages.dev/bi/" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:var(--c-brand);color:#fff;padding:9px 18px;border-radius:3px;text-decoration:none;white-space:nowrap;transition:opacity .15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Open Demo →</a>
+      </div>
+    </div>
+
+    <div class="sec" id="overview">
+      <div class="sec-num">01</div>
+      <h2>OVERVIEW</h2>
+      <p>Most businesses have data scattered across ERP (Sage X3, ERPNext), CRM (HubSpot, Salesforce), and SaaS apps. Without a structured warehouse layer, every report is a one-off query. With it, a single semantic layer powers dashboards, AI queries, and executive reporting from one source of truth.</p>
+      <p>This skill gives your AI agent production-grade knowledge of modern data stack design — from ingestion to BI tool — so it can guide architecture decisions, review dimensional models, write dbt transformations, and evaluate warehouse options for your specific constraints.</p>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">Transform</div>
+          <div class="info-value">dbt</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Pattern</div>
+          <div class="info-value">ELT</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Modeling</div>
+          <div class="info-value">STAR</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">License</div>
+          <div class="info-value">MIT</div>
+        </div>
+      </div>
+
+      <h3>What your agent can do</h3>
+      <ul>
+        <li>Design dimensional models (star schema, snowflake schema, fact and dimension tables)</li>
+        <li>Choose the right data warehouse engine for your volume, budget, and team</li>
+        <li>Scaffold dbt projects with medallion layer structure (bronze/silver/gold)</li>
+        <li>Write dbt models, tests, and documentation for your mart layer</li>
+        <li>Select and configure ingestion tools (Airbyte, Fivetran, Debezium CDC)</li>
+        <li>Evaluate ETL vs. ELT trade-offs for your data volume and latency requirements</li>
+        <li>Design a data governance framework and data catalog structure</li>
+        <li>Plan BI tool integration — connects directly to the Apache Superset skill</li>
+      </ul>
+    </div>
+
+    <div class="sec" id="architecture">
+      <div class="sec-num">02</div>
+      <h2>REFERENCE ARCHITECTURE</h2>
+      <p>The modern data stack follows a layered pattern. Each layer has a single responsibility and a clear interface to the next.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">Sources<br><span style="font-size:9px;color:var(--c-steel-600)">ERP / CRM / APIs</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Ingestion<br><span style="font-size:9px;color:var(--c-steel-600)">Airbyte / CDC</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Warehouse<br><span style="font-size:9px;color:var(--c-steel-600)">PG / ClickHouse</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Transform<br><span style="font-size:9px;color:var(--c-steel-600)">dbt Core</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Semantic<br><span style="font-size:9px;color:var(--c-steel-600)">Metrics Layer</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">BI<br><span style="font-size:9px;color:var(--c-steel-600)">Superset</span></div>
+        </div>
+        <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-steel-700);text-align:center">Medallion layers: Bronze (raw) → Silver (cleaned) → Gold (business-ready marts)</div>
+      </div>
+
+      <h3>Architecture Decision Framework</h3>
+      <p>Before selecting any tool, answer these five questions:</p>
+      <ol>
+        <li><strong>Data Volume & Velocity</strong> — How much data, how fast does it arrive?</li>
+        <li><strong>Query Patterns</strong> — Ad-hoc exploration vs. fixed dashboards vs. embedded analytics?</li>
+        <li><strong>Team Capability</strong> — SQL-literate analysts? Dedicated data engineers? Self-service business users?</li>
+        <li><strong>Latency Requirements</strong> — Real-time, near-real-time, or batch is fine?</li>
+        <li><strong>Budget Constraints</strong> — Cloud-managed vs. self-hosted? Per-seat licensing tolerance?</li>
+      </ol>
+    </div>
+
+    <div class="sec" id="modeling">
+      <div class="sec-num">03</div>
+      <h2>DIMENSIONAL MODELING</h2>
+      <p>Dimensional modeling is the design discipline that makes data queryable by business users. Fact tables hold measurements. Dimension tables hold descriptive context. The grain is everything.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Concept</th><th>Rule</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Grain</strong></td><td>Define the grain FIRST — one row = one what?</td></tr>
+          <tr><td><strong>Fact tables</strong></td><td>Contain measures (numeric, additive). Prefix with <code>fct_</code></td></tr>
+          <tr><td><strong>Dimension tables</strong></td><td>Contain descriptive attributes. Prefix with <code>dim_</code></td></tr>
+          <tr><td><strong>Surrogate keys</strong></td><td>Always use integer surrogates, never natural keys as PKs</td></tr>
+          <tr><td><strong>Date dimension</strong></td><td>Always build a dedicated <code>dim_date</code> with fiscal calendar support</td></tr>
+          <tr><td><strong>Junk dimensions</strong></td><td>Combine low-cardinality flags into a single junk dimension</td></tr>
+          <tr><td><strong>Degenerate dimensions</strong></td><td>Order/invoice numbers live in the fact table itself</td></tr>
+        </tbody>
+      </table>
+
+      <h3>SCD Type Selection</h3>
+      <table class="doc-table">
+        <thead>
+          <tr><th>SCD Type</th><th>How It Works</th><th>Use When</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Type 1</strong></td><td>Overwrite old value</td><td>History not needed (e.g. phone number corrections)</td></tr>
+          <tr><td><strong>Type 2</strong></td><td>New row + effective dates</td><td>Must preserve history (e.g. customer region changes)</td></tr>
+          <tr><td><strong>Type 3</strong></td><td>Add "previous value" column</td><td>Only need one prior value (rarely used)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec" id="etl">
+      <div class="sec-num">04</div>
+      <h2>ETL/ELT & DBT</h2>
+      <p>ELT (Extract, Load, Transform) is the default choice for modern cloud warehouses. Load raw data first, then transform in-warehouse using dbt. This approach is more flexible, cheaper, and easier to debug than traditional ETL.</p>
+
+      <div class="callout">
+        <div class="callout-title">The recommendation</div>
+        <p>For new builds: <strong>Airbyte</strong> for ingestion, <strong>dbt Core</strong> for transformation, <strong>Dagster</strong> for orchestration. All open-source, all production-proven.</p>
+      </div>
+
+      <h3>dbt Project Structure</h3>
+      <pre><code>models/
+  staging/          ← one model per source table, minimal transformation
+    stg_orders.sql
+    stg_customers.sql
+  intermediate/     ← joins and business logic, not exposed to BI
+    int_order_items_enriched.sql
+  marts/            ← final fact and dimension tables, BI-ready
+    fct_orders.sql
+    dim_customers.sql
+    dim_date.sql</code></pre>
+
+      <h3>Essential dbt Tests</h3>
+      <pre><code># models/marts/schema.yml
+models:
+  - name: fct_orders
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: order_status
+        tests:
+          - accepted_values:
+              values: ['pending', 'complete', 'cancelled', 'returned']</code></pre>
+    </div>
+
+    <div class="sec" id="warehouses">
+      <div class="sec-num">05</div>
+      <h2>WAREHOUSE SELECTION</h2>
+      <p>Choose the warehouse that fits your volume, budget, and team. Open-source options cover most SME requirements at zero licensing cost.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Warehouse</th><th>Best For</th><th>Cost</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>PostgreSQL + Citus</strong></td><td>SMB, &lt;500GB, budget-conscious</td><td>Free / infra only</td></tr>
+          <tr><td><strong>ClickHouse</strong></td><td>High-volume analytics, time-series, &gt;500GB</td><td>Free / infra only</td></tr>
+          <tr><td><strong>DuckDB</strong></td><td>Local analytics, CI/CD testing, prototyping</td><td>Free</td></tr>
+          <tr><td><strong>Apache Doris</strong></td><td>Real-time analytics, high concurrency</td><td>Free / infra only</td></tr>
+          <tr><td><strong>Snowflake</strong></td><td>Enterprise, multi-cloud, data sharing</td><td>Per compute-second</td></tr>
+          <tr><td><strong>BigQuery</strong></td><td>Google ecosystem, serverless</td><td>Per query (bytes scanned)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-title">SA/emerging market recommendation</div>
+        <p><strong>ClickHouse</strong> is the top pick for high-volume analytics on self-hosted infrastructure. It's orders of magnitude faster than PostgreSQL for analytical queries and costs nothing per seat. PostgreSQL is fine for &lt;100GB and teams already running it for their application database.</p>
+      </div>
+    </div>
+
+    <div class="sec" id="bi-tools">
+      <div class="sec-num">06</div>
+      <h2>BI TOOL INTEGRATION</h2>
+      <p>The BI layer connects to your marts. Always point BI tools at the mart layer only — never at raw or staging tables. See the companion <strong>Apache Superset</strong> skill for full implementation guidance.</p>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Tool</th><th>License</th><th>Best For</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Apache Superset</strong></td><td>Apache 2.0</td><td>SQL-native, 40+ viz types, RBAC, embedding</td></tr>
+          <tr><td><strong>Metabase</strong></td><td>AGPL / Commercial</td><td>Dead-simple UX, self-service for non-technical users</td></tr>
+          <tr><td><strong>Lightdash</strong></td><td>MIT</td><td>dbt-native, metrics-first, strong for dbt teams</td></tr>
+          <tr><td><strong>Grafana</strong></td><td>AGPL</td><td>Time-series, alerting — not designed for business BI</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec" id="governance">
+      <div class="sec-num">07</div>
+      <h2>DATA GOVERNANCE</h2>
+      <p>Governance is not a compliance checkbox. It's the operational discipline that keeps data trustworthy as the organisation grows.</p>
+
+      <h3>Minimum Viable Governance</h3>
+      <ul>
+        <li><strong>Data Catalog</strong> — Document every table, column, and metric definition</li>
+        <li><strong>Ownership</strong> — Every dataset has a named owner accountable for quality</li>
+        <li><strong>Quality Tests</strong> — Automated checks on freshness, completeness, and schema</li>
+        <li><strong>Access Control</strong> — Role-based access, principle of least privilege</li>
+        <li><strong>Lineage</strong> — Track data flow from source to dashboard (dbt provides this)</li>
+        <li><strong>Retention Policy</strong> — Define how long raw/processed data is kept</li>
+      </ul>
+
+      <h3>POPIA Compliance (SA Context)</h3>
+      <ul>
+        <li>Personal data must be processed lawfully; data minimisation applies</li>
+        <li>Store consent records alongside PII with timestamps</li>
+        <li>Design soft-delete patterns to support deletion requests</li>
+        <li>Document and justify any data leaving SA borders</li>
+      </ul>
+    </div>
+
+    <div class="sec" id="install">
+      <div class="sec-num">08</div>
+      <h2>INSTALL</h2>
+      <pre><code>npx skills add imbilawork/2nth-skills@bi-datawarehouse</code></pre>
+      <p>Works with Claude Code, Cursor, Windsurf, Cline, and any agent that reads SKILL.md files. The skill activates automatically when you ask about data warehouse design, dbt, ETL/ELT, dimensional modeling, or BI tool selection.</p>
+
+      <div class="callout">
+        <div class="callout-title">Companion skill</div>
+        <p>Install <strong>apache-superset</strong> alongside this skill for end-to-end coverage — from raw data ingestion to embedded dashboards in client-facing applications.</p>
+      </div>
+
+      <pre><code>npx skills add imbilawork/2nth-skills@apache-superset</code></pre>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
+    <div class="footer-links">
+      <a href="/">Skills</a>
+      <a href="https://2nth-marketing.pages.dev">2nth.ai</a>
+      <a href="https://github.com/imbilawork">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){document.documentElement.classList.toggle('light');localStorage.setItem('2nth-theme',document.documentElement.classList.contains('light')?'light':'dark');updateIcons();}
+function updateIcons(){var l=document.documentElement.classList.contains('light');document.getElementById('icon-sun').classList.toggle('hidden',!l);document.getElementById('icon-moon').classList.toggle('hidden',l);}
+updateIcons();
+</script>
+<script src="/skills-auth.js"></script>
+</body>
+</html>
