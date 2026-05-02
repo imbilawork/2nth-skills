@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apache Superset — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth-marketing.pages.dev/favicon.svg">
+  <meta name="description" content="Production deployment and operation of Apache Superset — Docker, Kubernetes, RBAC, row-level security, dashboard embedding, and performance tuning.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root {
+      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
+      --c-titanium:#fafafa;
+      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
+      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
+      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
+      --c-grid-line:hsla(0,0%,100%,.018);
+      --c-input-bg:#141414;
+      --c-brand:#3b82f6;
+    }
+    .light {
+      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
+      --c-titanium:#0a0a0a;
+      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
+      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
+      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
+      --c-grid-line:rgba(0,0,0,.03);
+      --c-input-bg:#f7f8fa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
+    @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
+    .hidden{display:none}
+
+    .page{max-width:1100px;margin:0 auto;padding:100px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+    @media(max-width:900px){.page{grid-template-columns:1fr;gap:24px}.toc{display:none}}
+
+    .toc{position:sticky;top:80px;height:fit-content}
+    .toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;font-weight:600}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.toc-active{color:var(--c-brand);border-left-color:var(--c-brand)}
+
+    .content{min-width:0}
+    .skill-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:var(--c-brand)}
+    .breadcrumb a:hover{text-decoration:underline}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:8px}
+    .skill-title span{color:var(--c-brand)}
+    .skill-subtitle{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.6;margin-bottom:16px}
+    .skill-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600}
+    .badge-brand{background:rgba(59,130,246,.12);color:var(--c-brand)}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-purple{background:rgba(99,102,241,.12);color:#6366f1}
+    .badge-orange{background:rgba(249,115,22,.12);color:#f97316}
+    .install-box{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .install-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--c-brand)}
+    .install-copy{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);background:var(--c-carbon);border:1px solid var(--c-border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .15s}
+    .install-copy:hover{color:var(--c-steel-300);border-color:var(--c-border-s)}
+
+    .sec{margin-bottom:48px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--c-brand);font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:24px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:12px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.6;margin-bottom:4px}
+    .sec strong{color:var(--c-steel-300)}
+
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:16px;margin:12px 0 16px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 5px;border-radius:3px;color:var(--c-brand)}
+
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .info-cell{background:var(--c-graphite);padding:16px}
+    .info-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:4px}
+    .info-value{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);line-height:1}
+
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:24px;margin:16px 0}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:120px}
+    .arch-box.highlight{border-color:var(--c-brand);color:var(--c-brand)}
+    .arch-arrow{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c-steel-700)}
+
+    .doc-table{width:100%;border-collapse:collapse;margin:12px 0 16px;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:8px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border)}
+    .doc-table tr:last-child td{border-bottom:none}
+
+    .callout{background:var(--c-graphite);border-left:3px solid var(--c-brand);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-brand);font-weight:600;margin-bottom:4px}
+    .callout p{font-size:13px;margin-bottom:0}
+
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://2nth-marketing.pages.dev" class="nav-brand"><span>2</span>NTH</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Skills</a>
+      <a href="https://2nth-marketing.pages.dev" class="nav-link">Home</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <aside class="toc">
+    <div class="toc-title">ON THIS PAGE</div>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#deployment">Deployment</a>
+    <a href="#config">Configuration</a>
+    <a href="#connections">Data Sources</a>
+    <a href="#rbac">RBAC & Security</a>
+    <a href="#embedding">Embedding</a>
+    <a href="#performance">Performance</a>
+    <a href="#install">Install</a>
+  </aside>
+
+  <div class="content">
+
+    <div class="skill-header">
+      <div class="breadcrumb"><a href="/">Skills</a> / Apache Superset</div>
+      <div class="skill-title">APACHE <span>SUPERSET</span></div>
+      <div class="skill-subtitle">The open-source BI platform that replaces Power BI and Tableau. Self-hosted, zero per-seat cost, 40+ chart types, production-grade RBAC, and embeddable dashboards via guest token API.</div>
+      <div class="skill-badges">
+        <span class="badge badge-green">LIVE</span>
+        <span class="badge badge-brand">v1.0</span>
+        <span class="badge badge-orange">Docker / K8s</span>
+        <span class="badge badge-brand">RBAC</span>
+        <span class="badge badge-purple">Embedding</span>
+        <span class="badge badge-brand">Apache 2.0</span>
+      </div>
+      <div class="install-box">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@apache-superset</code>
+        <button class="install-copy" onclick="navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@apache-superset');this.textContent='COPIED';setTimeout(()=>this.textContent='COPY',1500)">COPY</button>
+      </div>
+      <div style="margin-top:14px;background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.25);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#e63946;margin-bottom:4px">▶ Live Concept Demo</div>
+          <div style="font-size:13px;color:var(--c-steel-400)">See Superset running on real business data — dashboards, filters, SQL Lab, and AI query demo.</div>
+        </div>
+        <a href="https://biz-demos.pages.dev/bi/" target="_blank" style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:#e63946;color:#fff;padding:9px 18px;border-radius:3px;text-decoration:none;white-space:nowrap;transition:opacity .15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Open Demo →</a>
+      </div>
+    </div>
+
+    <div class="sec" id="overview">
+      <div class="sec-num">01</div>
+      <h2>OVERVIEW</h2>
+      <p>Apache Superset is a modern, enterprise-ready BI web application. It runs on your infrastructure, supports 40+ chart types, and connects to virtually any SQL database. For teams migrating from Power BI or Tableau — especially those cost-conscious about per-seat licensing — Superset is the production-grade alternative.</p>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">License</div>
+          <div class="info-value">APACHE</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Charts</div>
+          <div class="info-value">40+</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Databases</div>
+          <div class="info-value">20+</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Per-seat cost</div>
+          <div class="info-value">$0</div>
+        </div>
+      </div>
+
+      <h3>What your agent can do</h3>
+      <ul>
+        <li>Generate Docker Compose and Kubernetes Helm configurations for production deployment</li>
+        <li>Write <code>superset_config.py</code> with correct caching, Celery, and security settings</li>
+        <li>Configure database connections for PostgreSQL, ClickHouse, Snowflake, BigQuery, DuckDB</li>
+        <li>Design RBAC role hierarchies and row-level security rules for multi-tenancy</li>
+        <li>Implement guest token embedding for external-facing dashboards</li>
+        <li>Diagnose performance issues and recommend caching strategies</li>
+        <li>Plan migration paths from Power BI, Metabase, or Redash</li>
+      </ul>
+    </div>
+
+    <div class="sec" id="architecture">
+      <div class="sec-num">02</div>
+      <h2>ARCHITECTURE</h2>
+      <p>Superset has five required components in production. Each has a distinct role and must be sized and configured separately.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">Browser<br><span style="font-size:9px;color:var(--c-steel-600)">or embedded iFrame</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Web Server<br><span style="font-size:9px;color:var(--c-steel-600)">Gunicorn</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box highlight">Metadata DB<br><span style="font-size:9px;color:var(--c-steel-600)">PostgreSQL</span></div>
+        </div>
+        <div style="margin-top:8px" class="arch-flow">
+          <div class="arch-box highlight">Celery Workers<br><span style="font-size:9px;color:var(--c-steel-600)">async queries / alerts</span></div>
+          <div class="arch-arrow">&harr;</div>
+          <div class="arch-box highlight">Redis<br><span style="font-size:9px;color:var(--c-steel-600)">cache + broker</span></div>
+          <div class="arch-arrow">&rarr;</div>
+          <div class="arch-box">Data Sources<br><span style="font-size:9px;color:var(--c-steel-600)">read-only</span></div>
+        </div>
+      </div>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Component</th><th>Purpose</th><th>Required?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Web Server</strong></td><td>Serves UI, handles API requests</td><td>Yes</td></tr>
+          <tr><td><strong>Metadata DB</strong></td><td>Stores dashboards, charts, users, RBAC</td><td>Yes (PostgreSQL)</td></tr>
+          <tr><td><strong>Redis</strong></td><td>Caching, Celery broker, session store</td><td>Yes for production</td></tr>
+          <tr><td><strong>Celery Workers</strong></td><td>Async queries, scheduled reports, alerts</td><td>Yes for production</td></tr>
+          <tr><td><strong>Celery Beat</strong></td><td>Scheduled task runner</td><td>If using alerts/reports</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec" id="deployment">
+      <div class="sec-num">03</div>
+      <h2>DEPLOYMENT</h2>
+
+      <h3>Quick Start (Docker Compose — Development)</h3>
+      <pre><code>git clone https://github.com/apache/superset.git
+cd superset
+docker compose -f docker-compose-non-dev.yml up -d</code></pre>
+      <p>Access at <code>http://localhost:8088</code> — default login: <code>admin</code> / <code>admin</code>.</p>
+
+      <h3>Scaling Guide</h3>
+      <table class="doc-table">
+        <thead>
+          <tr><th>Users</th><th>Infrastructure</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt;20</td><td>Single Docker Compose, 4 CPU / 8 GB RAM</td></tr>
+          <tr><td>20–100</td><td>Docker Compose + external PostgreSQL + Redis; 2 Celery workers</td></tr>
+          <tr><td>100–500</td><td>Kubernetes, 3+ web pods, HPA on web and worker deployments</td></tr>
+          <tr><td>500+</td><td>K8s + CDN + read replicas on metadata DB, or Preset.io managed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec" id="config">
+      <div class="sec-num">04</div>
+      <h2>CONFIGURATION</h2>
+
+      <h3>Essential superset_config.py</h3>
+      <pre><code>import os
+
+SECRET_KEY = os.environ.get('SUPERSET_SECRET_KEY')  # MUST set in production
+SQLALCHEMY_DATABASE_URI = os.environ.get('SUPERSET_META_DB_URI')
+
+FEATURE_FLAGS = {
+    'DASHBOARD_NATIVE_FILTERS': True,
+    'DASHBOARD_CROSS_FILTERS': True,
+    'ENABLE_TEMPLATE_PROCESSING': True,
+    'ALERT_REPORTS': True,
+    'EMBEDDED_SUPERSET': True,
+    'GLOBAL_ASYNC_QUERIES': True,
+}
+
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 24,
+    'CACHE_KEY_PREFIX': 'superset_',
+    'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://redis:6379/0'),
+}
+
+DATA_CACHE_CONFIG = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_DEFAULT_TIMEOUT': 60 * 60 * 24,
+    'CACHE_KEY_PREFIX': 'superset_data_',
+    'CACHE_REDIS_URL': os.environ.get('REDIS_URL', 'redis://redis:6379/1'),
+}
+
+class CeleryConfig:
+    broker_url = os.environ.get('REDIS_URL', 'redis://redis:6379/3')
+    result_backend = os.environ.get('REDIS_URL', 'redis://redis:6379/4')
+
+CELERY_CONFIG = CeleryConfig
+ROW_LIMIT = 50000
+SQL_MAX_ROW = 100000
+SQLLAB_TIMEOUT = 300
+WTF_CSRF_ENABLED = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True  # requires HTTPS</code></pre>
+    </div>
+
+    <div class="sec" id="connections">
+      <div class="sec-num">05</div>
+      <h2>DATA SOURCE CONNECTIONS</h2>
+
+      <table class="doc-table">
+        <thead>
+          <tr><th>Database</th><th>SQLAlchemy URI</th><th>pip package</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>PostgreSQL</strong></td><td><code>postgresql://user:pass@host:5432/dbname</code></td><td>psycopg2-binary</td></tr>
+          <tr><td><strong>ClickHouse</strong></td><td><code>clickhousedb://user:pass@host:8123/dbname</code></td><td>clickhouse-connect</td></tr>
+          <tr><td><strong>Snowflake</strong></td><td><code>snowflake://user:pass@acct/db/schema?warehouse=WH</code></td><td>snowflake-sqlalchemy</td></tr>
+          <tr><td><strong>BigQuery</strong></td><td><code>bigquery://project</code></td><td>pybigquery</td></tr>
+          <tr><td><strong>DuckDB</strong></td><td><code>duckdb:///path/to/file.duckdb</code></td><td>duckdb-engine</td></tr>
+          <tr><td><strong>MySQL</strong></td><td><code>mysql://user:pass@host:3306/dbname</code></td><td>mysqlclient</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-title">Always read-only</div>
+        <p>Superset should never have write access to your warehouse. Create a dedicated read-only database user with access restricted to the marts schema only.</p>
+      </div>
+    </div>
+
+    <div class="sec" id="rbac">
+      <div class="sec-num">06</div>
+      <h2>RBAC & SECURITY</h2>
+
+      <h3>Role Hierarchy</h3>
+      <pre><code>Admin
+  └── Alpha  (full data access, can create charts/dashboards)
+        └── Gamma  (view-only access to granted dashboards)
+              └── Public  (no login — use for embedding)</code></pre>
+
+      <h3>Recommended Role Setup</h3>
+      <table class="doc-table">
+        <thead>
+          <tr><th>Role</th><th>Access</th><th>Use Case</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Data_Engineer</strong></td><td>SQL Lab + all databases</td><td>Data team</td></tr>
+          <tr><td><strong>Analyst</strong></td><td>SQL Lab (read-only) + create charts</td><td>Analytics team</td></tr>
+          <tr><td><strong>Dashboard_Viewer</strong></td><td>View specific dashboards only</td><td>Business users</td></tr>
+          <tr><td><strong>Embedded_User</strong></td><td>Specific embedded dashboards</td><td>External/app users</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Row-Level Security (Multi-tenancy)</h3>
+      <pre><code># Settings → Row Level Security → Add Rule
+Rule:    customer_filter
+Tables:  fct_orders, fct_revenue
+Clause:  customer_id = '{{ current_user.email }}'
+Roles:   [Dashboard_Viewer]
+
+# Appends WHERE customer_id = '<user>' to every query on those tables
+# No separate views or schemas required</code></pre>
+    </div>
+
+    <div class="sec" id="embedding">
+      <div class="sec-num">07</div>
+      <h2>EMBEDDING</h2>
+      <p>Superset supports embedding dashboards in external applications via a guest token API. The token can include per-user row-level security — so each customer sees only their data.</p>
+
+      <h3>Backend: Generate Guest Token</h3>
+      <pre><code>import requests
+
+# 1. Login
+auth = requests.post(f'{SUPERSET_URL}/api/v1/security/login', json={
+    'username': 'embed_service_account',
+    'password': EMBED_PASSWORD, 'provider': 'db',
+})
+access_token = auth.json()['access_token']
+
+# 2. Get CSRF token
+csrf = requests.get(f'{SUPERSET_URL}/api/v1/security/csrf_token/',
+    headers={'Authorization': f'Bearer {access_token}'})
+csrf_token = csrf.json()['result']
+
+# 3. Generate guest token with RLS
+guest = requests.post(f'{SUPERSET_URL}/api/v1/security/guest_token/',
+    headers={
+        'Authorization': f'Bearer {access_token}',
+        'X-CSRFToken': csrf_token,
+    },
+    json={
+        'user': {'username': 'customer_123'},
+        'resources': [{'type': 'dashboard', 'id': 'dashboard-uuid'}],
+        'rls': [{'clause': "customer_id = 'CUST-123'"}],
+    })
+guest_token = guest.json()['token']</code></pre>
+
+      <h3>Frontend: Superset Embedded SDK</h3>
+      <pre><code>import { embedDashboard } from '@superset-ui/embedded-sdk';
+
+embedDashboard({
+  id: 'dashboard-uuid',
+  supersetDomain: 'https://superset.yourapp.com',
+  mountPoint: document.getElementById('superset-container'),
+  fetchGuestToken: () =>
+    fetch('/api/superset-token').then(r => r.json()).then(d => d.token),
+  dashboardUiConfig: {
+    hideTitle: true,
+    hideChartControls: true,
+    filters: { visible: true, expanded: false },
+  },
+});</code></pre>
+    </div>
+
+    <div class="sec" id="performance">
+      <div class="sec-num">08</div>
+      <h2>PERFORMANCE TUNING</h2>
+
+      <h3>Quick Wins</h3>
+      <ol>
+        <li><strong>Enable query caching</strong> — Set <code>DATA_CACHE_CONFIG</code> timeout to match your data refresh frequency</li>
+        <li><strong>Cache warming</strong> — Schedule <code>superset cache-warmup</code> via Celery Beat for key dashboards</li>
+        <li><strong>Async queries</strong> — Enable <code>GLOBAL_ASYNC_QUERIES</code> for slow dashboards</li>
+        <li><strong>Pre-aggregate in the warehouse</strong> — Use materialized views or dbt incremental models, not Superset SQL</li>
+        <li><strong>Limit row counts</strong> — Set <code>ROW_LIMIT = 50000</code> (higher doesn't help chart rendering)</li>
+        <li><strong>Index filter columns</strong> — Ensure columns used in native filters are indexed in the warehouse</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-title">Dashboard layout rule</div>
+        <p>Max 12–15 charts per dashboard for performance. Use tab sets to segment audiences. Top row: KPI hero numbers. Second row: trend lines. Lower rows: breakdowns and detail tables.</p>
+      </div>
+    </div>
+
+    <div class="sec" id="install">
+      <div class="sec-num">09</div>
+      <h2>INSTALL</h2>
+      <pre><code>npx skills add imbilawork/2nth-skills@apache-superset</code></pre>
+      <p>Works with Claude Code, Cursor, Windsurf, Cline, and any agent that reads SKILL.md files. The skill activates automatically when you ask about Superset deployment, dashboards, RBAC, embedding, or migrating from Power BI.</p>
+
+      <div class="callout">
+        <div class="callout-title">Companion skill</div>
+        <p>Install <strong>bi-datawarehouse</strong> alongside this skill for complete coverage — from designing your dimensional model and dbt transformation layer through to Superset dashboards.</p>
+      </div>
+
+      <pre><code>npx skills add imbilawork/2nth-skills@bi-datawarehouse</code></pre>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
+    <div class="footer-links">
+      <a href="/">Skills</a>
+      <a href="https://2nth-marketing.pages.dev">2nth.ai</a>
+      <a href="https://github.com/imbilawork">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme(){document.documentElement.classList.toggle('light');localStorage.setItem('2nth-theme',document.documentElement.classList.contains('light')?'light':'dark');updateIcons();}
+function updateIcons(){var l=document.documentElement.classList.contains('light');document.getElementById('icon-sun').classList.toggle('hidden',!l);document.getElementById('icon-moon').classList.toggle('hidden',l);}
+updateIcons();
+</script>
+<script src="/skills-auth.js"></script>
+</body>
+</html>

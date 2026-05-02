@@ -1,6 +1,6 @@
 # 2nth.ai Skills
 
-Production-ready AI agent skills for ERP integration, reporting, and automation.
+Production-ready AI agent skills for ERP integration, reporting, automation, and data engineering.
 
 **Browse the catalog:** [2nth-skills.pages.dev](https://2nth-skills.pages.dev)
 
@@ -14,11 +14,16 @@ Works with Claude Code, Cursor, Windsurf, Cline, and 30+ AI coding agents.
 
 ## Available Skills
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [`sagex3-ai`](./sagex3-ai/) | Sage X3 ERP — GraphQL API, master data, reporting, AI integration | Live |
-| [`erpnext-furniture`](./erpnext-furniture/) | ERPNext — furniture manufacturing, BOMs, work orders, production, inventory | Live |
-| [`shopify-ai`](./shopify-ai/) | Shopify — Admin API, 6 role-based AI partners, MCP tools, content generation | Live |
+| Skill | Description | Domain | Status |
+|-------|-------------|--------|--------|
+| [`sagex3-ai`](./sagex3-ai/) | Sage X3 ERP — GraphQL API, master data, reporting, AI integration | BIZ | Live |
+| [`erpnext-furniture`](./erpnext-furniture/) | ERPNext — furniture manufacturing, BOMs, work orders, production, inventory | BIZ | Live |
+| [`shopify-ai`](./shopify-ai/) | Shopify — Admin API, 6 role-based AI partners, MCP tools, content generation | BIZ | Live |
+| [`twenty-crm-ai`](./public/skills/twenty-crm-ai.html) | Twenty CRM — GraphQL API, webhooks, MCP server, 6 agent patterns, Workers AI | BIZ | Live |
+| [`twenty-crm-hosting`](./public/skills/twenty-crm-hosting.html) | Twenty CRM hosting — Railway + Cloudflare R2 + Zero Trust deployment guide | ENG | Live |
+| [`cloudflare-containers`](./public/cloudflare/containers.html) | Cloudflare Containers — Docker on Workers + Durable Objects, 14-section deep dive | ENG | Live |
+| [`bi-datawarehouse`](./bi-datawarehouse/) | Modern data stack — dimensional modeling, dbt, warehouse selection, semantic layer | DATA | Live |
+| [`apache-superset`](./apache-superset/) | Apache Superset — deployment, RBAC, row-level security, embedding, performance | DATA | Live |
 
 ## Skill structure
 

@@ -3,135 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2nth.ai Skills — AI Agent Skills Catalog</title>
-  <link rel="icon" type="image/svg+xml" href="https://2nth.ai/favicon.svg">
-  <meta name="description" content="Production-ready AI agent skills for ERP integration, reporting, and automation. Built by 2nth.ai.">
+  <title>2nth.ai Skills — AI Skills Catalog</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth-marketing.pages.dev/favicon.svg">
+  <meta name="description" content="19 production-ready AI skills across Business, Education, Engineering, Legal, and Finance. Pair a human with an AI and the right domain skills.">
+  <meta property="og:title" content="2nth.ai Skills Catalog">
+  <meta property="og:description" content="19 live AI skills across 5 domains — BIZ, EDU, ENG, LEG, FIN.">
+  <meta property="og:url" content="https://skills.2nth.ai">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t!=='dark')document.documentElement.classList.add('light');})()</script>
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
   <style>
-    :root {
-      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
-      --c-titanium:#fafafa;
-      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
-      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
-      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
-      --c-grid-line:hsla(0,0%,100%,.018);
-      --c-input-bg:#141414;
-    }
-    .light {
-      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
-      --c-titanium:#0a0a0a;
-      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
-      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
-      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
-      --c-grid-line:rgba(0,0,0,.03);
-      --c-input-bg:#f7f8fa;
-    }
+    :root{--c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-titanium:#fafafa;--c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;--c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);--c-grid-line:hsla(0,0%,100%,.018);--c-brand:#06b6d4}
+    .light{--c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-titanium:#0a0a0a;--c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;--c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);--c-grid-line:rgba(0,0,0,.03)}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    *{-webkit-font-smoothing:antialiased}
     html{scroll-behavior:smooth}
     body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
     a{color:inherit;text-decoration:none}
 
-    /* ── Nav ── */
     nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
     @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
-    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px;gap:12px}
     .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
-    .nav-brand span{color:#06b6d4}
-    .nav-links{display:flex;align-items:center;gap:20px}
-    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-brand span{color:var(--c-brand)}
+    .nav-pills{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .dpill{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid var(--c-border);color:var(--c-steel-600);transition:all .15s;cursor:pointer}
+    .dpill:hover,.dpill.active{border-color:var(--c-brand);color:var(--c-brand)}
+    .dpill[data-domain="biz"]:hover,.dpill[data-domain="biz"].active{border-color:#8b5cf6;color:#8b5cf6}
+    .dpill[data-domain="edu"]:hover,.dpill[data-domain="edu"].active{border-color:#22c55e;color:#22c55e}
+    .dpill[data-domain="eng"]:hover,.dpill[data-domain="eng"].active{border-color:#06b6d4;color:#06b6d4}
+    .dpill[data-domain="leg"]:hover,.dpill[data-domain="leg"].active{border-color:#f59e0b;color:#f59e0b}
+    .dpill[data-domain="fin"]:hover,.dpill[data-domain="fin"].active{border-color:#10b981;color:#10b981}
+    .dpill[data-domain="data"]:hover,.dpill[data-domain="data"].active{border-color:#3b82f6;color:#3b82f6}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
     .nav-link:hover{color:var(--c-steel-400)}
-    .nav-link.active{color:var(--c-steel-300)}
-    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .hidden{display:none}
+    .theme-toggle{display:flex;min-height:34px;min-width:34px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s}
     .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
 
-    /* ── Hero ── */
-    .hero{position:relative;padding:120px 24px 60px;overflow:hidden}
+    .hero{position:relative;padding:120px 24px 64px;overflow:hidden}
     .hero-bg{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 99px,var(--c-grid-line) 99px,var(--c-grid-line) 100px),repeating-linear-gradient(0deg,transparent,transparent 99px,var(--c-grid-line) 99px,var(--c-grid-line) 100px)}
-    .hero-line{position:absolute;width:100%;height:1px;top:55%;background:linear-gradient(90deg,transparent,#6366f1 15%,#0ea5e9 38%,#06b6d4 62%,#10b981 85%,transparent);opacity:.2}
-    .hero-inner{position:relative;max-width:1100px;margin:0 auto}
-    .hero-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#22c55e;margin-bottom:20px;opacity:.7}
-    .hero-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s ease-in-out infinite}
+    .hero-spectrum{position:absolute;width:100%;height:1px;top:55%;background:linear-gradient(90deg,transparent,#8b5cf6 12%,#22c55e 30%,#06b6d4 50%,#f59e0b 70%,#10b981 88%,transparent);opacity:.2}
+    .hero-inner{position:relative;max-width:1200px;margin:0 auto}
+    .hero-eyebrow{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--c-brand);margin-bottom:18px;opacity:.85}
+    .hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--c-brand);animation:blink 2s ease-in-out infinite;flex-shrink:0}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,7vw,68px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:12px}
-    .hero h1 span{color:#06b6d4}
-    .hero p{font-size:18px;color:var(--c-steel-400);max-width:600px;line-height:1.6;margin-bottom:28px}
-    .hero-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,7vw,76px);line-height:.9;letter-spacing:.04em;color:var(--c-titanium);margin-bottom:14px}
+    .hero h1 span{color:var(--c-brand)}
+    .hero-sub{font-size:17px;color:var(--c-steel-400);max-width:600px;line-height:1.65;margin-bottom:32px}
+    .hero-stats{display:flex;flex-wrap:wrap;gap:24px}
+    .hero-stat{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);letter-spacing:.5px}
+    .hero-stat strong{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);letter-spacing:.04em;display:block;line-height:1}
 
-    /* ── Section ── */
-    .section{max-width:1100px;margin:0 auto;padding:60px 24px}
-    .section-label{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#06b6d4;font-weight:600;margin-bottom:8px}
-    .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5vw,42px);letter-spacing:.05em;color:var(--c-titanium);line-height:.95;margin-bottom:8px}
-    .section-desc{font-size:15px;color:var(--c-steel-500);max-width:600px;margin-bottom:32px}
+    .section{max-width:1200px;margin:0 auto;padding:64px 24px}
+    .section-divider{border:none;border-top:1px solid var(--c-border);margin:0}
+    .sec-label{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--c-brand);font-weight:600;margin-bottom:8px}
+    .sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,4vw,40px);letter-spacing:.04em;color:var(--c-titanium);line-height:.95;margin-bottom:8px}
+    .sec-desc{font-size:15px;color:var(--c-steel-500);max-width:580px;line-height:1.65;margin-bottom:32px}
 
-    /* ── Skill Cards ── */
-    .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
-    .skill-card{background:var(--c-graphite);padding:28px;transition:background .2s;display:flex;flex-direction:column}
+    /* Domain section header */
+    .domain-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--c-border)}
+    .domain-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .domain-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700}
+    .domain-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:var(--c-titanium)}
+    .domain-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-steel-700);margin-left:auto}
+    .domain-link{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;display:flex;align-items:center;gap:4px;transition:opacity .15s}
+    .domain-link:hover{opacity:.7}
+
+    .domain-block{margin-bottom:48px}
+    .domain-block.hidden-domain{display:none}
+
+    /* Skill cards */
+    .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .skill-card{background:var(--c-graphite);padding:24px;display:flex;flex-direction:column;transition:background .2s}
     .skill-card:hover{background:var(--c-gunmetal)}
-    .skill-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
-    .skill-icon{width:40px;height:40px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .skill-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;font-weight:600}
-    .tag-live{background:rgba(34,197,94,.12);color:#22c55e}
-    .tag-beta{background:rgba(245,158,11,.12);color:#f59e0b}
-    .tag-soon{background:rgba(255,255,255,.06);color:var(--c-steel-700)}
-    .light .tag-soon{background:rgba(0,0,0,.04)}
-    .skill-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--c-titanium);line-height:1;margin-bottom:6px}
-    .skill-desc{font-size:14px;color:var(--c-steel-500);line-height:1.5;margin-bottom:16px;flex:1}
-    .skill-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-    .skill-meta-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--c-steel-700);padding:2px 8px;border:1px solid var(--c-border);border-radius:3px}
-    .skill-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--c-border)}
-    .skill-install{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);background:var(--c-carbon);padding:4px 10px;border-radius:3px;border:1px solid var(--c-border)}
-    .skill-link{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#06b6d4;font-weight:600;transition:opacity .15s}
-    .skill-link:hover{opacity:.8}
+    .skill-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .skill-icon{width:36px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .skill-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:600}
+    .tag-live{background:rgba(34,197,94,.1);color:#22c55e}
+    .tag-soon{background:rgba(255,255,255,.05);color:var(--c-steel-700)}
+    .skill-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:var(--c-titanium);line-height:1;margin-bottom:5px}
+    .skill-desc{font-size:13px;color:var(--c-steel-500);line-height:1.55;margin-bottom:12px;flex:1}
+    .skill-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--c-border)}
+    .skill-install{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-steel-600)}
+    .skill-arrow{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;transition:opacity .15s}
+    .skill-arrow:hover{opacity:.7}
 
-    /* ── How it works ── */
-    .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
-    .step{background:var(--c-graphite);padding:28px}
-    .step-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:#06b6d4;line-height:1;margin-bottom:8px;opacity:.6}
-    .step-title{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin-bottom:8px;font-weight:600}
-    .step-desc{font-size:13px;color:var(--c-steel-600);line-height:1.5}
-
-    /* ── CTA ── */
-    .cta-section{text-align:center;padding:80px 24px;border-top:1px solid var(--c-border)}
-    .cta-btn{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;padding:12px 28px;border-radius:4px;background:#06b6d4;color:var(--c-carbon);border:1px solid #06b6d4;cursor:pointer;transition:all .2s}
-    .cta-btn:hover{background:#0891b2;border-color:#0891b2;transform:translateY(-1px)}
-    .cta-outline{background:transparent;color:#06b6d4}
-    .cta-outline:hover{background:#06b6d4;color:var(--c-carbon)}
-
-    /* ── Footer ── */
     footer{border-top:1px solid var(--c-border);padding:28px 24px}
-    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
     .footer-links{display:flex;gap:20px}
-    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;transition:color .15s}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
     .footer-links a:hover{color:var(--c-steel-400)}
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar{width:6px}
-    ::-webkit-scrollbar-track{background:transparent}
-    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
-
-    @media(max-width:768px){
-      .steps-grid{grid-template-columns:1fr}
-      .skills-grid{grid-template-columns:1fr}
-      .footer-inner{flex-direction:column;gap:12px;text-align:center}
-      .nav-links .nav-link{display:none}
-    }
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+    @media(max-width:768px){.nav-pills{display:none}.hero-stats{gap:16px}.skills-grid{grid-template-columns:1fr}.footer-inner{flex-direction:column;gap:12px}}
   </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
 <nav>
   <div class="nav-inner">
-    <a href="https://2nth.ai" class="nav-brand"><span>2</span>NTH</a>
-    <div class="nav-links">
-      <a href="https://2nth.ai" class="nav-link">Home</a>
-      <a href="/" class="nav-link active">Skills</a>
-      <a href="https://2nth.ai/partners.html" class="nav-link">Partners</a>
+    <a href="https://skills-hub.2nth.ai" class="nav-brand"><span>2</span>NTH <span style="font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.5px;opacity:.5">SKILLS</span></a>
+    <div class="nav-pills">
+      <button class="dpill active" data-domain="all" onclick="filterDomain('all',this)">ALL</button>
+      <button class="dpill" data-domain="biz" onclick="filterDomain('biz',this)">BIZ</button>
+      <button class="dpill" data-domain="edu" onclick="filterDomain('edu',this)">EDU</button>
+      <button class="dpill" data-domain="eng" onclick="filterDomain('eng',this)">ENG</button>
+      <button class="dpill" data-domain="leg" onclick="filterDomain('leg',this)">LEG</button>
+      <button class="dpill" data-domain="fin" onclick="filterDomain('fin',this)">FIN</button>
+      <button class="dpill" data-domain="data" onclick="filterDomain('data',this)">DATA</button>
+    </div>
+    <div class="nav-right">
+      <a href="https://skills-hub.2nth.ai" class="nav-link">Hub</a>
+      <a href="https://2nth-marketing.pages.dev" class="nav-link">2nth.ai</a>
+      <a href="https://beta.2nth.ai" class="nav-link">Platform</a>
+      <div id="auth-nav-slot" style="display:flex;align-items:center"></div>
       <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
         <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -140,299 +129,384 @@
   </div>
 </nav>
 
-<!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-bg"></div>
-  <div class="hero-line"></div>
+  <div class="hero-spectrum"></div>
   <div class="hero-inner">
-    <div class="hero-status">SKILLS REGISTRY</div>
-    <h1>AI AGENT <span>SKILLS</span></h1>
-    <p>Production-ready skills that give AI agents deep domain expertise. Each skill packages knowledge, query patterns, and integration blueprints for a specific system or workflow.</p>
-    <div class="hero-meta">Install via <code style="font-family:'JetBrains Mono',monospace;background:var(--c-graphite);padding:2px 8px;border-radius:3px;border:1px solid var(--c-border);color:#06b6d4;font-size:12px">npx skills add imbilawork/2nth-skills@skill-name</code></div>
-  </div>
-</section>
-
-<!-- ═══ SKILLS CATALOG ═══ -->
-<section class="section">
-  <div class="section-label">01 — CATALOG</div>
-  <div class="section-title">AVAILABLE SKILLS</div>
-  <div class="section-desc">Each skill is a self-contained knowledge package that agents can install and reference. Click through to see full documentation.</div>
-
-  <div class="skills-grid">
-
-    <!-- Sage X3 AI Integration -->
-    <a href="/skills/sagex3-ai-integration.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(6,182,212,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </div>
-        <span class="skill-tag tag-live">LIVE</span>
-      </div>
-      <div class="skill-name">SAGEX3 AI INTEGRATION</div>
-      <div class="skill-desc">Deep integration skill for Sage X3 ERP. Covers the GraphQL API, master data queries, sales/purchasing/inventory reporting, AI-powered natural language reporting, and Cloudflare edge deployment patterns.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">ERP</span>
-        <span class="skill-meta-tag">GraphQL</span>
-        <span class="skill-meta-tag">Sage X3</span>
-        <span class="skill-meta-tag">Reporting</span>
-        <span class="skill-meta-tag">Edge AI</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install">npx skills add imbilawork/2nth-skills@sagex3-ai</code>
-        <span class="skill-link">VIEW DOCS &rarr;</span>
-      </div>
-    </a>
-
-    <!-- ERPNext Furniture Manufacturing -->
-    <a href="/skills/erpnext-furniture.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(16,185,129,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M2 20h20M5 20V10l7-7 7 7v10"/><rect x="9" y="14" width="6" height="6"/></svg>
-        </div>
-        <span class="skill-tag tag-live">LIVE</span>
-      </div>
-      <div class="skill-name">ERPNEXT FURNITURE MANUFACTURING</div>
-      <div class="skill-desc">Full manufacturing integration for ERPNext. Bills of Materials, work orders, job cards, production routing, inventory management, quality inspection — all tailored for furniture production.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">ERPNext</span>
-        <span class="skill-meta-tag">Manufacturing</span>
-        <span class="skill-meta-tag">REST API</span>
-        <span class="skill-meta-tag">Frappe</span>
-        <span class="skill-meta-tag">Edge AI</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install">npx skills add imbilawork/2nth-skills@erpnext-furniture</code>
-        <span class="skill-link">VIEW DOCS &rarr;</span>
-      </div>
-    </a>
-
-    <!-- Shopify AI -->
-    <a href="/skills/shopify-ai.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(249,115,22,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        </div>
-        <span class="skill-tag tag-live">LIVE</span>
-      </div>
-      <div class="skill-name">SHOPIFY AI</div>
-      <div class="skill-desc">Role-based AI partners for every person on a Shopify team. Covers the Admin API (REST + GraphQL), 6 role patterns (Owner, Merchandiser, Content, Support, Marketing, Ops), MCP tool sets, and content generation via Workers AI.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">E-Commerce</span>
-        <span class="skill-meta-tag">Shopify</span>
-        <span class="skill-meta-tag">Admin API</span>
-        <span class="skill-meta-tag">MCP</span>
-        <span class="skill-meta-tag">6 Roles</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install">npx skills add imbilawork/2nth-skills@shopify-ai</code>
-        <span class="skill-link">VIEW DOCS &rarr;</span>
-      </div>
-    </a>
-
-    <!-- Twenty CRM Hosting -->
-    <a href="/skills/twenty-crm-hosting.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(245,158,11,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M6 8h4m-4 4h8"/></svg>
-        </div>
-        <span class="skill-tag tag-live">LIVE</span>
-      </div>
-      <div class="skill-name">TWENTY CRM HOSTING</div>
-      <div class="skill-desc">Deploy Twenty CRM on Railway with Cloudflare R2 for file storage, CF DNS for your subdomain, and Zero Trust Access for team-only gating. Complete validated env var reference and step-by-step deployment guide.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">Twenty CRM</span>
-        <span class="skill-meta-tag">Railway</span>
-        <span class="skill-meta-tag">Cloudflare R2</span>
-        <span class="skill-meta-tag">Zero Trust</span>
-        <span class="skill-meta-tag">~$20/mo</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install">npx skills add imbilawork/2nth-skills@twenty-hosting</code>
-        <span class="skill-link">VIEW DOCS &rarr;</span>
-      </div>
-    </a>
-
-    <!-- Twenty CRM AI -->
-    <a href="/skills/twenty-crm-ai.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(245,158,11,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <span class="skill-tag tag-live">LIVE</span>
-      </div>
-      <div class="skill-name">TWENTY CRM AI</div>
-      <div class="skill-desc">AI agent integration for Twenty, the open-source CRM with 43K GitHub stars. GraphQL API, webhooks, MCP server, 6 agent patterns (enrichment, pipeline alerts, NL queries, batch import), and Workers AI for lead scoring and email drafting.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">CRM</span>
-        <span class="skill-meta-tag">Twenty</span>
-        <span class="skill-meta-tag">GraphQL</span>
-        <span class="skill-meta-tag">MCP</span>
-        <span class="skill-meta-tag">6 Patterns</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install">npx skills add imbilawork/2nth-skills@twenty-crm-ai</code>
-        <span class="skill-link">VIEW DOCS &rarr;</span>
-      </div>
-    </a>
-
-    <div class="skill-card" style="opacity:.5;cursor:default">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(14,165,233,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <span class="skill-tag tag-soon">COMING SOON</span>
-      </div>
-      <div class="skill-name">HUBSPOT CRM INTEGRATION</div>
-      <div class="skill-desc">Full CRM integration skill for HubSpot. Contacts, deals, pipelines, custom objects, reporting, and automation workflows via the HubSpot API.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">CRM</span>
-        <span class="skill-meta-tag">HubSpot</span>
-        <span class="skill-meta-tag">Sales</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install" style="opacity:.4">coming soon</code>
-        <span class="skill-link" style="opacity:.3">VIEW DOCS &rarr;</span>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══ CLOUDFLARE INFRASTRUCTURE ═══ -->
-<section class="section">
-  <div class="section-label">02 — INFRASTRUCTURE</div>
-  <div class="section-title">CLOUDFLARE STACK</div>
-  <div class="section-desc">The complete Cloudflare infrastructure stack — Workers & Pages, Durable Objects, Queues, Workflows, D1, KV, R2, AI, Zero Trust and more. Explainers, architecture guides, and how 2nth.ai uses each product.</div>
-
-  <div class="skills-grid">
-    <a href="/cloudflare/" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(246,130,31,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F6821F" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <span class="skill-tag" style="background:rgba(246,130,31,.15);color:#F6821F;border-color:rgba(246,130,31,.3)">LIVE</span>
-      </div>
-      <div class="skill-name">CLOUDFLARE COMPUTE</div>
-      <div class="skill-desc">Workers &amp; Pages, Durable Objects, Queues, Workflows, Containers, Browser Rendering, Workers for Platforms, Email Service — the full compute layer explained for operators.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">Workers</span>
-        <span class="skill-meta-tag">Pages</span>
-        <span class="skill-meta-tag">Durable Objects</span>
-        <span class="skill-meta-tag">Queues</span>
-        <span class="skill-meta-tag">Workflows</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install" style="color:#F6821F">cloudflare infrastructure hub</code>
-        <span class="skill-link">EXPLORE &rarr;</span>
-      </div>
-    </a>
-    <a href="/cloudflare/containers.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(246,130,31,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F6821F" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
-        </div>
-        <span class="skill-tag" style="background:rgba(246,130,31,.15);color:#F6821F;border-color:rgba(246,130,31,.3)">LIVE</span>
-      </div>
-      <div class="skill-name">CONTAINERS</div>
-      <div class="skill-desc">Cloudflare Containers explained — run Docker images on-demand at the edge, managed by Workers and Durable Objects. 14 sections: architecture, instance types, lifecycle, registry, networking, pricing, and setup guide.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">Docker</span>
-        <span class="skill-meta-tag">Durable Objects</span>
-        <span class="skill-meta-tag">Auto-sleep</span>
-        <span class="skill-meta-tag">6 instance sizes</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install" style="color:#F6821F">14-section explainer</code>
-        <span class="skill-link">READ &rarr;</span>
-      </div>
-    </a>
-    <a href="/cloudflare/zero-trust.html" class="skill-card">
-      <div class="skill-card-header">
-        <div class="skill-icon" style="background:rgba(246,130,31,.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F6821F" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <span class="skill-tag" style="background:rgba(246,130,31,.15);color:#F6821F;border-color:rgba(246,130,31,.3)">LIVE</span>
-      </div>
-      <div class="skill-name">ZERO TRUST</div>
-      <div class="skill-desc">Comprehensive Zero Trust explainer — Access, Tunnel, WARP, Gateway, Browser Isolation. Architecture diagrams, policy patterns, mTLS setup, and how 2nth.ai uses it in production.</div>
-      <div class="skill-meta">
-        <span class="skill-meta-tag">Access</span>
-        <span class="skill-meta-tag">Tunnel</span>
-        <span class="skill-meta-tag">WARP</span>
-        <span class="skill-meta-tag">Gateway</span>
-        <span class="skill-meta-tag">mTLS</span>
-      </div>
-      <div class="skill-footer">
-        <code class="skill-install" style="color:#F6821F">14-section explainer</code>
-        <span class="skill-link">READ &rarr;</span>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- ═══ HOW IT WORKS ═══ -->
-<section class="section">
-  <div class="section-label">03 — HOW IT WORKS</div>
-  <div class="section-title">SKILLS FOR AI AGENTS</div>
-  <div class="section-desc">Skills are structured knowledge packages that AI agents load as context. They replace hallucinated API knowledge with verified, tested patterns.</div>
-
-  <div class="steps-grid">
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-title">Install</div>
-      <div class="step-desc">One command installs the skill into your agent's context. Works with Claude Code, Cursor, Windsurf, and 30+ other AI coding agents.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-title">Reference</div>
-      <div class="step-desc">The agent automatically loads the skill when working in the relevant domain. Schema patterns, query templates, and best practices are always available.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-title">Build</div>
-      <div class="step-desc">Your agent writes correct integration code on the first try. No hallucinated endpoints, no wrong field names, no missing auth patterns.</div>
+    <div class="hero-eyebrow">2nth Skills Registry — all domains</div>
+    <h1>25 <span>LIVE</span> AI SKILLS</h1>
+    <p class="hero-sub">Production-ready skills that give AI agents deep domain expertise across Business, Education, Engineering, Legal, Finance, and Data.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong style="color:#8b5cf6">8</strong>BIZ Skills</div>
+      <div class="hero-stat"><strong style="color:#22c55e">3</strong>EDU Skills</div>
+      <div class="hero-stat"><strong style="color:#06b6d4">6</strong>ENG Skills</div>
+      <div class="hero-stat"><strong style="color:#f59e0b">3</strong>LEG Skills</div>
+      <div class="hero-stat"><strong style="color:#10b981">3</strong>FIN Skills</div>
+      <div class="hero-stat"><strong style="color:#3b82f6">2</strong>DATA Skills</div>
     </div>
   </div>
 </section>
 
-<!-- ═══ CTA ═══ -->
-<section class="cta-section">
-  <div class="section-title" style="margin-bottom:12px">BUILD WITH VERIFIED KNOWLEDGE</div>
-  <p style="color:var(--c-steel-500);margin-bottom:28px;font-size:15px">Stop debugging hallucinated APIs. Give your agents real expertise.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="/skills/sagex3-ai-integration.html" class="cta-btn">EXPLORE SAGE X3 SKILL</a>
-    <a href="https://2nth.ai/join.html" class="cta-btn cta-outline">PARTNER WITH US</a>
-  </div>
-</section>
+<hr class="section-divider">
 
-<!-- ═══ FOOTER ═══ -->
+<div class="section">
+  <div class="sec-label">01 — CATALOG</div>
+  <div class="sec-title">ALL SKILLS</div>
+  <div class="sec-desc">Filter by domain or browse all 25 live skills. Each skill packages verified API patterns, query templates, and workflow blueprints for a specific system.</div>
+
+  <!-- BIZ -->
+  <div class="domain-block" data-domain="biz">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#8b5cf6"></div>
+      <span class="domain-label" style="color:#8b5cf6">BIZ</span>
+      <span class="domain-name">Business</span>
+      <span class="domain-count">8 LIVE</span>
+      <a href="https://biz.skills.2nth.ai" class="domain-link" style="color:#8b5cf6">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="https://biz.skills.2nth.ai/skills/shopify-ai" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">SHOPIFY AI</div>
+        <div class="skill-desc">Role-based AI partners for every Shopify team member. Admin API (REST + GraphQL), 6 role patterns, MCP tool sets, and Workers AI content generation.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-shopify-ai</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/sagex3-ai-integration" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">SAGE X3 AI</div>
+        <div class="skill-desc">Deep Sage X3 ERP integration. GraphQL API, master data, sales/purchasing/inventory reporting, and AI-powered natural language querying.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-sagex3-ai</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/erpnext-furniture" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">ERPNEXT FURNITURE</div>
+        <div class="skill-desc">Manufacturing-focused ERPNext skill for furniture production — BOMs, work orders, job cards, routing, inventory and quality inspection.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-erpnext-furniture</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/hubspot-crm" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">HUBSPOT CRM AI</div>
+        <div class="skill-desc">Full CRM AI for HubSpot. Contacts, deals, pipelines, custom objects, automation workflows, and AI-powered sales intelligence.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-hubspot-crm</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/business-intelligence" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">BUSINESS INTELLIGENCE AI</div>
+        <div class="skill-desc">Cross-platform BI — connect Metabase, Looker, or Power BI to your AI for natural language reporting and anomaly detection.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-business-intelligence</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/xero-accounting" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l2.5 2.5L16 9"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">XERO ACCOUNTING AI</div>
+        <div class="skill-desc">AI-powered accounting automation — invoicing, bank reconciliation, AP/AR aging, P&amp;L reporting, and cash management via the Xero REST API.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-xero-accounting</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="https://biz.skills.2nth.ai/skills/market-intelligence" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">MARKET INTELLIGENCE AI</div>
+        <div class="skill-desc">Competitive research, trend analysis, and market sizing — synthesise market signals into structured strategic briefings.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-market-intelligence</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+      <a href="/skills/twenty-crm-ai.html" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">TWENTY CRM AI</div>
+        <div class="skill-desc">AI agent integration for Twenty, the open-source CRM. GraphQL API, webhooks, MCP server, 6 agent patterns (enrichment, pipeline alerts, NL queries, batch import), and Workers AI for lead scoring and email drafting.</div>
+        <div class="skill-footer"><code class="skill-install">@biz-twenty-crm-ai</code><span class="skill-arrow" style="color:#8b5cf6">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- EDU -->
+  <div class="domain-block" data-domain="edu">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#22c55e"></div>
+      <span class="domain-label" style="color:#22c55e">EDU</span>
+      <span class="domain-name">Education</span>
+      <span class="domain-count">3 LIVE</span>
+      <a href="https://edu.skills.2nth.ai" class="domain-link" style="color:#22c55e">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="https://edu.skills.2nth.ai/skills/curriculum-designer" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CURRICULUM DESIGNER AI</div>
+        <div class="skill-desc">Structured learning experiences from scratch. Aligns to CAPS, IEB, Cambridge, IB frameworks. Scope-and-sequence, lesson plans, and Bloom's mapping.</div>
+        <div class="skill-footer"><code class="skill-install">@edu-curriculum-designer</code><span class="skill-arrow" style="color:#22c55e">VIEW →</span></div>
+      </a>
+      <a href="https://edu.skills.2nth.ai/skills/assessment-builder" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">ASSESSMENT BUILDER</div>
+        <div class="skill-desc">Formative and summative assessments, analytic rubrics, and marking guides. Multiple-choice, short answer, essays, and project formats at any Bloom's level.</div>
+        <div class="skill-footer"><code class="skill-install">@edu-assessment-builder</code><span class="skill-arrow" style="color:#22c55e">VIEW →</span></div>
+      </a>
+      <a href="https://edu.skills.2nth.ai/skills/research-assistant" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">RESEARCH ASSISTANT</div>
+        <div class="skill-desc">Literature reviews, citation formatting (APA/MLA/Chicago/Harvard/Vancouver), source evaluation, and synthesis of complex material into structured summaries.</div>
+        <div class="skill-footer"><code class="skill-install">@edu-research-assistant</code><span class="skill-arrow" style="color:#22c55e">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ENG -->
+  <div class="domain-block" data-domain="eng">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#06b6d4"></div>
+      <span class="domain-label" style="color:#06b6d4">ENG</span>
+      <span class="domain-name">Engineering</span>
+      <span class="domain-count">6 LIVE</span>
+      <a href="https://eng.skills.2nth.ai" class="domain-link" style="color:#06b6d4">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="https://eng.skills.2nth.ai/skills/cloudflare-stream" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CLOUDFLARE STREAM</div>
+        <div class="skill-desc">Serverless video platform. Upload, live RTMPS/SRT ingest, signed URL access control, HLS/DASH delivery, and Workers AI transcription.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-cloudflare-stream</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+      <a href="https://eng.skills.2nth.ai/skills/code-architecture" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CODE ARCHITECTURE AI</div>
+        <div class="skill-desc">System design and architecture review. MADR ADRs, C4 Mermaid diagrams, 12 architecture patterns, trade-off analysis.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-code-architecture</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+      <a href="https://eng.skills.2nth.ai/skills/devops-pipeline" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">DEVOPS PIPELINE AI</div>
+        <div class="skill-desc">CI/CD pipeline design, GitHub Actions YAML, Terraform HCL, deployment strategies, and incident runbook generation.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-devops-pipeline</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+      <a href="https://eng.skills.2nth.ai/skills/security-audit" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">SECURITY AUDIT AI</div>
+        <div class="skill-desc">OWASP Top 10 analysis, dependency vulnerability scanning, secrets detection, and security posture reporting for codebases and infrastructure.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-security-audit</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+      <a href="/skills/twenty-crm-hosting.html" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M6 8h4m-4 4h8"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">TWENTY CRM HOSTING</div>
+        <div class="skill-desc">Deploy Twenty CRM on Railway with Cloudflare R2 for file storage, CF DNS for your subdomain, and Zero Trust Access for team-only gating. Validated env var reference and step-by-step deployment guide.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-twenty-crm-hosting</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+      <a href="/cloudflare/containers.html" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CLOUDFLARE CONTAINERS</div>
+        <div class="skill-desc">Run Docker images on-demand at the edge, managed by Workers and Durable Objects. 14 sections: architecture, instance types, lifecycle, registry, networking, pricing, and setup guide.</div>
+        <div class="skill-footer"><code class="skill-install">@eng-cloudflare-containers</code><span class="skill-arrow" style="color:#06b6d4">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- LEG -->
+  <div class="domain-block" data-domain="leg">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#f59e0b"></div>
+      <span class="domain-label" style="color:#f59e0b">LEG</span>
+      <span class="domain-name">Legal</span>
+      <span class="domain-count">3 LIVE</span>
+      <a href="https://leg.skills.2nth.ai" class="domain-link" style="color:#f59e0b">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="https://leg.skills.2nth.ai/skills/contract-review" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CONTRACT REVIEW AI</div>
+        <div class="skill-desc">First-pass review of commercial contracts. Non-standard clauses, liability exposure, payment terms, and redline suggestions against a configurable baseline.</div>
+        <div class="skill-footer"><code class="skill-install">@leg-contract-review</code><span class="skill-arrow" style="color:#f59e0b">VIEW →</span></div>
+      </a>
+      <a href="https://leg.skills.2nth.ai/skills/compliance-checker" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">COMPLIANCE CHECKER</div>
+        <div class="skill-desc">POPIA, GDPR, CCPA, SOC 2, ISO 27001 compliance monitoring. Maps obligations to controls and surfaces gaps with remediation suggestions.</div>
+        <div class="skill-footer"><code class="skill-install">@leg-compliance-checker</code><span class="skill-arrow" style="color:#f59e0b">VIEW →</span></div>
+      </a>
+      <a href="https://leg.skills.2nth.ai/skills/document-drafting" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">DOCUMENT DRAFTING AI</div>
+        <div class="skill-desc">First-draft NDAs, SLAs, employment agreements, vendor contracts, and policy documents — jurisdiction-aware and clause-library driven.</div>
+        <div class="skill-footer"><code class="skill-install">@leg-document-drafting</code><span class="skill-arrow" style="color:#f59e0b">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FIN -->
+  <div class="domain-block" data-domain="fin">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#10b981"></div>
+      <span class="domain-label" style="color:#10b981">FIN</span>
+      <span class="domain-name">Finance</span>
+      <span class="domain-count">3 LIVE</span>
+      <a href="https://fin.skills.2nth.ai" class="domain-link" style="color:#10b981">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="https://fin.skills.2nth.ai/skills/financial-modelling" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">FINANCIAL MODELLING AI</div>
+        <div class="skill-desc">DCF, three-statement models, scenario analysis, WACC, sensitivity tables. Validates assumptions, flags errors, exports to Excel with formulas intact.</div>
+        <div class="skill-footer"><code class="skill-install">@fin-financial-modelling</code><span class="skill-arrow" style="color:#10b981">VIEW →</span></div>
+      </a>
+      <a href="https://fin.skills.2nth.ai/skills/cash-flow-forecaster" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">CASH FLOW FORECASTER</div>
+        <div class="skill-desc">Rolling 13-week cash flow forecasting, variance analysis, treasury positioning, and covenant monitoring. Integrates bank feeds and ERP exports.</div>
+        <div class="skill-footer"><code class="skill-install">@fin-cash-flow-forecaster</code><span class="skill-arrow" style="color:#10b981">VIEW →</span></div>
+      </a>
+      <a href="https://fin.skills.2nth.ai/skills/budget-variance" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">BUDGET &amp; VARIANCE AI</div>
+        <div class="skill-desc">Annual budget construction, monthly variance analysis, and AI-generated management accounts commentary. Board pack ready in minutes.</div>
+        <div class="skill-footer"><code class="skill-install">@fin-budget-variance</code><span class="skill-arrow" style="color:#10b981">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+  </div>
+
+  <!-- DATA -->
+  <div class="domain-block" data-domain="data">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#3b82f6"></div>
+      <span class="domain-label" style="color:#3b82f6">DATA</span>
+      <span class="domain-name">Data & BI</span>
+      <span class="domain-count">2 LIVE</span>
+      <a href="https://data.skills.2nth.ai" class="domain-link" style="color:#3b82f6">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="/skills/bi-datawarehouse" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">BI & DATA WAREHOUSING</div>
+        <div class="skill-desc">Modern data stack architecture — dimensional modeling, ETL/ELT with dbt, warehouse selection, medallion layers, semantic layer, and BI tool integration.</div>
+        <div class="skill-footer"><code class="skill-install">@bi-datawarehouse</code><span class="skill-arrow" style="color:#3b82f6">VIEW →</span></div>
+      </a>
+      <a href="/skills/apache-superset" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">APACHE SUPERSET</div>
+        <div class="skill-desc">Production deployment, dashboard authoring, RBAC, row-level security, and guest-token embedding for self-hosted open-source BI.</div>
+        <div class="skill-footer"><code class="skill-install">@apache-superset</code><span class="skill-arrow" style="color:#3b82f6">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<hr class="section-divider">
+
+<div class="section" style="text-align:center;padding:60px 24px">
+  <div class="sec-label" style="justify-content:center;display:flex">SKILLS HUB</div>
+  <div class="sec-title">EXPLORE BY DOMAIN</div>
+  <p style="font-size:15px;color:var(--c-steel-500);max-width:520px;margin:0 auto 28px;line-height:1.65">Each domain has its own registry with deep-dive skill pages, pairing philosophy, and a community contribution form.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a href="https://skills-hub.2nth.ai" style="font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;background:var(--c-brand);color:#0a0a0a;padding:11px 24px;border-radius:3px;border:none;display:inline-flex;align-items:center;gap:6px;transition:background .2s">VISIT THE HUB →</a>
+    <a href="https://2nth-marketing.pages.dev" style="font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;border:1px solid var(--c-brand);color:var(--c-brand);padding:10px 20px;border-radius:3px;background:none;display:inline-flex;align-items:center;gap:6px">2NTH.AI</a>
+  </div>
+</div>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
     <div class="footer-links">
-      <a href="https://2nth.ai">2nth.ai</a>
+      <a href="https://skills-hub.2nth.ai">Hub</a>
+      <a href="https://2nth-marketing.pages.dev">2nth.ai</a>
       <a href="https://github.com/imbilawork">GitHub</a>
-      <a href="https://2nth.ai/partners.html">Partners</a>
     </div>
   </div>
 </footer>
 
-<script src="https://2nth.ai/app-switcher.js"></script>
-<script src="https://2nth.ai/auth-bar.js"></script>
-<script src="https://2nth.ai/browse-gate.js"></script>
-<script>window._asSwitcher.inject('.nav-links');window._authBar.inject('.nav-links');</script>
 <script>
+function filterDomain(domain, btn) {
+  document.querySelectorAll('.dpill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.domain-block').forEach(b => {
+    if (domain === 'all' || b.dataset.domain === domain) {
+      b.classList.remove('hidden-domain');
+    } else {
+      b.classList.add('hidden-domain');
+    }
+  });
+}
 function toggleTheme(){
   document.documentElement.classList.toggle('light');
-  localStorage.setItem('2nth-theme',document.documentElement.classList.contains('light')?'light':'dark');
+  localStorage.setItem('2nth-theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
   updateIcons();
 }
 function updateIcons(){
-  var l=document.documentElement.classList.contains('light');
-  document.getElementById('icon-sun').classList.toggle('hidden',!l);
-  document.getElementById('icon-moon').classList.toggle('hidden',l);
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
 }
 updateIcons();
 </script>
+<script src="/skills-auth.js"></script>
 </body>
 </html>

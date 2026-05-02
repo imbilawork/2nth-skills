@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudflare Stream — 2nth.ai Skills</title>
+  <link rel="icon" type="image/svg+xml" href="https://2nth-marketing.pages.dev/favicon.svg">
+  <meta name="description" content="AI agent skill for Cloudflare Stream — upload, encode, live stream, and deliver video with access control, signed URLs, Workers AI transcription, and MCP tools.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>(function(){var t=localStorage.getItem('2nth-theme');if(t==='light')document.documentElement.classList.add('light');})()</script>
+  <style>
+    :root {
+      --c-carbon:#0a0a0a;--c-graphite:#141414;--c-gunmetal:#1c1c1e;--c-chassis:#232326;
+      --c-titanium:#fafafa;
+      --c-steel-900:#27272a;--c-steel-800:#3f3f46;--c-steel-700:#52525b;--c-steel-600:#71717a;
+      --c-steel-500:#a1a1aa;--c-steel-400:#c4c4cc;--c-steel-300:#d4d4d8;--c-steel-200:#e4e4e7;
+      --c-border:hsla(0,0%,100%,.06);--c-border-s:hsla(0,0%,100%,.1);
+      --c-grid-line:hsla(0,0%,100%,.018);
+      --c-input-bg:#141414;
+    }
+    .light {
+      --c-carbon:#fff;--c-graphite:#f7f8fa;--c-gunmetal:#f0f1f3;--c-chassis:#e8e9eb;
+      --c-titanium:#0a0a0a;
+      --c-steel-900:#e4e4e7;--c-steel-800:#d4d4d8;--c-steel-700:#a1a1aa;--c-steel-600:#71717a;
+      --c-steel-500:#52525b;--c-steel-400:#3f3f46;--c-steel-300:#27272a;--c-steel-200:#1c1c1e;
+      --c-border:rgba(0,0,0,.08);--c-border-s:rgba(0,0,0,.12);
+      --c-grid-line:rgba(0,0,0,.03);
+      --c-input-bg:#f7f8fa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    html{scroll-behavior:smooth}
+    body{font-family:'Barlow',sans-serif;background:var(--c-carbon);color:var(--c-steel-500);line-height:1.625;transition:background-color .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    /* Nav */
+    nav{position:fixed;top:0;left:0;right:0;z-index:50;background:var(--c-carbon);border-bottom:1px solid var(--c-border)}
+    @supports(backdrop-filter:blur(12px)){nav{background:color-mix(in srgb,var(--c-carbon) 85%,transparent);backdrop-filter:blur(12px)}}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 24px}
+    .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--c-titanium)}
+    .nav-brand span{color:#06b6d4}
+    .nav-links{display:flex;align-items:center;gap:20px}
+    .nav-link{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
+    .nav-link:hover{color:var(--c-steel-400)}
+    .theme-toggle{display:flex;min-height:36px;min-width:36px;align-items:center;justify-content:center;border-radius:4px;border:1px solid var(--c-border);background:none;color:var(--c-steel-600);cursor:pointer;transition:color .15s,border-color .15s}
+    .theme-toggle:hover{color:var(--c-steel-400);border-color:var(--c-border-s)}
+    .hidden{display:none}
+
+    /* Layout */
+    .page{max-width:1100px;margin:0 auto;padding:100px 24px 60px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+    @media(max-width:900px){.page{grid-template-columns:1fr;gap:24px}.toc{display:none}}
+
+    /* TOC */
+    .toc{position:sticky;top:80px;height:fit-content}
+    .toc-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--c-steel-700);margin-bottom:12px;font-weight:600}
+    .toc a{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-600);padding:5px 0 5px 12px;border-left:2px solid var(--c-border);transition:all .15s}
+    .toc a:hover{color:var(--c-steel-300);border-left-color:var(--c-steel-600)}
+    .toc a.toc-active{color:#06b6d4;border-left-color:#06b6d4}
+
+    /* Content */
+    .content{min-width:0}
+    .skill-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--c-border)}
+    .breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);letter-spacing:.5px;margin-bottom:16px}
+    .breadcrumb a{color:#06b6d4}
+    .breadcrumb a:hover{text-decoration:underline}
+    .skill-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);line-height:.95;letter-spacing:.05em;color:var(--c-titanium);margin-bottom:8px}
+    .skill-title span{color:#06b6d4}
+    .skill-subtitle{font-size:17px;color:var(--c-steel-400);max-width:640px;line-height:1.6;margin-bottom:16px}
+    .skill-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600}
+    .badge-brand{background:rgba(6,182,212,.12);color:#06b6d4}
+    .badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+    .badge-purple{background:rgba(99,102,241,.12);color:#6366f1}
+    .badge-orange{background:rgba(249,115,22,.12);color:#f97316}
+    .badge-amber{background:rgba(245,158,11,.12);color:#f59e0b}
+    .install-box{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .install-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:#06b6d4}
+    .install-copy{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);background:var(--c-carbon);border:1px solid var(--c-border);padding:5px 12px;border-radius:3px;cursor:pointer;transition:all .15s}
+    .install-copy:hover{color:var(--c-steel-300);border-color:var(--c-border-s)}
+
+    /* Sections */
+    .sec{margin-bottom:48px}
+    .sec-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .sec h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--c-titanium);line-height:1;margin-bottom:12px}
+    .sec h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-300);margin:24px 0 10px;font-weight:600}
+    .sec p{font-size:14px;color:var(--c-steel-500);line-height:1.65;margin-bottom:12px}
+    .sec ul,.sec ol{padding-left:20px;margin-bottom:12px}
+    .sec li{font-size:14px;color:var(--c-steel-500);line-height:1.6;margin-bottom:4px}
+    .sec strong{color:var(--c-steel-300)}
+
+    /* Code */
+    pre{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:16px;margin:12px 0 16px;overflow-x:auto}
+    pre code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:var(--c-steel-400)}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--c-graphite);border:1px solid var(--c-border);padding:1px 5px;border-radius:3px;color:#06b6d4}
+
+    /* Info grid */
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--c-border);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;margin:16px 0}
+    .info-cell{background:var(--c-graphite);padding:16px}
+    .info-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-bottom:4px}
+    .info-value{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--c-titanium);line-height:1}
+    .info-value.small{font-size:15px}
+
+    /* Architecture */
+    .arch{background:var(--c-graphite);border:1px solid var(--c-border);border-radius:4px;padding:24px;margin:16px 0;text-align:center}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .arch-box{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-400);text-align:center;min-width:120px}
+    .arch-box.highlight{border-color:#06b6d4;color:#06b6d4}
+    .arch-box.green{border-color:#22c55e;color:#22c55e}
+    .arch-box.orange{border-color:#f97316;color:#f97316}
+    .arch-arrow{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--c-steel-700)}
+    .arch-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--c-steel-700);margin-top:16px}
+
+    /* Table */
+    .doc-table{width:100%;border-collapse:collapse;margin:12px 0 16px;border:1px solid var(--c-border);border-radius:4px;overflow:hidden}
+    .doc-table th{background:var(--c-graphite);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--c-steel-600);padding:8px 14px;text-align:left;font-weight:600;border-bottom:1px solid var(--c-border)}
+    .doc-table td{padding:8px 14px;font-size:13px;color:var(--c-steel-400);border-bottom:1px solid var(--c-border)}
+    .doc-table tr:last-child td{border-bottom:none}
+    .doc-table td code{font-size:11px}
+
+    /* Callout */
+    .callout{background:var(--c-graphite);border-left:3px solid #06b6d4;padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0}
+    .callout.warn{border-left-color:#f59e0b}
+    .callout.green{border-left-color:#22c55e}
+    .callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#06b6d4;font-weight:600;margin-bottom:4px}
+    .callout.warn .callout-title{color:#f59e0b}
+    .callout.green .callout-title{color:#22c55e}
+    .callout p{font-size:13px;margin-bottom:0}
+
+    /* Tool grid */
+    .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin:12px 0}
+    .tool-item{background:var(--c-carbon);border:1px solid var(--c-border);border-radius:3px;padding:8px 12px}
+    .tool-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:#06b6d4;margin-bottom:2px}
+    .tool-desc{font-size:11px;color:var(--c-steel-600)}
+
+    /* Conversation */
+    .convo{margin:16px 0}
+    .convo-line{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+    .convo-role{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;min-width:60px;padding-top:12px;font-weight:600}
+    .convo-role.human{color:var(--c-steel-500)}
+    .convo-role.ai{color:#06b6d4}
+    .convo-text{font-size:13px;color:var(--c-steel-400);line-height:1.6;background:var(--c-carbon);border:1px solid var(--c-border);border-radius:4px;padding:10px 14px;flex:1}
+
+    /* Footer */
+    footer{border-top:1px solid var(--c-border);padding:28px 24px;margin-top:40px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .footer-brand{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700)}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-steel-700);transition:color .15s}
+    .footer-links a:hover{color:var(--c-steel-400)}
+
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--c-steel-800);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://2nth-marketing.pages.dev" class="nav-brand"><span>2</span>NTH</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Skills</a>
+      <a href="https://2nth-marketing.pages.dev" class="nav-link">Home</a>
+      <button onclick="toggleTheme()" class="theme-toggle" title="Toggle theme">
+        <svg id="icon-sun" class="hidden" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="icon-moon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ═══ TOC ═══ -->
+  <aside class="toc">
+    <div class="toc-title">ON THIS PAGE</div>
+    <a href="#overview">Overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#upload">Upload Methods</a>
+    <a href="#live">Live Streaming</a>
+    <a href="#playback">Playback & Player</a>
+    <a href="#access">Access Control</a>
+    <a href="#webhooks">Webhooks</a>
+    <a href="#workers-ai">Workers AI</a>
+    <a href="#mcp-tools">MCP Tools</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#gotchas">Gotchas</a>
+    <a href="#install">Install</a>
+  </aside>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content">
+
+    <div class="skill-header">
+      <div class="breadcrumb"><a href="/">Skills</a> / Cloudflare Stream</div>
+      <div class="skill-title">CLOUDFLARE <span>STREAM</span></div>
+      <div class="skill-subtitle">Serverless video platform for on-demand and live video. Upload, encode, store, and deliver globally via a single REST API — no infrastructure to manage.</div>
+      <div class="skill-badges">
+        <span class="badge badge-green">LIVE</span>
+        <span class="badge badge-brand">REST API</span>
+        <span class="badge badge-brand">HLS / DASH</span>
+        <span class="badge badge-brand">RTMPS / SRT</span>
+        <span class="badge badge-purple">Workers AI</span>
+        <span class="badge badge-orange">MCP Ready</span>
+      </div>
+      <div class="install-box">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@cloudflare-stream</code>
+        <button class="install-copy" onclick="copyInstall()">COPY</button>
+      </div>
+    </div>
+
+    <!-- ═══ 01 OVERVIEW ═══ -->
+    <div class="sec" id="overview">
+      <div class="sec-num">01 — OVERVIEW</div>
+      <h2>WHAT IS CLOUDFLARE STREAM</h2>
+      <p>Cloudflare Stream is a fully managed video platform — upload a video file, get back an encoding pipeline, global CDN delivery, an embeddable player, and a playback API. It handles on-demand VOD and real-time live streaming in the same product.</p>
+      <p>For AI agents, Stream is the right tool whenever a workflow involves video: storing customer walkthroughs, live-streaming product launches, transcribing support calls, or building AI-powered media pipelines on Cloudflare Workers.</p>
+
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">Base URL</div>
+          <div class="info-value small">api.cloudflare.com/client/v4</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Auth Header</div>
+          <div class="info-value small">Authorization: Bearer {token}</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Max File Size</div>
+          <div class="info-value">30 GB</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Max FPS</div>
+          <div class="info-value">70 FPS</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Resolutions</div>
+          <div class="info-value small">360p → 1080p</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Live Protocols</div>
+          <div class="info-value small">RTMPS · SRT</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Delivery</div>
+          <div class="info-value small">HLS · DASH · MP4</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Codec</div>
+          <div class="info-value small">H.264 + AAC</div>
+        </div>
+      </div>
+
+      <h3>Supported Upload Formats</h3>
+      <p>MP4, MKV, MOV, AVI, FLV, MPEG-2 TS, MPEG-2 PS, MXF, LXF, GXF, 3GP, WebM, MPG, QuickTime. <strong>Recommended:</strong> MP4 container · H.264 video · AAC audio · ≤60 FPS.</p>
+    </div>
+
+    <!-- ═══ 02 ARCHITECTURE ═══ -->
+    <div class="sec" id="architecture">
+      <div class="sec-num">02 — ARCHITECTURE</div>
+      <h2>HOW STREAM FITS IN</h2>
+      <p>Stream sits between your application and your viewers. You push video in via the API; Stream encodes, stores, and delivers it. Your Workers or AI agents talk to the API to manage assets and generate secure playback URLs.</p>
+
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-box">Source Video<br><span style="font-size:9px;color:var(--c-steel-700)">file / URL / webcam / encoder</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box highlight">Stream Ingest<br><span style="font-size:9px">Upload API / RTMPS / SRT</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box">Encode<br><span style="font-size:9px;color:var(--c-steel-700)">H.264 · ABR · 360-1080p</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box">Store<br><span style="font-size:9px;color:var(--c-steel-700)">Cloudflare edge PoPs</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box green">Deliver<br><span style="font-size:9px">HLS / DASH / MP4</span></div>
+        </div>
+        <div class="arch-label">Webhooks fire at each state transition · Workers AI runs post-encode</div>
+      </div>
+
+      <div class="arch" style="margin-top:12px">
+        <div class="arch-flow">
+          <div class="arch-box highlight">Your Worker<br><span style="font-size:9px">API calls · signed URLs</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box">Stream API<br><span style="font-size:9px;color:var(--c-steel-700)">manage assets · live inputs</span></div>
+          <div class="arch-arrow">↔</div>
+          <div class="arch-box">AI Agent<br><span style="font-size:9px;color:var(--c-steel-700)">transcribe · caption · search</span></div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-box orange">Viewer<br><span style="font-size:9px">&lt;stream&gt; · HLS player</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 03 UPLOAD ═══ -->
+    <div class="sec" id="upload">
+      <div class="sec-num">03 — UPLOAD METHODS</div>
+      <h2>GETTING VIDEO INTO STREAM</h2>
+      <p>Four distinct upload paths depending on where the video originates and who is uploading it.</p>
+
+      <h3>Method 1 — Direct Upload (server-side)</h3>
+      <p>POST a multipart form or a tus resumable upload from your backend. Ideal for server-initiated workflows — processing pipelines, content ingestion, automated archiving.</p>
+      <pre><code># Upload via multipart form (small files < 200 MB)
+POST https://api.cloudflare.com/client/v4/accounts/{account_id}/stream
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="video.mp4"
+Content-Type: video/mp4
+[binary data]
+--boundary--
+
+# Response includes uid, status, thumbnail, playback URLs
+{
+  "result": {
+    "uid": "ea95132c15732419d526b5cae4c20c56",
+    "status": { "state": "queued" },
+    "thumbnail": "https://videodelivery.net/ea95.../thumbnails/thumbnail.jpg",
+    "playback": {
+      "hls": "https://videodelivery.net/ea95.../manifest/video.m3u8",
+      "dash": "https://videodelivery.net/ea95.../manifest/video.mpd"
+    }
+  }
+}</code></pre>
+
+      <h3>Method 2 — Upload by URL (pull from external source)</h3>
+      <p>Pass a publicly accessible URL and Stream fetches and encodes it asynchronously. Useful when pulling from S3, a CMS asset library, or a third-party CDN.</p>
+      <pre><code>POST https://api.cloudflare.com/client/v4/accounts/{account_id}/stream/copy
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "url": "https://your-bucket.s3.amazonaws.com/source/video.mp4",
+  "meta": {
+    "name": "Product Walkthrough Q1 2026"
+  },
+  "requireSignedURLs": false,
+  "allowedOrigins": ["yourdomain.com"]
+}</code></pre>
+
+      <h3>Method 3 — Direct Creator Uploads (client-side, one-time URL)</h3>
+      <p>Your backend mints a single-use upload URL and passes it to the browser. The user uploads directly to Cloudflare — your API token never touches the client. This is the correct pattern for user-generated content platforms.</p>
+      <pre><code># Step 1: Backend mints the upload URL
+POST https://api.cloudflare.com/client/v4/accounts/{account_id}/stream/direct_upload
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "maxDurationSeconds": 3600,
+  "expiry": "2026-04-01T00:00:00Z",
+  "meta": { "uploadedBy": "user_123" },
+  "requireSignedURLs": true
+}
+
+# Response
+{
+  "result": {
+    "uid": "2f01...",
+    "uploadURL": "https://upload.videodelivery.net/2f01..."
+  }
+}
+
+# Step 2: Client POSTs directly to uploadURL (tus protocol)
+# No auth header needed — URL is the credential</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">tus Resumable Uploads</div>
+        <p>For files over 200 MB use the tus protocol (<code>tus-js-client</code> or <code>uppy</code>). Set endpoint to <code>https://api.cloudflare.com/client/v4/accounts/{account_id}/stream</code> with the <code>Authorization</code> header as tus metadata.</p>
+      </div>
+
+      <h3>Upload API Fields Reference</h3>
+      <table class="doc-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>uid</code></td><td>string</td><td>Unique video identifier — used in all playback URLs</td></tr>
+          <tr><td><code>meta.name</code></td><td>string</td><td>Human-readable label for the video</td></tr>
+          <tr><td><code>requireSignedURLs</code></td><td>bool</td><td>Restrict playback to signed tokens only</td></tr>
+          <tr><td><code>allowedOrigins</code></td><td>string[]</td><td>CORS-style origin whitelist for the player</td></tr>
+          <tr><td><code>scheduledDeletion</code></td><td>datetime</td><td>Auto-delete at this UTC timestamp</td></tr>
+          <tr><td><code>maxDurationSeconds</code></td><td>int</td><td>Hard cap on video length (creator uploads)</td></tr>
+          <tr><td><code>status.state</code></td><td>string</td><td><code>queued</code> → <code>inprogress</code> → <code>ready</code> / <code>error</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Video Management</h3>
+      <pre><code># List all videos
+GET /accounts/{account_id}/stream?limit=50&status=ready&search=walkthrough
+
+# Get single video
+GET /accounts/{account_id}/stream/{video_uid}
+
+# Update metadata
+POST /accounts/{account_id}/stream/{video_uid}
+{ "meta": { "name": "Updated Title" }, "requireSignedURLs": true }
+
+# Delete
+DELETE /accounts/{account_id}/stream/{video_uid}</code></pre>
+    </div>
+
+    <!-- ═══ 04 LIVE ═══ -->
+    <div class="sec" id="live">
+      <div class="sec-num">04 — LIVE STREAMING</div>
+      <h2>STREAM LIVE</h2>
+      <p>Stream Live accepts RTMPS and SRT ingest. Every live broadcast is automatically recorded — the VOD asset becomes available within 60 seconds of the stream ending.</p>
+
+      <h3>Create a Live Input</h3>
+      <pre><code>POST https://api.cloudflare.com/client/v4/accounts/{account_id}/stream/live_inputs
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "meta": { "name": "Weekly Webinar — Product Updates" },
+  "recording": {
+    "mode": "automatic",
+    "timeoutSeconds": 300
+  }
+}
+
+# Response — store rtmps.url + rtmps.streamKey for your encoder
+{
+  "result": {
+    "uid": "66c...",
+    "rtmps": {
+      "url": "rtmps://live.cloudflare.com:443/live/",
+      "streamKey": "66c...abc"
+    },
+    "srt": {
+      "url": "srt://live.cloudflare.com:778",
+      "streamId": "66c...",
+      "passphrase": "xyz..."
+    },
+    "playback": {
+      "hls": "https://videodelivery.net/66c.../manifest/video.m3u8",
+      "dash": "https://videodelivery.net/66c.../manifest/video.mpd"
+    }
+  }
+}</code></pre>
+
+      <h3>Live Input Management</h3>
+      <pre><code># List live inputs
+GET /accounts/{account_id}/stream/live_inputs
+
+# Get live input + all recorded VODs
+GET /accounts/{account_id}/stream/live_inputs/{live_input_uid}/videos
+
+# Delete live input
+DELETE /accounts/{account_id}/stream/live_inputs/{live_input_uid}</code></pre>
+
+      <h3>OBS / FFmpeg Setup</h3>
+      <table class="doc-table">
+        <thead><tr><th>Field</th><th>OBS Value</th></tr></thead>
+        <tbody>
+          <tr><td>Service</td><td>Custom</td></tr>
+          <tr><td>Server</td><td><code>rtmps://live.cloudflare.com:443/live/</code></td></tr>
+          <tr><td>Stream Key</td><td><code>{streamKey}</code> from live input response</td></tr>
+          <tr><td>Encoder</td><td>x264 · CBR · 6000 kbps max · Keyframe 2s</td></tr>
+        </tbody>
+      </table>
+
+      <pre><code># FFmpeg RTMPS ingest (requires automatic reconnect flags)
+ffmpeg -re -i input.mp4 \
+  -c:v libx264 -preset veryfast -b:v 4000k -maxrate 4000k -bufsize 8000k \
+  -g 60 -keyint_min 60 \
+  -c:a aac -b:a 128k \
+  -f flv "rtmps://live.cloudflare.com:443/live/{streamKey}"</code></pre>
+
+      <div class="callout warn">
+        <div class="callout-title">Reconnect Handling</div>
+        <p>OBS reconnects automatically. FFmpeg does not — wrap in a shell loop or use <code>-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 30</code> flags. Cloudflare holds the stream open for <code>timeoutSeconds</code> after the last packet before marking it ended.</p>
+      </div>
+
+      <h3>Adaptive Bitrate Behaviour</h3>
+      <p>Stream Live calculates ABR renditions from the actual ingest bitrate — not a fixed ladder. Low-motion content (slides, talking heads) will produce fewer/lower renditions. High-motion content (sports, gaming) triggers higher estimates. Plan encoder bitrate accordingly.</p>
+    </div>
+
+    <!-- ═══ 05 PLAYBACK ═══ -->
+    <div class="sec" id="playback">
+      <div class="sec-num">05 — PLAYBACK & PLAYER</div>
+      <h2>SERVING VIDEO TO VIEWERS</h2>
+
+      <h3>Stream Player (Embed)</h3>
+      <p>The fastest path. Cloudflare's own player handles adaptive streaming, captions, thumbnails, and analytics out of the box.</p>
+      <pre><code>&lt;!-- Load the SDK (once per page) --&gt;
+&lt;script src="https://embed.cloudflarestream.com/embed/sdk.latest.js"&gt;&lt;/script&gt;
+
+&lt;!-- Embed the player --&gt;
+&lt;stream
+  src="ea95132c15732419d526b5cae4c20c56"
+  controls
+  autoplay
+  muted
+  loop
+  width="100%"
+  poster="https://videodelivery.net/ea95.../thumbnails/thumbnail.jpg?time=5s&height=360"
+&gt;&lt;/stream&gt;
+
+&lt;!-- JavaScript API --&gt;
+&lt;script&gt;
+  const player = Stream(document.querySelector('stream'));
+  player.addEventListener('play', () =&gt; console.log('playing'));
+  player.play();
+  player.pause();
+  player.currentTime = 30;
+  player.volume = 0.5;
+&lt;/script&gt;</code></pre>
+
+      <h3>HLS / DASH — Custom Player</h3>
+      <p>Use any player (Video.js, Shaka Player, hls.js) by pointing it at the manifest URL.</p>
+      <pre><code># HLS manifest
+https://videodelivery.net/{video_uid}/manifest/video.m3u8
+
+# DASH manifest
+https://videodelivery.net/{video_uid}/manifest/video.mpd
+
+# Direct MP4 (for download or simple playback)
+https://videodelivery.net/{video_uid}/downloads/default.mp4
+
+# Example with hls.js
+const hls = new Hls();
+hls.loadSource('https://videodelivery.net/{video_uid}/manifest/video.m3u8');
+hls.attachMedia(videoElement);</code></pre>
+
+      <h3>Thumbnails</h3>
+      <pre><code># Default thumbnail (at 0:00)
+https://videodelivery.net/{video_uid}/thumbnails/thumbnail.jpg
+
+# Thumbnail at specific time
+https://videodelivery.net/{video_uid}/thumbnails/thumbnail.jpg?time=15s
+
+# Resize
+https://videodelivery.net/{video_uid}/thumbnails/thumbnail.jpg?height=360&width=640&fit=crop
+
+# Animated GIF preview (first 3 seconds by default)
+https://videodelivery.net/{video_uid}/thumbnails/thumbnail.gif?duration=5s</code></pre>
+    </div>
+
+    <!-- ═══ 06 ACCESS CONTROL ═══ -->
+    <div class="sec" id="access">
+      <div class="sec-num">06 — ACCESS CONTROL</div>
+      <h2>SIGNED URLS & RESTRICTIONS</h2>
+      <p>When <code>requireSignedURLs: true</code> is set on a video, all direct playback URLs return 401. Viewers must present a signed token issued by your backend.</p>
+
+      <h3>Step 1 — Enable on a Video</h3>
+      <pre><code>POST /accounts/{account_id}/stream/{video_uid}
+{ "requireSignedURLs": true }</code></pre>
+
+      <h3>Step 2 — Generate a Signing Key</h3>
+      <pre><code>POST /accounts/{account_id}/stream/keys
+# Returns a pemKey (RSA private key) — store securely, never expose to clients
+{
+  "result": {
+    "id": "key_abc123",
+    "pemKey": "-----BEGIN RSA PRIVATE KEY-----\n..."
+  }
+}</code></pre>
+
+      <h3>Step 3 — Issue Tokens in Your Worker</h3>
+      <pre><code>// Cloudflare Worker — sign a playback token
+import { SignJWT, importPKCS8 } from 'jose';
+
+export async function signStreamToken(videoUID, pemKey, keyId, expiresIn = '1h') {
+  const privateKey = await importPKCS8(pemKey, 'RS256');
+  return new SignJWT({})
+    .setProtectedHeader({ alg: 'RS256', kid: keyId })
+    .setSubject(videoUID)
+    .setIssuedAt()
+    .setExpirationTime(expiresIn)
+    .sign(privateKey);
+}
+
+// Usage — append token to any Stream URL
+const token = await signStreamToken(uid, pemKey, keyId, '2h');
+const signedHLS = `https://videodelivery.net/${token}/manifest/video.m3u8`;
+const signedEmbed = `&lt;stream src="${token}" controls&gt;&lt;/stream&gt;`;</code></pre>
+
+      <div class="callout green">
+        <div class="callout-title">Token Claims</div>
+        <p>JWT <code>sub</code> must be the video UID. Optional claims: <code>accessRules</code> to restrict by IP range, country, or any custom claim in the viewer's JWT. Tokens are stateless — no database lookups at playback time.</p>
+      </div>
+
+      <h3>Origin Restrictions (No Auth Required)</h3>
+      <pre><code># Restrict playback to specific domains without signed URLs
+POST /accounts/{account_id}/stream/{video_uid}
+{ "allowedOrigins": ["yourdomain.com", "app.yourdomain.com"] }</code></pre>
+    </div>
+
+    <!-- ═══ 07 WEBHOOKS ═══ -->
+    <div class="sec" id="webhooks">
+      <div class="sec-num">07 — WEBHOOKS</div>
+      <h2>STREAM EVENTS</h2>
+      <p>Subscribe to Stream webhook events to trigger downstream workflows — transcription jobs, CMS updates, notifications, or AI processing pipelines.</p>
+
+      <h3>Register a Webhook Endpoint</h3>
+      <pre><code>PUT /accounts/{account_id}/stream/webhook
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "notificationUrl": "https://your-worker.workers.dev/stream-webhook"
+}</code></pre>
+
+      <h3>Event Types</h3>
+      <table class="doc-table">
+        <thead><tr><th>Event</th><th>When It Fires</th></tr></thead>
+        <tbody>
+          <tr><td><code>stream.video.ready</code></td><td>Video finished encoding and is ready for playback</td></tr>
+          <tr><td><code>stream.video.errored</code></td><td>Encoding failed — check <code>status.errReasonCode</code></td></tr>
+          <tr><td><code>stream.live_input.connected</code></td><td>RTMPS/SRT encoder connected and stream is live</td></tr>
+          <tr><td><code>stream.live_input.disconnected</code></td><td>Encoder disconnected; recording will save after timeout</td></tr>
+          <tr><td><code>stream.live_input.recording_started</code></td><td>Recording is being written to storage</td></tr>
+          <tr><td><code>stream.live_input.recording_ready</code></td><td>Post-stream VOD is ready and can be played back</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Webhook Payload & Verification</h3>
+      <pre><code>// Worker receiving a webhook
+export default {
+  async fetch(request) {
+    const body = await request.json();
+    const { uid, status, meta } = body.result;
+
+    // Cloudflare signs the request — verify with HMAC-SHA256
+    const signature = request.headers.get('Webhook-Signature');
+    // signature = 'time=1234;sig1=...'
+
+    if (status.state === 'ready') {
+      // Trigger downstream: transcription, CMS update, AI summary
+      await triggerTranscription(uid);
+    }
+
+    return new Response('OK');
+  }
+};</code></pre>
+    </div>
+
+    <!-- ═══ 08 WORKERS AI ═══ -->
+    <div class="sec" id="workers-ai">
+      <div class="sec-num">08 — WORKERS AI INTEGRATION</div>
+      <h2>AI-POWERED VIDEO WORKFLOWS</h2>
+      <p>Combine Stream with Workers AI to build intelligent video pipelines without leaving Cloudflare's network. Common patterns: auto-transcription, caption generation, content moderation, and semantic video search.</p>
+
+      <h3>Auto-Transcription on Ready</h3>
+      <pre><code>// workers/stream-pipeline.js
+// Triggered by stream.video.ready webhook
+
+export default {
+  async fetch(request, env) {
+    const event = await request.json();
+    const { uid } = event.result;
+
+    // 1. Download the audio track from Stream
+    const audioResp = await fetch(
+      `https://videodelivery.net/${uid}/downloads/default.mp3`
+    );
+    const audioBuffer = await audioResp.arrayBuffer();
+
+    // 2. Transcribe with Whisper via Workers AI
+    const transcription = await env.AI.run('@cf/openai/whisper', {
+      audio: [...new Uint8Array(audioBuffer)],
+    });
+
+    // 3. Store transcript (D1, KV, R2...)
+    await env.DB.prepare(
+      'INSERT INTO transcripts (video_uid, text, language) VALUES (?, ?, ?)'
+    ).bind(uid, transcription.text, transcription.language).run();
+
+    // 4. Generate VTT captions and attach to video
+    const vtt = buildVTT(transcription.words);
+    await uploadCaptions(uid, vtt, env.CF_API_TOKEN, env.CF_ACCOUNT_ID);
+
+    return new Response('Pipeline complete');
+  }
+};</code></pre>
+
+      <h3>Upload VTT Captions to Stream</h3>
+      <pre><code>async function uploadCaptions(videoUID, vttContent, token, accountId) {
+  const formData = new FormData();
+  formData.append('file', new Blob([vttContent], { type: 'text/vtt' }), 'captions.vtt');
+
+  return fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/${videoUID}/captions/en`,
+    {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    }
+  );
+}</code></pre>
+
+      <h3>AI-Powered Summary Generation</h3>
+      <pre><code>// After transcription, generate a structured summary
+const summary = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+  messages: [
+    {
+      role: 'system',
+      content: 'You are a video content analyst. Extract key topics, action items, and a brief summary from the transcript.'
+    },
+    {
+      role: 'user',
+      content: `Transcript:\n${transcription.text}`
+    }
+  ]
+});
+
+// Store alongside the video in your CMS or D1 database</code></pre>
+
+      <div class="callout">
+        <div class="callout-title">Full Pipeline Architecture</div>
+        <p>Stream webhook → Worker receives <code>stream.video.ready</code> → Download audio → Whisper transcription → LLaMA summary → Store in D1 → Attach VTT captions back to video → Update search index → Notify user. All within Cloudflare's network, zero egress fees.</p>
+      </div>
+
+      <h3>Typical AI Workflow Patterns</h3>
+      <table class="doc-table">
+        <thead><tr><th>Pattern</th><th>Models</th><th>Output</th></tr></thead>
+        <tbody>
+          <tr><td>Auto-transcription</td><td><code>@cf/openai/whisper</code></td><td>Full transcript with word timestamps</td></tr>
+          <tr><td>Auto-captioning</td><td>Whisper → VTT formatter</td><td>VTT file attached to video</td></tr>
+          <tr><td>Meeting summary</td><td>Whisper + LLaMA 3.1</td><td>Structured JSON: topics, action items</td></tr>
+          <tr><td>Content moderation</td><td>Custom classifier</td><td>Flag/approve workflow</td></tr>
+          <tr><td>Semantic search</td><td>Whisper + embeddings + Vectorize</td><td>Natural language video search</td></tr>
+          <tr><td>Chapter generation</td><td>Whisper + LLaMA</td><td>Timestamped chapter markers</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══ 09 MCP TOOLS ═══ -->
+    <div class="sec" id="mcp-tools">
+      <div class="sec-num">09 — MCP TOOLS</div>
+      <h2>AI AGENT TOOL SET</h2>
+      <p>When an AI agent has the Cloudflare Stream skill installed, it has access to the following tool definitions for managing videos programmatically.</p>
+
+      <div class="tool-grid">
+        <div class="tool-item">
+          <div class="tool-name">stream_upload_url</div>
+          <div class="tool-desc">Upload a video by pulling from a public URL</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_create_upload</div>
+          <div class="tool-desc">Mint a one-time direct creator upload URL</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_list_videos</div>
+          <div class="tool-desc">List videos with filter by status, search term</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_get_video</div>
+          <div class="tool-desc">Fetch a single video's metadata and playback URLs</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_update_video</div>
+          <div class="tool-desc">Update meta, requireSignedURLs, allowedOrigins</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_delete_video</div>
+          <div class="tool-desc">Permanently delete a video and its storage</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_create_live_input</div>
+          <div class="tool-desc">Create live input, return RTMPS/SRT credentials</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_list_live_inputs</div>
+          <div class="tool-desc">List all live inputs and their current status</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_sign_token</div>
+          <div class="tool-desc">Issue a signed JWT playback token for a video</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_upload_captions</div>
+          <div class="tool-desc">Attach a VTT caption file to a video by language code</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_transcribe</div>
+          <div class="tool-desc">Run Whisper transcription via Workers AI on a video</div>
+        </div>
+        <div class="tool-item">
+          <div class="tool-name">stream_get_embed</div>
+          <div class="tool-desc">Return ready-to-paste &lt;stream&gt; embed HTML</div>
+        </div>
+      </div>
+
+      <h3>Example Agent Conversations</h3>
+      <div class="convo">
+        <div class="convo-line">
+          <span class="convo-role human">User</span>
+          <div class="convo-text">Upload the video at https://assets.acme.com/webinar-march.mp4, restrict it to signed URLs only, and give me the embed code.</div>
+        </div>
+        <div class="convo-line">
+          <span class="convo-role ai">Agent</span>
+          <div class="convo-text">I'll use <strong>stream_upload_url</strong> to pull the video into Stream, then <strong>stream_update_video</strong> to enable requireSignedURLs, generate a 24-hour signed token with <strong>stream_sign_token</strong>, and return the embed. One moment while it encodes — I'll poll <code>status.state</code> until it hits <code>ready</code>.</div>
+        </div>
+      </div>
+      <div class="convo">
+        <div class="convo-line">
+          <span class="convo-role human">User</span>
+          <div class="convo-text">Set up a live stream for our Friday product demo and give me the OBS settings.</div>
+        </div>
+        <div class="convo-line">
+          <span class="convo-role ai">Agent</span>
+          <div class="convo-text">Creating the live input now with <strong>stream_create_live_input</strong>. For OBS: Service → Custom, Server → <code>rtmps://live.cloudflare.com:443/live/</code>, Stream Key → <code>[key]</code>. Use x264, CBR, 4000 kbps, 60fps, 2-second keyframe interval. The HLS playback URL for your site is ready immediately — the stream goes live as soon as OBS connects.</div>
+        </div>
+      </div>
+      <div class="convo">
+        <div class="convo-line">
+          <span class="convo-role human">User</span>
+          <div class="convo-text">Transcribe all videos uploaded this week and add English captions.</div>
+        </div>
+        <div class="convo-line">
+          <span class="convo-role ai">Agent</span>
+          <div class="convo-text">I'll use <strong>stream_list_videos</strong> filtered by creation date, then run <strong>stream_transcribe</strong> on each via Workers AI (Whisper), format the output as VTT, and call <strong>stream_upload_captions</strong> with language code <code>en</code>. I'll batch these to avoid rate limits — estimated 3-5 minutes for the full set.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 10 PRICING ═══ -->
+    <div class="sec" id="pricing">
+      <div class="sec-num">10 — PRICING</div>
+      <h2>STREAM COSTS</h2>
+      <p>Stream pricing is based on minutes stored and minutes delivered. There is no charge for encoding, transcoding, or packaging.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Dimension</th><th>Cost</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Storage (minutes)</td><td>$5 / 1,000 min stored</td><td>Measured at encoded output duration</td></tr>
+          <tr><td>Delivery (minutes)</td><td>$1 / 1,000 min delivered</td><td>Per viewer-minute of playback</td></tr>
+          <tr><td>Live encoding</td><td>Included</td><td>No extra charge for RTMPS/SRT ingest</td></tr>
+          <tr><td>Recording</td><td>$5 / 1,000 min recorded</td><td>Live streams auto-recorded</td></tr>
+          <tr><td>Captions</td><td>Included</td><td>VTT upload + delivery at no extra cost</td></tr>
+          <tr><td>Signed URLs</td><td>Included</td><td>No charge for token issuance</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <div class="callout-title">Cost Planning Tip</div>
+        <p>For AI transcription pipelines: Workers AI Whisper costs apply separately (charged per audio second). Budget ~$0.005 per minute of audio. Schedule transcription jobs after <code>stream.video.ready</code> to avoid wasted calls on failed encodes.</p>
+      </div>
+    </div>
+
+    <!-- ═══ 11 GOTCHAS ═══ -->
+    <div class="sec" id="gotchas">
+      <div class="sec-num">11 — GOTCHAS</div>
+      <h2>COMMON ISSUES & FIXES</h2>
+
+      <table class="doc-table">
+        <thead><tr><th>Issue</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Video stuck in <code>inprogress</code></td>
+            <td>Large file still encoding</td>
+            <td>Poll <code>GET /stream/{uid}</code> every 5s; hook <code>stream.video.ready</code> webhook instead of polling</td>
+          </tr>
+          <tr>
+            <td>Playback returns 401</td>
+            <td><code>requireSignedURLs</code> is true but no token passed</td>
+            <td>Pass signed JWT as the <code>src</code> in <code>&lt;stream&gt;</code> or append <code>?token=...</code> to HLS URL</td>
+          </tr>
+          <tr>
+            <td>Live stream drops and doesn't reconnect</td>
+            <td>FFmpeg doesn't auto-reconnect on RTMPS disconnect</td>
+            <td>Add <code>-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 30</code> to FFmpeg flags</td>
+          </tr>
+          <tr>
+            <td>Player not showing on page</td>
+            <td>SDK script loaded after <code>&lt;stream&gt;</code> element</td>
+            <td>Load <code>sdk.latest.js</code> in <code>&lt;head&gt;</code> or before the <code>&lt;stream&gt;</code> tag</td>
+          </tr>
+          <tr>
+            <td>ABR quality lower than expected</td>
+            <td>Stream calculates renditions from ingest bitrate</td>
+            <td>Increase encoder bitrate — Stream won't upscale. Target ≥6 Mbps for 1080p output</td>
+          </tr>
+          <tr>
+            <td>Thumbnail returns wrong frame</td>
+            <td>Default is 0:00 which may be a black frame</td>
+            <td>Set <code>?time=5s</code> or specify <code>thumbnailTimestampPct</code> during upload</td>
+          </tr>
+          <tr>
+            <td>Creator upload URL expired</td>
+            <td><code>expiry</code> field set too short</td>
+            <td>Set <code>expiry</code> to at least 30 minutes from now; mint a new URL if expired</td>
+          </tr>
+          <tr>
+            <td>Multi-channel audio mixed down</td>
+            <td>Stream encodes to stereo by design</td>
+            <td>Expected behaviour — pre-mix to stereo before upload if mix matters</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══ 12 INSTALL ═══ -->
+    <div class="sec" id="install">
+      <div class="sec-num">12 — INSTALL</div>
+      <h2>ADD THIS SKILL</h2>
+      <p>Install the Cloudflare Stream skill into your AI agent or Claude Code project. Once installed, the agent has access to all API patterns, code examples, and MCP tool definitions on this page.</p>
+      <div class="install-box" style="margin-bottom:16px">
+        <code class="install-cmd">npx skills add imbilawork/2nth-skills@cloudflare-stream</code>
+        <button class="install-copy" onclick="copyInstall()">COPY</button>
+      </div>
+
+      <h3>Related Skills</h3>
+      <p>Cloudflare Stream integrates naturally with these other 2nth.ai skills:</p>
+      <ul>
+        <li><strong>Shopify AI</strong> — embed product demo videos and live launch streams directly in Shopify storefronts</li>
+        <li><strong>Sage X3 AI Integration</strong> — attach training videos to ERP onboarding workflows and knowledge bases</li>
+      </ul>
+
+      <div class="callout">
+        <div class="callout-title">Reference Docs</div>
+        <p>Official Cloudflare Stream documentation: <a href="https://developers.cloudflare.com/stream/" style="color:#06b6d4">developers.cloudflare.com/stream</a></p>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /page -->
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&copy; 2026 2NTH.AI — Skills Registry</div>
+    <div class="footer-links">
+      <a href="/">Skills</a>
+      <a href="https://2nth-marketing.pages.dev">2nth.ai</a>
+      <a href="https://developers.cloudflare.com/stream/">CF Stream Docs</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://2nth-marketing.pages.dev/app-switcher.js"></script>
+<script>
+function toggleTheme(){
+  document.documentElement.classList.toggle('light');
+  localStorage.setItem('2nth-theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+  updateIcons();
+}
+function updateIcons(){
+  var l = document.documentElement.classList.contains('light');
+  document.getElementById('icon-sun').classList.toggle('hidden', !l);
+  document.getElementById('icon-moon').classList.toggle('hidden', l);
+}
+updateIcons();
+
+function copyInstall(){
+  navigator.clipboard.writeText('npx skills add imbilawork/2nth-skills@cloudflare-stream');
+  var btns = document.querySelectorAll('.install-copy');
+  btns.forEach(function(btn){ btn.textContent = 'COPIED'; });
+  setTimeout(function(){ btns.forEach(function(btn){ btn.textContent = 'COPY'; }); }, 1500);
+}
+
+// TOC active state
+var tocLinks = document.querySelectorAll('.toc a');
+var sections = document.querySelectorAll('.sec[id]');
+window.addEventListener('scroll', function(){
+  var scrollY = window.scrollY + 120;
+  var current = '';
+  sections.forEach(function(s){ if(s.offsetTop <= scrollY) current = s.id; });
+  tocLinks.forEach(function(a){
+    a.classList.toggle('toc-active', a.getAttribute('href') === '#' + current);
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
