@@ -24,6 +24,7 @@ Works with Claude Code, Cursor, Windsurf, Cline, and 30+ AI coding agents.
 | [`cloudflare-containers`](./public/cloudflare/containers.html) | Cloudflare Containers — Docker on Workers + Durable Objects, 14-section deep dive | ENG | Live |
 | [`bi-datawarehouse`](./bi-datawarehouse/) | Modern data stack — dimensional modeling, dbt, warehouse selection, semantic layer | DATA | Live |
 | [`apache-superset`](./apache-superset/) | Apache Superset — deployment, RBAC, row-level security, embedding, performance | DATA | Live |
+| [`open-design`](./open-design/) | Open Design — open-source local-first Claude Design alternative. CLI-as-design-engine, 19 skills + 71 design systems, BYOK, POPIA-friendly | DESIGN | Live |
 
 ## Skill structure
 
