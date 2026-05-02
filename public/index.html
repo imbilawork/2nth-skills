@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2nth.ai Skills — AI Skills Catalog</title>
   <link rel="icon" type="image/svg+xml" href="https://2nth-marketing.pages.dev/favicon.svg">
-  <meta name="description" content="19 production-ready AI skills across Business, Education, Engineering, Legal, and Finance. Pair a human with an AI and the right domain skills.">
+  <meta name="description" content="26 production-ready AI skills across Business, Education, Engineering, Legal, Finance, Data, and Design. Pair a human with an AI and the right domain skills.">
   <meta property="og:title" content="2nth.ai Skills Catalog">
-  <meta property="og:description" content="19 live AI skills across 5 domains — BIZ, EDU, ENG, LEG, FIN.">
+  <meta property="og:description" content="26 live AI skills across 7 domains — BIZ, EDU, ENG, LEG, FIN, DATA, DESIGN.">
   <meta property="og:url" content="https://skills.2nth.ai">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +36,7 @@
     .dpill[data-domain="leg"]:hover,.dpill[data-domain="leg"].active{border-color:#f59e0b;color:#f59e0b}
     .dpill[data-domain="fin"]:hover,.dpill[data-domain="fin"].active{border-color:#10b981;color:#10b981}
     .dpill[data-domain="data"]:hover,.dpill[data-domain="data"].active{border-color:#3b82f6;color:#3b82f6}
+    .dpill[data-domain="design"]:hover,.dpill[data-domain="design"].active{border-color:#ec4899;color:#ec4899}
     .nav-right{display:flex;align-items:center;gap:12px}
     .nav-link{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-steel-600);transition:color .15s}
     .nav-link:hover{color:var(--c-steel-400)}
@@ -115,6 +116,7 @@
       <button class="dpill" data-domain="leg" onclick="filterDomain('leg',this)">LEG</button>
       <button class="dpill" data-domain="fin" onclick="filterDomain('fin',this)">FIN</button>
       <button class="dpill" data-domain="data" onclick="filterDomain('data',this)">DATA</button>
+      <button class="dpill" data-domain="design" onclick="filterDomain('design',this)">DESIGN</button>
     </div>
     <div class="nav-right">
       <a href="https://skills-hub.2nth.ai" class="nav-link">Hub</a>
@@ -134,8 +136,8 @@
   <div class="hero-spectrum"></div>
   <div class="hero-inner">
     <div class="hero-eyebrow">2nth Skills Registry — all domains</div>
-    <h1>25 <span>LIVE</span> AI SKILLS</h1>
-    <p class="hero-sub">Production-ready skills that give AI agents deep domain expertise across Business, Education, Engineering, Legal, Finance, and Data.</p>
+    <h1>26 <span>LIVE</span> AI SKILLS</h1>
+    <p class="hero-sub">Production-ready skills that give AI agents deep domain expertise across Business, Education, Engineering, Legal, Finance, Data, and Design.</p>
     <div class="hero-stats">
       <div class="hero-stat"><strong style="color:#8b5cf6">8</strong>BIZ Skills</div>
       <div class="hero-stat"><strong style="color:#22c55e">3</strong>EDU Skills</div>
@@ -143,6 +145,7 @@
       <div class="hero-stat"><strong style="color:#f59e0b">3</strong>LEG Skills</div>
       <div class="hero-stat"><strong style="color:#10b981">3</strong>FIN Skills</div>
       <div class="hero-stat"><strong style="color:#3b82f6">2</strong>DATA Skills</div>
+      <div class="hero-stat"><strong style="color:#ec4899">1</strong>DESIGN Skills</div>
     </div>
   </div>
 </section>
@@ -152,7 +155,7 @@
 <div class="section">
   <div class="sec-label">01 — CATALOG</div>
   <div class="sec-title">ALL SKILLS</div>
-  <div class="sec-desc">Filter by domain or browse all 25 live skills. Each skill packages verified API patterns, query templates, and workflow blueprints for a specific system.</div>
+  <div class="sec-desc">Filter by domain or browse all 26 live skills. Each skill packages verified API patterns, query templates, and workflow blueprints for a specific system.</div>
 
   <!-- BIZ -->
   <div class="domain-block" data-domain="biz">
@@ -454,6 +457,28 @@
         <div class="skill-name">APACHE SUPERSET</div>
         <div class="skill-desc">Production deployment, dashboard authoring, RBAC, row-level security, and guest-token embedding for self-hosted open-source BI.</div>
         <div class="skill-footer"><code class="skill-install">@apache-superset</code><span class="skill-arrow" style="color:#3b82f6">VIEW →</span></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- DESIGN -->
+  <div class="domain-block" data-domain="design">
+    <div class="domain-header">
+      <div class="domain-dot" style="background:#ec4899"></div>
+      <span class="domain-label" style="color:#ec4899">DESIGN</span>
+      <span class="domain-name">Design</span>
+      <span class="domain-count">1 LIVE</span>
+      <a href="https://design.skills.2nth.ai" class="domain-link" style="color:#ec4899">EXPLORE →</a>
+    </div>
+    <div class="skills-grid">
+      <a href="/skills/open-design" class="skill-card">
+        <div class="skill-card-top">
+          <div class="skill-icon" style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.15)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><rect x="3" y="3" width="13" height="13" rx="1"/><rect x="8" y="8" width="13" height="13" rx="1"/></svg></div>
+          <span class="skill-tag tag-live">LIVE</span>
+        </div>
+        <div class="skill-name">OPEN DESIGN</div>
+        <div class="skill-desc">Open-source, local-first alternative to Anthropic's Claude Design. Turn any installed coding-agent CLI into a design engine — 19 skills, 71 design systems, BYOK proxy fallback. POPIA-friendly, load-shedding-resilient, ZAR-friendly.</div>
+        <div class="skill-footer"><code class="skill-install">@design-open-design</code><span class="skill-arrow" style="color:#ec4899">VIEW →</span></div>
       </a>
     </div>
   </div>
